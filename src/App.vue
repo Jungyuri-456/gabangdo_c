@@ -23,4 +23,9 @@ import Footer from './components/Footer.vue';
   padding-top: 75px;
 
 }
+.wrap{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 </style>

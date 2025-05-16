@@ -1,20 +1,10 @@
 <template>
   <div class="ma_visual-wrap">
     <div class="inner">
-      <!-- 왼쪽 -->
-      <div class="mavistxt">
-        <img src="/images/geen/maintxt.png" alt="텍스트이미지" />
-        <button><router-link to="/yeyak">예약하기</router-link></button>
-      </div>
       <!-- 오른쪽 -->
       <div class="mavisimg">
         <!-- <img src="/images/ma/ma_visual/mavisual.gif" alt="ma-viusal" /> -->
         <img src="/images/gh/ma_visual/mavisual.gif" alt="메인비쥬얼" />
-        <!-- 오디오 음악재생 -->
-        <audio autoplay controls class="mavisaudio" loop alt="음악재생">
-          <!-- <source src="/music.mp3" /> -->
-          <source src="/images/gh/music.mp3" alt="음악재생" />
-        </audio>
       </div>
     </div>
   </div>
@@ -25,7 +15,7 @@
 /* 전체영역 */
 .ma_visual-wrap .inner {
   width: 100%;
-  max-width: 1300px;;
+  max-width: 800px;;
   display: flex;
   justify-content: center;
   margin: 50px auto 80px;

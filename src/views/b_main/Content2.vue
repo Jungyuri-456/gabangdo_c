@@ -1,97 +1,53 @@
 <template>
-  <div class="macontent2_wrap">
+  <!-- 컨텐츠1 -->
+  <div class="widthAllBg">
     <div class="inner">
-      <div class="macontent2_icon">
-        <!-- 1. 가방도 -->
-        <div class="macontent2_iconimg">
-          <a href="#">
-            <!-- 아이콘 이미지 -->
-            <router-link to="/bangbeob1"><img
-              src="/images/gh/ma_content2/bangbeobdo_icon.png"
-              alt="방법도 아이콘"
-            /></router-link>
-            <!-- hover시 보일 텍스트 -->
-            <div class="macontent2_icon_hover">
-              <h5>운송 보관<br />어디든지</h5>
-            </div>
-          </a>
-          <!-- 항상 보이는 텍스트 -->
-          <div class="macontent2_icontxt">
-            <h4>가방도</h4>
-          </div>
+      <div class="bg_all">
+        <!-- 왼쪽 용다리 -->
+        <div class="leftImg">
+          <img src="/public/images/yongdal2.png" alt="" />
         </div>
-        <!-- 2. 예약도 -->
-        <div class="macontent2_iconimg">
-          <a href="#">
-            <!-- 아이콘 이미지 -->
-            <router-link to="/yeyak"><img
-              src="/images/gh/ma_content2/reservation_icon.png"
-              alt="예약도 아이콘"
-            /></router-link>
-            <!-- hover시 보일 텍스트 -->
-            <div class="macontent2_icon_hover">
-              <h5>
-                가방맡기기
-                <br />지금 예약
-              </h5>
-            </div>
-          </a>
-          <!-- 항상 보이는 텍스트 -->
-          <div class="macontent2_icontxt">
-            <h4>예약도</h4>
-          </div>
+        <!-- 오른쪽 글씨 -->
+        <div class="rightLetter">
+          <h2>쉽고 가벼운 여행도!</h2>
+          <p>원하는 곳에 짐 맡기고</p>
+          <p>편하게 이동하자</p>
         </div>
-        <!-- 3. 요금도 -->
-        <div class="macontent2_iconimg">
-          <a href="#">
-            <!-- 아이콘 이미지 -->
-            <router-link to="/yogeum"><img src="/images/gh/ma_content2/cash_icon.png" alt="요금도 아이콘" /></router-link>
-            <!-- hover시 보일 텍스트 -->
-            <div class="macontent2_icon_hover">
-              <h5>
-                서비스 요금<br> 결제 방법<br />
-              </h5>
-            </div>
-          </a>
-          <!-- 항상 보이는 텍스트 -->
-          <div class="macontent2_icontxt">
-            <h4>요금도</h4>
-          </div>
+      </div>
+    </div>
+  </div>
+  <!-- 컨텐츠2 -->
+  <div class="widthAllBg bgColor">
+    <div class="inner">
+      <div class="bg_all">
+        <!-- 왼쪽 용다리 -->
+        <div class="rightLetter">
+          <h2>짐보관도 부담없이!</h2>
+          <p>지하철, 기차, 공항</p>
+          <p>어디든지 짐 맡기자</p>
         </div>
-        <!-- 4. 소통도 -->
-        <div class="macontent2_iconimg">
-          <a href="#">
-            <!-- 아이콘 이미지 -->
-            <router-link to="/sotong"><img
-              src="/images/gh/ma_content2/comunity_icon.png"
-              alt="소통도 아이콘"
-            /></router-link>
-            <!-- hover시 보일 텍스트 -->
-            <div class="macontent2_icon_hover">
-              <h5>
-                공지사항<br> 이용후기
-              </h5>
-            </div>
-          </a>
-          <!-- 항상 보이는 텍스트 -->
-          <div class="macontent2_icontxt">
-            <h4>소통도</h4>
-          </div>
+        <!-- 오른쪽 글씨 -->
+
+        <div class="leftImg">
+          <img src="/public/images/yongdal3.png" alt="" />
         </div>
-        <!-- 5. 여행도 -->
-        <div class="macontent2_iconimg">
-          <a href="#">
-            <!-- 아이콘 이미지 -->
-            <router-link to="/yh_festival"><img src="/images/gh/ma_content2/trip_icon.png" alt="여행도 아이콘" /></router-link>
-            <!-- hover시 보일 텍스트 -->
-            <div class="macontent2_icon_hover">
-              <h5>대구 축제<br/>시티투어</h5>
-            </div>
-          </a>
-          <!-- 항상 보이는 텍스트 -->
-          <div class="macontent2_icontxt">
-            <h4>여행도</h4>
-          </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 컨텐츠3 -->
+  <div class="widthAllBg">
+    <div class="inner">
+      <div class="bg_all">
+        <!-- 왼쪽 용다리 -->
+        <div class="leftImg">
+          <img src="/public/images/yongdal4.png" alt="" />
+        </div>
+        <!-- 오른쪽 글씨 -->
+        <div class="rightLetter">
+          <h2 class="more">실시간 배송조회도!</h2>
+          <p>짐이 어디있는지 한눈에!</p>
+          <p>실시간 확인하기</p>
         </div>
       </div>
     </div>
@@ -99,6 +55,45 @@
 </template>
 <script setup></script>
 <style lang="scss" scoped>
-@use "/src/assets/Variables" as *;
+@use "/src/assets/_Variables" as *;
+.bgColor{
+  background-color: rgb(255, 255, 255) !important;
+}
+.widthAllBg {
+  background-color: rgb(255, 255, 255);
+  .inner {
+    max-width: 1200px;
+    margin: 0 auto;
 
+    .bg_all {
+      width: 100%;
+      height: 50vh;
+      display: flex;
+      padding-top: 70px;
+      justify-content: space-between;
+
+      .leftImg {
+        text-align: center;
+        line-height: 300px;
+      }
+      .rightLetter {
+        h2 {
+          font-size: 80px;
+          margin-top: 70px;
+          margin-bottom: 40px;
+          font-weight: 520;
+        }
+        .more{
+          margin-top: 80px;
+        }
+        p {
+          font-size: 45px;
+          margin-bottom: 8px;
+          font-family: $font-ownglyph;
+          color: #494949;
+        }
+      }
+    }
+  }
+}
 </style>

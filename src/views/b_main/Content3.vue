@@ -1,137 +1,331 @@
 <template>
-  <div class="macontent3_wrap">
+  <div class="widthAllBg">
+    <div class="blockgr">
+    </div>
     <div class="inner">
-      <!-- 1. 여행도 -->
-      <div class="macontent3_gp ma3trip">
-        <div class="ma3bg">
-          <div class="ma3img">
-            <img
-              src="/images/geen/1/sudal_01.png"
-              alt="여행도" />
-          </div>
-          <div class="ma3txt">
-            <span>가방도와 함께라면~</span>
-            <h3>가벼운 여행도  </h3><strong>짐 어느 곳에서든 맡기기</strong>
-            
-          </div>
-        </div>
+    <!-- 그라데이션 구분 -->
+
+      <div class="title">
+        <h2>가방도 이래서 좋아요</h2>
       </div>
-      <!-- 2. 배달도 -->
-      <div class="macontent3_gp madily">
-        <div class="ma3bg">
-          <div class="ma3txt">
-            <span>가방도와 함께라면~</span>
-            <h3>보관도 &nbsp;배달도 </h3>           <span>안전 보관   , 책임 배송 </span>
+      <swiper
+        :slides-per-view="3.5"
+        :space-between="30"
+        :modules="[Pagination]"
+        class="mySwiper">
+        <!-- 리뷰카드1 -->
+        <swiper-slide>
+          <div class="Reviews">
+            <!-- 사진 -->
+            <div class="cardImg">
+              <img src="/public/images/carrier2.png" alt="" />
+            </div>
+            <!-- 이름 -->
+            <div class="name">
+              <p>김 * *</p>
+            </div>
+            <!-- 후기 -->
+            <div class="Review">
+              <p>출장길 짐때문에 이동이 번거로울 뻔했는데</p>
+              <p>지인의 추천으로 써보니 좋았습니다.</p>
+            </div>
           </div>
-          <div class="ma3img">
-            <img
-              src="/images/geen/1/sudal_02.png"
-              alt="배달도" />
+        </swiper-slide>
+        <!-- 리뷰카드2 -->
+        <swiper-slide>
+          <div class="Reviews">
+            <!-- 사진 -->
+            <div class="cardImg">
+              <img src="/public/images/carrier3.png" alt="" />
+            </div>
+            <!-- 이름 -->
+            <div class="name">
+              <p>하 * *</p>
+            </div>
+            <!-- 후기 -->
+            <div class="Review">
+              <p>부모님 데리고 가족여행을 대구로 왔는데</p>
+              <p>짐이 너무 많은거에요!! 덕분에 짐 덜었습니다ㅎㅎ</p>
+            </div>
           </div>
+        </swiper-slide>
+        <!-- 리뷰카드3 -->
+        <swiper-slide>
+          <div class="Reviews">
+            <!-- 사진 -->
+            <div class="cardImg">
+              <img src="/public/images/carrier5.png" alt="" />
+            </div>
+            <!-- 이름 -->
+            <div class="name">
+              <p>권 * *</p>
+            </div>
+            <!-- 후기 -->
+            <div class="Review">
+              <p>이번 여행때 차가없어서 고민이 많았는데</p>
+              <p>
+                친구의 추천으로 알게되었습니다. 한번씩 가벼운 여행을 하고 싶을때
+                추천드립니다.
+              </p>
+            </div>
+          </div>
+        </swiper-slide>
+        <!-- 리뷰카드4 -->
+        <swiper-slide>
+          <div class="Reviews">
+            <!-- 사진 -->
+            <div class="cardImg">
+              <img src="/public/images/carrier6.png" alt="" />
+            </div>
+            <!-- 이름 -->
+            <div class="name">
+              <p>하 * *</p>
+            </div>
+            <!-- 후기 -->
+            <div class="Review">
+              <p>부모님 데리고 가족여행을 대구로 왔는데</p>
+              <p>짐이 너무 많은거에요!! 덕분에 짐 덜었습니다ㅎ</p>
+            </div>
+          </div>
+        </swiper-slide>
+        <!-- 리뷰카드5 -->
+        <swiper-slide>
+          <div class="Reviews">
+            <!-- 사진 -->
+            <div class="cardImg">
+              <img src="/public/images/carrier4.png" alt="" />
+            </div>
+            <!-- 이름 -->
+            <div class="name">
+              <p>우 * *</p>
+            </div>
+            <!-- 후기 -->
+            <div class="Review">
+              <p>즐거운여행!!</p>
+              <p>가벼운 여행!!</p>
+            </div>
+          </div>
+        </swiper-slide>
+        <!-- 리뷰카드6 -->
+        <swiper-slide>
+          <div class="Reviews">
+            <!-- 사진 -->
+            <div class="cardImg">
+              <img src="/public/images/carrier1.png" alt="" />
+            </div>
+            <!-- 이름 -->
+            <div class="name">
+              <p>나 * *</p>
+            </div>
+            <!-- 후기 -->
+            <div class="Review">
+              <p>대구 여행길 짐이 많아 고민이었는데</p>
+              <p>덕분에 편하게 여행했습니다.</p>
+            </div>
+          </div>
+        </swiper-slide>
+      </swiper>
+
+      <!-- 스타벅스 커피이벤트 -->
+      <div class="ReviewEvent">
+        <div class="title2">
+          <h2>리뷰쓰고 커피받자!</h2>
+          <p>인스타 리뷰작성시 스타벅스 커피지급</p>
         </div>
-      </div>
-      <!-- 3. 배송조회도! -->
-      <div class="macontent3_gp ma3shearch">
-        <div class="ma3bg">
-          <div class="ma3img">
-            <img class="ma_sudal3img"
-              src="/images/geen/1/sudal_03.png"
-              alt="배송조회도!" />
+        <div class="instaAll">
+          <!-- 말풍선1 -->
+          <div class="ballon1">
+            <img src="/public/images/yr/center/balloon1.png" alt="" />
           </div>
-          <div class="ma3txt">
-            <span>가방도와 함께라면~</span>
-            <h3>가방조회도 </h3>            <span>위치  실시간 확인 </span>
+          <!-- 인스타게시글 -->
+          <div class="instaReview">
+            <div class="instabg">
+              <!-- 인스타상단 -->
+              <div class="instaTop">
+                <div class="profile">
+                  <img src="/public/images/profile_insta.png" alt="" />
+                </div>
+                <p>Doyongdal</p>
+              </div>
+              <!-- 용달가족놀러 -->
+              <div class="instaMiddle">
+                <img src="/images/gh/ma_visual/mavisual.gif" alt="메인비쥬얼" />
+              </div>
+              <!-- 인스타아이콘들 -->
+              <div class="instaIcons">
+                <img src="/public/images/yr/center/instaIcon1.png" alt="" />
+                <img src="/public/images/yr/center/instaIcon2.png" alt="" />
+                <img src="/public/images/yr/center/instaIcon3.png" alt="" />
+              </div>
+              <!-- 인스타 태그 -->
+              <div class="instTag">
+                <p class="like">좋아요 999</p>
+                <p>#가방도#짐운송#짐운반#가벼운이동</p>
+                <p>#83타워#금호강#수성못#오리배</p>
+                <p>#행복해#용달가족#나들이#날씨좋아</p>
+              </div>
+            </div>
+          </div>
+          <!-- 스벅커피 -->
+          <div class="starBucksCoffee">
+            <img src="/public/images/yr/center/coffee.png" alt="">
+          </div>
+          <!-- 말풍선2 -->
+          <div class="ballon2">
+            <img src="/public/images/yr/center/balloon2.png" alt="" />
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-<script setup></script>
+<script setup>
+import { Swiper, SwiperSlide } from "swiper/vue";
+import "swiper/css";
+import "swiper/css/pagination";
+// import '@/style.css';
+import { Pagination } from "swiper/modules";
+</script>
 <style lang="scss" scoped>
 @use "/src/assets/Variables" as *;
-/* 전체영역 */
-.macontent3_wrap {
-  width: 100%;
-  max-width: 40%;
-  position: relative;
-  margin: auto;
-  line-height: 25px;
-}
-/* 중앙 원 */
-.macontent3_wrap> .inner::before {
-  display: none;
-  content: "";
-  position: absolute;
-  top: 60%;
-  left: 50%;
-  width: 800px; /* 원 크기 */
-  height: 800px;
-  background-color: rgba(237, 237, 237, 1); /* 반투명 흰색 */
-  border-radius: 50%;
-  transform: translate(-50%, -50%); /* 정확한 중앙 정렬 */
-  z-index: -2; /* 콘텐츠보다 뒤에 배치 */
-}
-/* 가운데 정렬 */
-.macontent3_wrap .inner {
-  position: relative;
-  max-width: 1300px;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+.widthAllBg {
+  .blockgr{
+        background: linear-gradient(to bottom, #f2f2f2, #ffffff);
+        height: 70px; // 필요에 따라 조정
+        margin-top: 90px;
+      }
+  // background: linear-gradient(
+  //   to bottom,
+  //   #f3f3f3,
+  //   #fff
+  // ); // 회색(#ccc) → 하얀색(#fff)
+  // height: 100vh;
+  
+  .inner {
+    max-width: 1300px;
+    margin: 0 auto;
 
-/* 개별 박스 */
-.macontent3_gp {
-  display: flex;
-  width: 200%;
-  max-width: 1050px;
-  margin: 20px 0;
-}
+    .title {
+      width: 100%;
+      h2 {
+        font-size: 60px;
+        text-align: center;
+        font-family: $font-ownglyph;
+        padding-top: 120px;
+        padding-bottom: 120px;
+      }
+    }
 
-/* 기본적으로 왼쪽 정렬 */
-.macontent3_gp .ma3bg {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 600px;
-  height: 120px;
-  background-color: #007bd8;
-  border-radius: 90px;
-  margin: 20px;
-}
+    .Reviews {
+      width: 100%;
+      // background-color: #f0f0f0;
+      border: 3px solid #f0f0f0;
 
-/* 짝수 번째 박스는 오른쪽 정렬 */
-.macontent3_gp:nth-child(even) {
-  justify-content: flex-end;  
-}
+      padding: 5%;
+      border-radius: 15px;
+      .cardImg {
+        img {
+          width: 100%;
+          border-radius: 5px;
+        }
+      }
+      .name {
+        font-size: 28px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
+      .Review {
+        font-size: 20px;
+        p {
+          margin-bottom: 3px;
+          font-family: $font-ownglyph;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
 
-/* 홀수 번째 박스는 왼쪽 정렬 */
-.macontent3_gp:nth-child(odd) {
-  justify-content: flex-start;
-}
-/* txt */
-.ma3txt{ 
-  font-size: 19px;
-  margin-right: 30px;
-  span, strong{
-    font-size: 14px;
-    color:  #fff;
+    .ReviewEvent {
+      width: 100%;
+      // height: 100vh;
+      padding-top: 120px;
+      padding-bottom: 120px;
+      .title2 {
+        text-align: center;
+        font-family: $font-ownglyph;
+        h2 {
+          font-size: 60px;
+          margin-bottom: 10px;
+        }
+        p {
+          font-size: 25px;
+        }
+      }
+      .instaAll{
+        display: flex;
+        // 인스타 풍선1
+        .ballon1{
+          margin-top: 150px;
+        }
+
+      // 인스타 페이지
+      .instaReview {
+        position: relative;
+        margin-top: 50px !important;
+        width: 50%;
+        background-color: #fff;
+        border: 3px solid #f0f0f0;
+        margin: 0 auto;
+        padding: 2%;
+        .instabg {
+          .instaTop {
+            display: flex;
+            p {
+              font-size: 19px;
+              line-height: 30px;
+              padding-top: 5px;
+              padding-left: 7px;
+            }
+          }
+          .instaMiddle {
+            img {
+              width: 600px;
+            }
+          }
+          .instaIcons {
+            display: flex;
+            gap: 2%;
+            margin-bottom: 3%;
+          }
+          .instTag {
+            .like {
+              color: #000;
+              margin-bottom: 3%;
+              font-size: 20px;
+            }
+            p {
+              color: #c7c7c7;
+              font-size: 18px;
+              margin-bottom: 1%;
+            }
+          }
+        }
+      }
+      .starBucksCoffee{
+        position: absolute;
+        top: 3950px;
+        left: 1200px;
+        img{
+          transform: rotate(12deg);
+          transform-origin: top left; /* 왼쪽 위 기준으로 회전 */
+        }
+      }
+      .ballon2{
+          margin-top: 450px;
+        }
+    }
+    }
   }
-  h3{
-    width: 100%;
-    font-size: 22px;
-    line-height: 30px;
-    color:  #fff !important;     
-  }
- 
 }
-.madily{
-  .ma3txt{
-    margin-left: 40px;    
-      
-  }
-}
-
 </style>
