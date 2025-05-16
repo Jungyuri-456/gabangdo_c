@@ -2,11 +2,11 @@
   <div class="wrap">
     <!-- <Header /> -->
     <main class="main">
-      <Visual />
       <!-- PC 전용 콘텐츠 -->
-      <Content1 v-if="!isMobile" />
+      <!-- <Content1 v-if="!isMobile" /> -->
       <!-- 635이하 전용 콘텐츠 -->
-      <Homeswiper1 v-if="isMobile"/>
+      <!-- <Homeswiper1 v-if="isMobile"/> -->
+      <Content0/>
       <Content2 />
       <Homeswiper2/>
       <Content3 />
@@ -20,13 +20,14 @@
 import { ref, onMounted, onUnmounted } from "vue";
 
 //  각종 컴포넌트 import
-import Visual from "./views/b_main/Visual.vue";
+import Content0 from "@/views/b_main/Content0.vue";
 import Content1 from "@/views/b_main/Content1.vue";
 import Homeswiper1 from "./views/b_main/Homeswiper1.vue";
 import Homeswiper2 from "./views/b_main/Homeswiper2.vue";
 import Content2 from "@/views/b_main/Content2.vue";
 import Content3 from "@/views/b_main/Content3.vue";
 import Modal from "@/views/b_main/Modal.vue";
+import Visual from "@/views/b_main/Visual.vue";
 
 //  반응형 관련 상태
 // - isMobile: 현재 화면이 모바일인지 여부 (true: 모바일 화면)
@@ -54,7 +55,6 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 .main {
-  padding-top: 75px;
   padding-bottom: 100px;
 }
 </style>

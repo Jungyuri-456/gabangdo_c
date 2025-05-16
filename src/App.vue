@@ -48,4 +48,11 @@ const isWorkerPage = computed(() => {
 .main {
   padding-top: 75px;
 }
+
+.wrap{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 </style>
+
