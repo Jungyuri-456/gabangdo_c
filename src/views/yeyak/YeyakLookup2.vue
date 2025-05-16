@@ -1,137 +1,330 @@
-<script setup>
-import { ref, onMounted } from "vue";
+<style>
+/*푸터 .fixed-buttons 영역을 클릭 투명하게*/
+:deep(.fixed-buttons) {
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+/*푸터 안의 a, button 만 클릭 허용*/
+:deep(.fixed-buttons) a,
+:deep(.fixed-buttons) button {
+  pointer-events: auto !important;
+}
+</style>
 
+<script setup>
+import { ref, onMounted, computed } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 const reservations = ref([]);
 const selectedReservation = ref(null);
 
+// 데이터 더미 생성
+const startAddresses = [
+  "대구 수성구 만촌동 ○○호텔",
+  "대구 중구 동성로 ○○게스트하우스",
+  "대구 달서구 본리동 ○○레지던스",
+  "대구 북구 칠곡 ○○모텔",
+  "대구 남구 대명동 ○○하우스",
+  "대구 달성군 현풍읍 ○○리조트",
+  "대구 동구 신암동 ○○게하",
+  "대구 서구 비산동 ○○호스텔",
+  "대구 중구 삼덕동 ○○호텔",
+  "대구 수성구 지산동 ○○펜션",
+  "대구 동구 율하동 ○○스테이",
+  "대구 북구 학정동 ○○민박",
+  "대구 중구 봉산동 ○○레지던스",
+  "대구 달서구 송현동 ○○하우스",
+  "대구 남구 봉덕동 ○○호텔",
+  "대구 수성구 황금동 ○○게스트룸",
+  "대구 동구 검사동 ○○게스트하우스",
+  "대구 중구 계산동 ○○모텔",
+  "대구 동구 방촌동 ○○숙소",
+  "대구 북구 침산동 ○○오피스텔",
+];
+const stopAddresses = [
+  "대구 중구 공평동 ○○호텔",
+  "대구 수성구 범어동 ○○게하",
+  "대구 북구 읍내동 ○○하우스",
+  "대구 달성군 다사읍 ○○펜션",
+  "대구 동구 신천동 ○○레지던스",
+  "대구 서구 내당동 ○○숙소",
+  "대구 남구 이천동 ○○게스트하우스",
+  "대구 중구 남산동 ○○민박",
+  "대구 수성구 파동 ○○리조트",
+  "대구 동구 동촌동 ○○게스트룸",
+  "대구 북구 복현동 ○○호텔",
+  "대구 중구 덕산동 ○○오피스텔",
+  "대구 달서구 감삼동 ○○스테이",
+  "대구 수성구 두산동 ○○게하",
+  "대구 서구 평리동 ○○레지던스",
+  "대구 동구 효목동 ○○하우스",
+  "대구 중구 교동 ○○게스트하우스",
+  "대구 남구 대명11동 ○○펜션",
+  "대구 북구 구암동 ○○모텔",
+  "대구 달성군 유가읍 ○○게스트룸",
+];
 const names = ["김철수", "이영희", "박지민", "최준호", "장서연"];
-const places = ["공항", "동대구역", "숙소", "기타"];
-const bagTypes = ["S", "M", "L", "기타"];
-
-function getRandomItem(arr) {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
-
+const places = ["대구공항", "동대구역", "서대구역", "숙소"];
+const bagTypes = [
+  { label: "S사이즈", tag: "(기내용)" },
+  { label: "M사이즈", tag: "(화물용)" },
+  { label: "L사이즈", tag: "(대형)" },
+];
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+function getRandomItem(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+function generateReservationNumber(digits = 4) {
+  const now = new Date();
+  const yy = String(now.getFullYear()).slice(-2);
+  const dd = String(now.getDate()).padStart(2, "0");
+  const max = 4 ** digits;
+  const rnd = String(Math.floor(Math.random() * max)).padStart(digits, "0");
+  return `R${yy}${dd}${rnd}`;
+}
+const reservationNumber = ref(generateReservationNumber());
 
 function generateRandomDate() {
-  const today = new Date();
-  const randomOffset = Math.floor(Math.random() * 7);
-  const newDate = new Date(today.setDate(today.getDate() + randomOffset));
-  return newDate.toISOString().split("T")[0];
+  const d = new Date();
+  d.setDate(d.getDate() + getRandomInt(0, 6));
+
+  const year = d.getFullYear();
+  const month = d.getMonth() + 1; // 월은 0부터 시작
+  const day = d.getDate();
+
+  return `${year}년\u00A0${month}월\u00A0${day}일`;
+}
+function generateRandomTime() {
+  // 8시부터 18시까지 랜덤 시각
+  const hour24 = getRandomInt(8, 18);
+  // 분은 0,10,20,…,50 중 랜덤
+  const minute = [0, 10, 20, 30, 40, 50][getRandomInt(0, 5)];
+
+  // AM/PM 결정 (12시 이전 → 오전, 이후 → 오후)
+  const period = hour24 < 12 ? "오전" : "오후";
+
+  // 12시간제로 변환 (0→12, 13→1, …)
+  const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+
+  // 두 자리 문자열 포맷
+  const h = String(hour12).padStart(2, "0");
+  const m = String(minute).padStart(2, "0");
+
+  return `${period}\u00A0${h}:${m}`;
 }
 
 function generateRandomBags() {
   return bagTypes
-    .map((type) => ({
-      label: type,
-      count: getRandomInt(0, 3),
-    }))
-    .filter((bag) => bag.count > 0);
+    .map((t) => ({ label: t.label, tag: t.tag, count: getRandomInt(0, 3) }))
+    .filter((b) => b.count > 0);
 }
 
-function generateDummyReservations(count = 5) {
-  const result = [];
-  for (let i = 0; i < count; i++) {
-    result.push({
-      reservationNumber: `R${Date.now()}${i}`,
+function generateDummyReservations() {
+  const list = [];
+  for (let i = 0; i < 5; i++) {
+    list.push({
+      reservationNumber: generateReservationNumber(),
       name: getRandomItem(names),
       phone: `010-${getRandomInt(1000, 9999)}-${getRandomInt(1000, 9999)}`,
       date: generateRandomDate(),
-      time: `${String(getRandomInt(0, 23)).padStart(2, "0")}:${String(
-        getRandomInt(0, 59)
-      ).padStart(2, "0")}`,
+      time: generateRandomTime(),
       start: getRandomItem(places),
       stop: getRandomItem(places),
+      customStartAddress: getRandomItem(startAddresses),
+      customStopAddress: getRandomItem(stopAddresses),
       bags: generateRandomBags(),
     });
   }
-  return result;
+  return list;
 }
 
 onMounted(() => {
-  const dummy = generateDummyReservations(5);
-  reservations.value = dummy;
-  selectedReservation.value = getRandomItem(dummy);
+  reservations.value = generateDummyReservations();
+  selectedReservation.value = getRandomItem(reservations.value);
 });
+
+const summaryRows = computed(() => {
+  const r = selectedReservation.value;
+  if (!r) return [];
+
+  const rows = [
+    { label: "예약번호", value: reservationNumber.value },
+    { label: "이름", value: r.name },
+    { label: "전화번호", value: r.phone },
+    // ───────────── 구분선 추가 ─────────────
+    { divider: true },
+    {
+      label: "이용날짜 및 시간",
+      value: `${r.date}\u00A0\u00A0${r.time}`,
+    },
+    {
+      label: "출발 → 도착",
+      value: `${r.start} → ${r.stop}`,
+    },
+  ];
+
+  // 숙소 입력 주소
+  if (r.start === "숙소")
+    rows.push({
+      label: "",
+      value: `출발 숙소명: ${r.customStartAddress}`,
+      cssClass: "addr-start",
+    });
+  if (r.stop === "숙소")
+    rows.push({
+      label: "",
+      value: `도착 숙소명: ${r.customStopAddress}`,
+      cssClass: "addr-stop",
+    });
+  // ───────────── 구분선 추가 ─────────────
+  rows.push({ divider: true });
+  // 가방 요약
+  if (r.bags.length) {
+    r.bags.forEach((b, idx) => {
+      rows.push({
+        label: idx === 0 ? "가방 종류 및 수량" : "",
+        bagLabel: b.label,
+        bagTag: b.tag,
+        bagCount: `${b.count}개`,
+      });
+    });
+  } else {
+    rows.push({
+      label: "가방 종류 및 수량",
+      bagLabel: "",
+      bagTag: "",
+      bagCount: "선택한 가방이 없습니다.",
+    });
+  }
+
+  return rows;
+});
+//취소하기 모달창
+const showCancelModal = ref(false);
+function openCancelModal() {
+  showCancelModal.value = true;
+}
+function closeCancelModal() {
+  showCancelModal.value = false;
+}
+function confirmCancel() {
+  // 예: 홈으로 돌아가기
+  router.push("/");
+}
+//라우터링크
+function goToNextPage() {
+  router.push("/");
+}
 </script>
 
 <template>
-  <div class="st_wrap">
-        <div class="yy_title1">
-          <div class="title_txt1">
-            <h1>예약확인</h1>
+  <div class="wrap">
+    <div class="st_wrap">
+      <div class="yy_title1">
+        <div class="title_txt1"><h1>예약조회</h1></div>
+      </div>
+
+      <div class="st_line">
+        <div class="payment-page">
+          <div class="payment-info-box">
+            <div
+              v-for="(row, idx) in summaryRows"
+              :key="idx"
+              :class="['info-row', row.cssClass]"
+            >
+              <!-- 1) 구분선 -->
+              <template v-if="row.divider">
+                <hr v-if="row.divider" class="divider extended" />
+              </template>
+
+              <!-- 2) 일반 데이터(구분선 아닐 때) -->
+              <template v-else>
+                <span class="label">{{ row.label }}</span>
+
+                <!-- 2-1) 값이 있을 때 -->
+                <template v-if="row.value !== undefined">
+                  <span class="value" :class="row.cssClass">
+                    {{ row.value }}
+                  </span>
+                </template>
+
+                <!-- 2-2) 값 없으면 가방 정보 -->
+                <template v-else>
+                  <div class="summary-item">
+                    <span class="bag-label">{{ row.bagLabel }}</span>
+                    <span class="bag-tag">{{ row.bagTag }}</span>
+                    <span class="bag-count">{{ row.bagCount }}</span>
+                  </div>
+                </template>
+              </template>
+            </div>
+          </div>
+          <div class="st_button">
+            <div class="button">
+              <button class="st_cancle my-button" @click="openCancelModal">
+                취소하기
+              </button>
+            </div>
+            <div class="button">
+              <button class="my-button st_reser" @click="goToNextPage">
+                처음으로
+              </button>
+            </div>
           </div>
         </div>
-    <div class="st_line">
-      <div class="payment-page">
-        <div class="payment-info-box" v-if="selectedReservation">
-          <div class="info-row">
-            <span class="label">예약조회</span>
-            <span class="value">{{
-              selectedReservation.reservationNumber
-            }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">이름</span>
-            <span class="value">{{ selectedReservation.name }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">전화번호</span>
-            <span class="value">{{ selectedReservation.phone }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">날짜</span>
-            <span class="value">{{ selectedReservation.date }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">시간</span>
-            <span class="value">{{ selectedReservation.time }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">출발지</span>
-            <span class="value">{{ selectedReservation.start }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">도착지</span>
-            <span class="value">{{ selectedReservation.stop }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">가방 종류 및 수량</span>
-            <span class="value">
-              <p v-for="(bag, i) in selectedReservation.bags" :key="i">
-                {{ bag.label }} ({{ bag.count }}개)
-              </p>
-            </span>
-          </div>
-        </div>
-        <router-link to="/" class="st_reser">처음으로</router-link>
+      </div>
+    </div>
+  </div>
+  <!-- 취소 확인 모달 -->
+  <div v-if="showCancelModal" class="modal-overlay">
+    <div class="modal-box">
+      <p>정말 예약을 취소하시겠습니까?</p>
+      <div class="modal-buttons">
+        <button class="btn-confirm" @click="confirmCancel">확인</button>
+        <button class="btn-cancel" @click="closeCancelModal">닫기</button>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+@use "sass:color";
 @use "@/assets/Main.scss" as *;
 @use "@/assets/_Variables.scss" as *;
 
+// 스타일 변수
+$border-gray: #b5b5b5;
+$blue-sky: #279bf3;
+$red-holiday: #e63946;
+$blue-weekend: #1a44ff;
+$gray-past: #cccccc;
+$dark-gray: #333333;
+$radius: 8px;
+
+//전체배경
+.wrap {
+  padding: 100px 0;
+  min-height: 100vh; /* 화면 전체 높이를 확보한 뒤 */
+  background: linear-gradient(
+    to top,
+    #e2f1fc 50%,
+    /* 아래 50% */ transparent 50% /* 위 50% */
+  );
+}
+// 전체 래퍼
 .st_wrap {
-  width: 100%;
-  max-width: 700px;
-  margin-top: 100px;
-  margin-bottom: 100px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 1200px;
+  margin: auto;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
+  justify-content: center;
+  flex-direction: column;
   font-family: $font-family;
 }
-
 .yy_title1 {
   display: flex;
   gap: 10px;
@@ -142,126 +335,194 @@ onMounted(() => {
   padding-bottom: 30px;
   .title_txt1 h1 {
     font-size: 40px;
-    font-family: "omyu_pretty";
+    font-family: $font-gothic;
   }
 }
 
-.st_line{
+.st_line {
   width: 100%;
-  padding: 20px;
-  border: 1px solid #007bff;
+  max-width: 600px;
+  border: 1px solid $border-gray;
   box-shadow: $box-shadow;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  border-radius: $radius;
+  padding: 20px;
+  overflow: visible;
+  height: auto;
+  background-color: #ffffff;
 }
 
-
 .payment-page {
-  width: 100%;
-  color: #333;
-  justify-content: center;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
 .payment-info-box {
-  width: 80%;
-  border: 1px solid #dcdcdc;
-  border-radius: 12px;
-   background-color: #f8f9fa;
-   padding: 20px;
-   margin: 10px auto;
-  .info-row {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    .label {
-      font-weight: 500;
-      color: #666;
-    }
-    .value {
-      font-weight: 600;
-    }
+  width: 100%;
+  // background: #f8f9fa;
+  border-radius: $radius;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+.info-row {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  // border-bottom: 1px dashed $border-gray;
+  padding: 10px 20px;
+  margin: 0;
+
+  .label {
+    width: 40%;
+    text-align: right;
+    margin-right: 15px;
+    flex: 0 0 auto;
+    color: #505050;
+    font-size: 16px;
+  }
+
+  .value {
+    color: $dark-gray;
+    font-size: 17px;
+    text-align: right;
+    white-space: pre;
+    font-weight: bold;
   }
 }
 
-.st_reser {
-  width: 150px;
-  height: 50px;
-  line-height: 25px;
-  margin: 20px auto;
-  display: inline-block;
-  padding: 12px 24px;
-  background-color: $main-color;
-  color: white;
-  font-size: 16px;
-  border-radius: 30px;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
+.info-row .value.addr-start,
+.info-row .value.addr-stop {
+  font-weight: normal;
+  font-size: 14px;
+  color: #707070;
+}
+.divider.extended {
   border: none;
-  transition: background 0.3s;
+  border-top: 1px solid #d6d6d6;
+  width: 110%;
+  margin: 0 -5%;
 }
 
-.st_reser:hover {
-  background-color: $hover;
-}
-@media (max-width: 768px) {
-  .yy_title1 .title_txt1 h1 {
-    font-size: 30px;
-    font-family: "omyu_pretty";
-    text-align: center;
-  }
-  .st_line {
-    padding: 15px;
-    width: 90%;
-  }
-  .payment-info-box {
-    width: 100%;
-    .info-row {
-      align-items: flex-start;
-      gap: 4px;
-      .label,
-      .value {
-        font-size: 15px;
-      }
-    }
-  }
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
 
-  .st_reser {
-    width: 150px;
-    height: 50px;
-    line-height: 25px;
+  .bag-label,
+  .bag-tag,
+  .bag-count {
+    font-weight: bold;
+    white-space: nowrap;
+    color: $dark-gray;
+  }
+}
+.st_button {
+  display: flex;
+  gap: 20px;
+}
+
+// 제출 버튼
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  .st_cancle {
+    width: 120px;
+    height: 40px;
+    background-color: $red-holiday;
+    color: #fff;
     font-size: 16px;
-    padding: 12px 24px;
-    margin-top: 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.3s;
+    margin: 15px;
+    display: block;
   }
-}
-
-@media (max-width: 390px) {
-  .yy_title1 .title_txt1 h1 {
-    font-size: 30px;
-    font-family: "omyu_pretty";
-    text-align: center;
-  }
-
-  .info-row {
-    .label,
-    .value {
-      font-size: 13px;
-    }
+  .st_cancle:hover {
+    background-color: #a80311;
+    color: #fff;
   }
   .st_reser {
-    width: 150px;
-    height: 50px;
-    line-height: 25px;
+    width: 120px;
+    height: 40px;
+    background-color: #777;
+    color: #fff;
     font-size: 16px;
-    padding: 12px 24px;
-    margin-top: 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.3s;
+    margin: 15px;
+    display: block;
+  }
+  .st_reser:hover {
+    background-color: #333;
   }
 }
 
+.my-button {
+  position: relative;
+  z-index: 4000; /* fixed-buttons(1000)보다 높게 */
+}
+// 모달 배경
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5000;
+}
+
+// 모달 박스
+.modal-box {
+  background: #fff;
+  padding: 30px;
+  border-radius: $radius;
+  width: 300px;
+  text-align: center;
+  box-shadow: $box-shadow;
+
+  p {
+    margin-bottom: 30px;
+    font-size: 17px;
+  }
+}
+
+// 버튼 그룹
+.modal-buttons {
+  display: flex;
+  justify-content: space-around;
+
+  button {
+    padding: 7px 15px;
+    border: none;
+    border-radius: $radius;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  .btn-confirm {
+    background-color: $red-holiday;
+    color: #fff;
+  }
+  .btn-cancel {
+    background-color: $gray-past;
+    color: #333;
+  }
+  .btn-confirm:hover {
+    background-color: #a80311;
+    color: #fff;
+  }
+  .btn-cancel:hover {
+    background-color: #505050;
+    color: #fff;
+  }
+}
 </style>
