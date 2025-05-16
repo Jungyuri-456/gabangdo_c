@@ -18,6 +18,9 @@ import Delivery from "../views/deliverylogin/Delivery.vue";
 import Login from "../views/deliverylogin/Login.vue";
 import Signup from "../views/deliverylogin/Signup.vue";
 import findPassword from "../views/deliverylogin/findPassword.vue";
+// 기사페이지
+import WorkerHome from "@/pages/worker/WorkerHome.vue";
+import DDashboard from "@/pages/worker/DDashboard.vue"
 const routes = [
   { path: "/", component: Home },
   { path: "/bangbeob1", component: Bangbeob1 },
@@ -42,6 +45,34 @@ const routes = [
     path: "/:pathMatch(.*)*",
     name: "ErrorPage",
     component: () => import("../views/ErrorPage.vue"),
+  },
+  // 기사페이지
+  {
+    path: "/worker",
+    component: WorkerHome,
+    redirect: "/worker/ddashboard", //경로 접근시 자동 리다이렉트
+    children: [
+      {
+        path: "ddashboard",
+        component: DDashboard,
+      },
+      // {
+      //   path: "assigned-jobs",
+      //   component: AssingnedJobs,
+      // },
+      // {
+      //   path: "assing",
+      //   component: Assing,
+      // },
+      // {
+      //   path: "job-history",
+      //   component: Jobhistory,
+      // },
+      // {
+      //   path: "profile",
+      //   component: Profile,
+      // },
+    ],
   },
 ];
 
