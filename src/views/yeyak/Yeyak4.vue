@@ -1,461 +1,559 @@
+<style>
+/*푸터 .fixed-buttons 영역을 클릭 투명하게*/
+:deep(.fixed-buttons) {
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+/*푸터 안의 a, button 만 클릭 허용*/
+:deep(.fixed-buttons) a,
+:deep(.fixed-buttons) button {
+  pointer-events: auto !important;
+}
+</style>
+
 <script setup>
-import { ref } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useReservationStore } from "@/stores/reservationStore";
 
-const reservationStore = useReservationStore();
-const selectedPayment = ref("");
-const showModal = ref(false);
+// Pinia 스토어 & 라우터
+const store = useReservationStore();
 const router = useRouter();
 
-const basicPayments = {
-  bank: "계좌이체",
-  card: "카드결제",
-  phone: "휴대폰이체",
- };
- const easyPayments = {
-  toss: "토스",
-  naver: "네이버페이",
-  kakao: "카카오페이",
-};
+// 가방 + 총 금액 행 생성
+function makeBagRows(sizes) {
+  console.log("▶ sizes:", sizes, "▶ price:", store.totalPrice.value);
 
-const paymentNames = {
-  ...basicPayments,
-  ...easyPayments,
-};
-const confirmPayment = () => {
+  const bagRows = [];
+  const selected = sizes.filter((i) => i.count > 0);
+
+  if (selected.length) {
+    selected.forEach((item, i) => {
+      bagRows.push({
+        label: i === 0 ? "가방 종류 및 수량" : "",
+        bagLabel: item.label,
+        bagTag: item.tag,
+        bagCount: `${item.count}개`,
+      });
+    });
+  } else {
+    bagRows.push({
+      label: "가방 종류 및 수량",
+      bagLabel: "",
+      bagTag: "",
+      bagCount: "선택한 가방이 없습니다.",
+    });
+  }
+
+  const price = store.totalPrice;
+  bagRows.push({
+    label: "총 금액",
+    value: isNaN(price) ? "0원" : `${price.toLocaleString()}원`,
+    highlight: true,
+    cssClass: "total-price",
+  });
+
+  return bagRows;
+}
+
+// 오늘 날짜 포맷
+function getTodayFormatted() {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  return `${y}년 ${m}월 ${d}일`;
+}
+
+// 페이지 진입 시 가격 조정
+onMounted(() => {
+  if (store.selectedDate === getTodayFormatted()) {
+    store.handleTodaySelected();
+  } else {
+    store.resetPrices();
+  }
+});
+
+// 요약 배열
+const summaryRows = computed(() => {
+  const rows = [
+    { label: "이름", value: store.name },
+    { label: "전화번호", value: store.fullPhone },
+    {
+      label: "이용날짜 및 시간",
+      value: `${store.selectedDate}  ${store.selectedTime}`,
+    },
+  ];
+
+  if (store.selectedStart || store.selectedStop) {
+    rows.push({
+      label: "출발 → 도착",
+      value: `${store.selectedStart || "출발지 없음"} → ${
+        store.selectedStop || "도착지 없음"
+      }`,
+    });
+  }
+  if (store.customStartAddress) {
+    rows.push({
+      label: "",
+      value: `출발 숙소명: ${store.customStartAddress}`,
+      cssClass: "addr-start",
+    });
+  }
+  if (store.customStopAddress) {
+    rows.push({
+      label: "",
+      value: `도착 숙소명: ${store.customStopAddress}`,
+      cssClass: "addr-stop",
+    });
+  }
+
+  rows.push(...makeBagRows(store.sizes));
+  return rows;
+});
+
+// 결제 수단 선택 후 이동
+const selectedPayment = ref("");
+function submitReservation() {
   if (!selectedPayment.value) {
     alert("결제 수단을 선택해주세요.");
     return;
   }
-  showModal.value = true;
+  store.paymentMethod = selectedPayment.value;
+  router.push("/yeyak5");
+}
+
+// ✅ 결제 수단
+const paymentTexts = {
+  bank: "계좌이체",
+  card: "카드결제",
+  phone: "휴대폰이체",
 };
 
-const closeModal = () => {
-  showModal.value = false;
-  router.push({
-    path: "/yeyak5",
-    query: { payment: selectedPayment.value },
-  });
+const paymentIcons = {
+  toss: "/images/cr/yy_toss.png",
+  naver: "/images/cr/yy_naver.png",
+  kakao: "/images/cr/yy_kakao.png",
 };
 </script>
 
 <template>
-  <div class="st_wrap">
-        <div class="yy_title1">
-          <div class="title_txt1">
-            <h1>결제하기</h1>
-          </div>
+  <div class="wrap">
+    <div class="st_wrap">
+      <!-- 제목 영역 -->
+      <div class="yy_title1">
+        <div class="title_txt1">
+          <h1>결제하기</h1>
         </div>
-    <div class="st_line">
-      <div class="payment-page">
-        <!-- 결제 정보 -->
+      </div>
+
+      <!-- 본문 박스 -->
+      <div class="st_line">
+        <!-- 예약 정보 요약 -->
         <div class="payment-info-box">
-          <div class="info-row">
-            <span class="label">이름</span>
-            <span class="value">{{ reservationStore.name }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">날짜</span>
-            <span class="value">{{ reservationStore.selectedDate }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">예약시간</span>
-            <span class="value">
-              {{ reservationStore.selectedHour }}시
-              {{ reservationStore.selectedMinute }}분</span
-            >
-          </div>
-          <div class="info-row">
-            <span class="label">출발지</span>
-            <span class="value">{{ reservationStore.selectedStart }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">도착지</span>
-            <span class="value">{{ reservationStore.selectedStop }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">가방 종류 및 수량</span>
-            <span class="value">
-              <p v-for="(item, i) in reservationStore.sizes" :key="i">
-                {{ item.label }} ({{ item.count }}개)
-              </p></span
-            >
-          </div>
-          <div class="info-row">
-            <span class="label">결제 금액</span>
-            <span class="value red">{{ reservationStore.totalPrice }}</span>
+          <div v-for="(row, idx) in summaryRows" :key="idx" class="info-row">
+            <span class="label">{{ row.label }}</span>
+
+            <div v-if="row.bagLabel !== undefined" class="summary-item">
+              <span class="bag-label">{{ row.bagLabel }}</span>
+              <span class="bag-tag">{{ row.bagTag }}</span>
+              <span class="bag-count">{{ row.bagCount }}</span>
+            </div>
+            <template v-else>
+              <span
+                class="value"
+                :class="[row.highlight ? 'highlight' : '', row.cssClass]"
+              >
+                {{ row.value }}
+              </span>
+            </template>
           </div>
         </div>
 
-        <!-- 결제 수단 -->
-        <div class="payment-section">
-          <span class="payment">결제 수단</span>
-          <!-- 기본 결제 수단 -->
-<div class="payment-methods">
-  <label
-    v-for="(label, key) in basicPayments"
-    :key="key"
-    class="method-btn">
-    <input type="radio" :value="key" v-model="selectedPayment" />
-    <span>{{ label }}</span>
-  </label>
-</div>
+        <!-- 결제 수단 선택 영역 -->
+        <div class="payment-wrap">
+          <div class="payment-methods">
+            <!-- 일반 결제 수단 버튼들 -->
+            <label
+              v-for="(val, key) in paymentTexts"
+              :key="key"
+              class="payment-option my-button"
+              :class="{ active: selectedPayment === key }"
+            >
+              <input
+                type="radio"
+                v-model="selectedPayment"
+                :value="key"
+                name="payment"
+                class="my-button"
+              />
+              {{ val }}
+            </label>
 
-<!-- 간편 결제 수단 -->
-<div class="easy-payments">
-  <h3 class="payment-section">간편결제</h3>
-  <label
-    v-for="(label, key) in easyPayments"
-    :key="key"
-    class="easy-option">
-    <input type="radio" :value="key" v-model="selectedPayment" />
-    <img :src="`/images/cr/yy_${key}.png`" :alt="label" />
-  </label>
-</div>
+            <!-- 간편결제 섹션 -->
+            <div class="payment-icons-wrapper payment-icons-inline">
+              <span class="payment-label">간편결제</span>
+              <div class="payment-radio my-button">
+                <label
+                  v-for="(src, key) in paymentIcons"
+                  :key="key"
+                  class="payment-image my-button"
+                  :class="{ active: selectedPayment === key }"
+                >
+                  <input
+                    type="radio"
+                    v-model="selectedPayment"
+                    :value="key"
+                    name="payment"
+                    class="my-button"
+                  />
+                  <img
+                    :src="src"
+                    :alt="`${key} 아이콘`"
+                    class="payment-icon my-button"
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          <button class="st_reser" @click="confirmPayment">결제완료</button>
+        <!-- 결제 버튼 -->
+        <div class="button">
+          <button
+            class="my-button st_reser"
+            @click="submitReservation"
+            :disabled="!selectedPayment"
+          >
+            결제하기
+          </button>
         </div>
       </div>
-
-      <!-- 모달 -->
-      <div v-if="showModal" class="modal-overlay">
-        <div class="modal-box">
-          <p>
-            선택하신 <strong>{{ paymentNames[selectedPayment] }}</strong
-            >로 결제가 완료되었습니다.
-          </p>
-          <button @click="closeModal" class="st_reser">확인</button>
-        </div>
-      </div>
+      <!-- .st_line 끝 -->
     </div>
+    <!-- .st_wrap 끝 -->
   </div>
 </template>
 
 <style lang="scss" scoped>
-@use "@/assets/Main.scss" as *;
+@use "sass:color";
 @use "@/assets/_Variables.scss" as *;
 
+// 스타일 변수
+$border-gray: #b5b5b5;
+$blue-sky: #279bf3;
+$red-holiday: #e63946;
+$blue-weekend: #1a44ff;
+$gray-past: #cccccc;
+$dark-gray: #333333;
+$radius: 8px;
+
+//전체배경
+.wrap {
+  padding: 100px 0;
+  min-height: 100vh; /* 화면 전체 높이를 확보한 뒤 */
+  background: linear-gradient(
+    to top,
+    #e2f1fc 50%,
+    /* 아래 50% */ transparent 50% /* 위 50% */
+  );
+}
+// 전체 래퍼
 .st_wrap {
-  width: 100%;
-  max-width: 700px;
-  margin-top: 100px;
-  margin-bottom: 100px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 1200px;
+  margin: auto;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
+  justify-content: center;
+  flex-direction: column;
   font-family: $font-family;
 }
 
+// 타이틀
 .yy_title1 {
   display: flex;
   gap: 10px;
-  line-height: 40px;
-  flex-wrap: wrap; /* 넘치면 자동 줄바꿈 */
-  align-items: center; /* 세로 중앙 정렬 */
-  justify-content: center; /* 가로 중앙 정렬 */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   padding-bottom: 30px;
   .title_txt1 h1 {
     font-size: 40px;
-    font-family: "omyu_pretty";
+    font-family: $font-gothic;
   }
 }
 
-.st_line{
+.st_line {
   width: 100%;
-  padding: 20px;
-  border: 1px solid #007bff;
+  max-width: 550px;
+  // border: 1px solid $border-gray;
   box-shadow: $box-shadow;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  border-radius: $radius;
+  padding: 30px;
+  overflow: visible;
+  height: auto;
+  background-color: #ffffff;
 }
-
 
 .payment-page {
-  width: 100%;
-  color: #333;
-  justify-content: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-
-.page-title {
-  font-size: 28px;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 24px;
 }
 
 .payment-info-box {
-  width: 80%;
-  border: 1px solid #dcdcdc;
-  border-radius: 12px;
-  background-color: #f8f9fa;
+  width: 100%;
+  background: #f8f9fa;
+  border-radius: $radius;
   padding: 20px;
-margin: 10px auto;
+  margin-bottom: 30px;
+
   .info-row {
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
-    .label {
-      font-weight: 500;
-      color: #666;
-    }
-    .value {
-      font-weight: 600;
+    align-items: flex-start;
+    border-bottom: 1px dashed $border-gray;
+    padding: 10px 0;
+    margin: 0;
+
+    &:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
     }
 
-    &.total .value {
-      color: #ff3b30;
-      font-weight: 700;
+    .label {
+      flex: 0 0 auto;
+      margin-right: 15px;
+      font-weight: 500;
+      color: #505050;
+      font-size: 17px;
+    }
+
+    .value {
+      flex: 1;
+      font-weight: 600;
+      color: $dark-gray;
+      font-size: 15px;
+      text-align: right;
+      white-space: pre;
+
+      &.highlight {
+        font-size: 16px;
+        font-weight: 600;
+        color: #00bfa5;
+      }
+
+      &.addr-start,
+      &.addr-stop {
+        font-size: 13px;
+        color: #707070;
+        margin-top: 2px;
+        text-align: right;
+      }
     }
   }
 }
 
-.payment-section {
-  text-align: center;
+.summary-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 15px;
+  text-align: right;
+
+  .bag-label {
+    color: $dark-gray;
+  }
+
+  .bag-tag {
+    font-size: 13px;
+    color: color.adjust($dark-gray, $lightness: 20%);
+  }
+
+  .bag-count {
+    font-weight: 600;
+    color: $blue-sky;
+  }
 }
-.payment {
-  font-size: 20px;
-  margin: 15px auto;
-  display: inline-block;
+// 결제 수단
+.payment-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center; // ✅ 내부 항목 수평 가운데
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 30px;
 }
 
 .payment-methods {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  margin-bottom: 5px;
 }
 
-.method-btn {
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  background: #fff;
-  padding: 10px 10px;
-  font-weight: 500;
+.payment-option {
+  display: flex;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $border-gray;
+  border-radius: $radius;
   cursor: pointer;
-  width: 48%;
-  text-align: center;
   transition: all 0.2s;
+  font-size: 15px;
+  box-sizing: border-box;
+  background-color: #fff;
+  color: $dark-gray;
 
   input[type="radio"] {
-    display: none;
+    display: none; // 텍스트 항목에서는 라디오 숨김
   }
 
-  span {
-    color: #333;
+  .payment-icon {
+    object-fit: contain;
+    align-items: center;
   }
 
-  input[type="radio"]:checked + span {
-    color: #03c75a;
-    font-weight: 700;
+  &.active {
+    background: color.adjust($blue-sky, $lightness: 10%);
+    color: #fff;
+  }
+
+  &:hover:not(.active) {
+    background: color.adjust($blue-sky, $lightness: 30%);
   }
 }
 
-.easy-payments {
+.payment-icons-wrapper {
   display: flex;
-  justify-content: center;
+  height: 44px;
+  background-color: #fff;
   align-items: center;
-  text-align: center;
-  gap: 10px; // 버튼 사이 간격
-  margin: 15px auto;
-  padding: 2px 0;
-  border: 2px solid #ddd;
-  border-radius: 12px;
-  background: #fff;
-  width: 100%;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid $border-gray;
+  border-radius: $radius;
+  box-sizing: border-box;
+  grid-column: span 3;
+  color: $dark-gray;
+  cursor: pointer;
   transition: all 0.2s;
 }
-.payment-section h3 {
-  width: 100%;
-  text-align: center;
-  font-size: 18px;
-  font-weight: 600;
-  margin: 10px;
-  display: block;
-}
-.easy-option {
+
+.payment-icons-inline {
   display: flex;
+  height: 44px;
   align-items: center;
-  justify-content: center;
-  border: 2px solid transparent;
-  border-radius: 8px;
+  justify-content: space-between;
+}
+
+.payment-label {
+  display: flex;
+  margin-right: auto;
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+  color: $dark-gray;
+  text-align: left;
+}
+
+.payment-icons-inline {
+  display: flex;
+  height: 44px;
+  align-items: center;
+  gap: 3px;
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.2s;
+
+  input[type="radio"] {
+    display: inline-block !important;
+    appearance: auto;
+    margin: 0;
+    cursor: pointer;
+  }
+}
+.payment-radio {
+  display: flex;
+  height: 44px;
+  align-items: center;
+  gap: 15px;
+  justify-content: flex-end;
+}
+.payment-image {
+  display: flex;
+  gap: 5px;
   padding: 5px;
-  transition: border-color 0.2s ease;
-  cursor: pointer;
-
-  input[type="radio"] {
-    display: block;
-  }
-
-  img {
-    width: 75px;
-    height: auto;
-    display: block;
-  }
-}
-
-.st_reser {
-  width: 150px;
-  height: 50px;
-  line-height: 25px;
-  margin: 20px auto;
-  display: inline-block;
-  padding: 12px 24px;
-  background-color: $main-color;
-  color: rgb(255, 255, 255);
-  font-size: 16px;
-  border-radius: 30px;
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  border: none;
-  transition: background 0.3s;
-}
-.st_reser:hover {
-  background-color: $hover;
-}
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
   align-items: center;
-}
-
-.modal-box {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 12px;
-  text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-
-  p {
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
-}
-@media (max-width: 768px) {
-  .yy_title1 .title_txt1 h1 {
-    font-size: 30px;
-    font-family: "omyu_pretty";
-    text-align: center;
-  }
-  .st_line {
-    padding: 15px;
-    width: 90%;
-  }
-  .payment-info-box {
-    width: 95%;
-    padding: 16px;
-  }
-
-  .info-row {
-    align-items: flex-start;
-
-  }
-
-  .payment-methods {
-    gap: 12px;
-
-    .method-btn {
-      width: 100%;
-    }
-  }
-   .easy-option {
-    width: 100%;
-    height: auto;
-    display: flex;
-
-    img {
-      width: 100%;   
-    }
-  }
-
-  .st_reser {
-    width: 150px;
-    height: 50px;
-    line-height: 25px;
-    font-size: 16px;
-    padding: 12px 24px;
-    margin-top: 20px;
-  }
-}
-
-@media (max-width: 390px) {
-  .yy_title1 .title_txt1 h1 {
-    font-size: 30px;
-    font-family: "omyu_pretty";
-    text-align: center;
-  }
-
-
-  .payment-methods {
-    gap: 12px;
-
-    .method-btn {
-      width: 100%;
-      font-size: 14px;
-    }
-  }
-  .easy-payments {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  gap: 5px; // 버튼 사이 간격
-   border: 2px solid #ddd;
-  border-radius: 12px;
-  background: #fff;
-  width: 100%;
+  justify-content: flex-end;
+  cursor: pointer;
   transition: all 0.2s;
+  box-sizing: border-box;
+
+  .payment-icon {
+    max-height: 30px; // 아이콘 크기 고정
+    width: auto;
+  }
+
+  &.active {
+    background: color.adjust($blue-sky, $lightness: 10%);
+    color: #fff;
+    border-radius: $radius;
+  }
+
+  &:hover:not(.active) {
+    background: color.adjust($blue-sky, $lightness: 30%);
+    border-radius: $radius;
+  }
 }
-.payment-section h3 {
-  width: 100%;
+.payment-methods {
+  grid-auto-rows: 44px; /* 모든 그리드 행을 44px로 강제 */
+}
+
+/* ── 진짜 높이·패딩·마진 완전 초기화 ── */
+.payment-option,
+.payment-icons-wrapper,
+.payment-icons-inline,
+.payment-radio {
+  margin: 0; /* 기본 마진 제거 */
+  padding: 0 10px; /* 위/아래 0, 좌/우 10px */
+  height: 44px !important; /* 고정 높이 */
+  box-sizing: border-box !important;
+  line-height: normal !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+// 제출 버튼
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  font-size: 16px;
-  font-weight: 600;
-  margin: 15px 0;
-  display: block;
-}
-   .easy-option {
-    width: 100%;
-        img {
-      width: 80%;   
-    }
-  }
-
-
-  .modal-box {
-    width: 90%;
-    padding: 1.5rem;
-
-    p {
-      font-size: 16px;
-    }
-  }
-
   .st_reser {
-    width: 150px;
-    height: 50px;
-    line-height: 25px;
+    width: 120px;
+    height: 40px;
+    background-color: color.adjust($main-color, $lightness: 30%);
+    color: #fff;
     font-size: 16px;
-    padding: 12px 24px;
-    margin-top: 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.3s;
+    margin: 15px;
+    display: block;
   }
+  .st_reser:hover {
+    background-color: color.adjust($sub-color, $lightness: 20%) !important;
+  }
+}
+
+.my-button {
+  position: relative;
+  z-index: 4000; /* fixed-buttons(1000)보다 높게 */
 }
 </style>

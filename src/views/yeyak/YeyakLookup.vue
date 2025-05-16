@@ -1,128 +1,148 @@
+<style>
+/*푸터 .fixed-buttons 영역을 클릭 투명하게*/
+:deep(.fixed-buttons) {
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+/*푸터 안의 a, button 만 클릭 허용*/
+:deep(.fixed-buttons) a,
+:deep(.fixed-buttons) button {
+  pointer-events: auto !important;
+}
+</style>
+
 <script setup>
-import { ref, nextTick } from "vue";
+import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
-
-const name = ref("");
-const reservationNumber = ref("");
-const telPrefix = ref("010");
-const middlePhone = ref(""); // 8자리 입력
-
-const toastMessage = ref("");
-const toastTargetIndex = ref(null);
+import CustomSelect from "./CustomSelect.vue";
 
 const router = useRouter();
+const name = ref("");
+const telPrefix = ref("010");
+const phoneRaw = ref("");
+const reservationNumber = ref("");
 
-const showToast = (message, index) => {
-  toastMessage.value = message;
-  toastTargetIndex.value = index;
-  setTimeout(() => {
-    toastMessage.value = "";
-    toastTargetIndex.value = null;
-  }, 3000);
-};
+// 연락처 포맷터: 8자리 숫자 -> 4자리-4자리 형식
+const formattedNumber = computed({
+  get() {
+    const digits = phoneRaw.value.replace(/\D/g, "").slice(0, 8);
+    return digits.length > 4
+      ? `${digits.slice(0, 4)}-${digits.slice(4)}`
+      : digits;
+  },
+  set(val) {
+    phoneRaw.value = val.replace(/\D/g, "").slice(0, 8);
+  },
+});
 
-const handleLookup = () => {
-  if (!name.value) {
-    showToast("이름을 입력해주세요.", 0);
-    return;
-  }
-  if (middlePhone.value.length !== 8) {
-    showToast("연락처를 정확히 입력해주세요.", 1);
-    return;
-  }
-  if (!reservationNumber.value) {
-    showToast("예약번호를 입력해주세요.", 2);
-    return;
-  }
-
-  const fullPhone = `${telPrefix.value}-${middlePhone.value}`;
-  console.log("최종 전화번호:", fullPhone);
-
+// 예시: 버튼 클릭 시 페이지 이동
+function goToLookup() {
   router.push("/yeyaklookup2");
-};
+}
 </script>
 
 <template>
-  <div class="st_wrap">
-    <div class="yy_title1">
-      <div class="title_txt1">
-        <h1>예약조회</h1>
-      </div>
-    </div>
-
-    <div class="st_line">
-      <!-- 이름 입력 -->
-      <div class="container">
-        <div class="tooltip-container">
-          <input
-            class="st_name"
-            v-model="name"
-            type="text"
-            placeholder="이름을 입력해주세요." />
-          <transition name="fade">
-            <div v-if="toastTargetIndex === 0" class="tooltip-bottom">
-              {{ toastMessage }}
-            </div>
-          </transition>
+  <div class="wrap">
+    <div class="st_wrap">
+      <div class="yy_title1">
+        <div class="title_txt1">
+          <h1>예약조회</h1>
         </div>
+      </div>
 
-        <!-- 연락처 입력 -->
-        <div class="tooltip-container st_phone-wrapper">
-          <div class="st_phone-group">
-            <select v-model="telPrefix" class="st_phone-select">
-              <option value="010">010</option>
-              <option value="011">011</option>
-              <option value="016">016</option>
-              <option value="017">017</option>
-              <option value="018">018</option>
-              <option value="019">019</option>
-            </select>
-            <input
-              v-model="middlePhone"
-              maxlength="8"
-              class="st_phone-single"
-              placeholder="010을 제외한 번호를 입력해주세요." />
+      <div class="st_line">
+        <div class="container">
+          <!-- 1. 이름 입력 -->
+          <div class="info-row">
+            <div class="name-input">
+              <input v-model="name" placeholder="이름 입력" />
+            </div>
           </div>
-          <transition name="fade">
-            <div v-if="toastTargetIndex === 1" class="tooltip-bottom">
-              {{ toastMessage }}
-            </div>
-          </transition>
-        </div>
 
-        <!-- 예약번호 입력 -->
-        <div class="tooltip-container">
-          <input
-            class="st_look"
-            v-model="reservationNumber"
-            type="text"
-            placeholder="예약번호를 입력해주세요." />
-          <transition name="fade">
-            <div v-if="toastTargetIndex === 2" class="tooltip-bottom">
-              {{ toastMessage }}
+          <!-- 2. 연락처 입력 -->
+          <div class="info-row">
+            <div class="phone-input my-button">
+              <CustomSelect
+                v-model="telPrefix"
+                :options="[
+                  { value: '010', label: '010' },
+                  { value: '011', label: '011' },
+                  { value: '016', label: '016' },
+                  { value: '017', label: '017' },
+                  { value: '018', label: '018' },
+                  { value: '019', label: '019' },
+                ]"
+                placeholder="전화번호 앞자리"
+              />
+              <input
+                v-model="formattedNumber"
+                maxlength="9"
+                placeholder="전화번호 입력(8자리)"
+                class="datetime-input"
+              />
             </div>
-          </transition>
+          </div>
+
+          <!-- 3. 예약번호 입력 -->
+          <div class="info-row">
+            <div class="lookup">
+              <input
+                class="st_look"
+                v-model="reservationNumber"
+                type="text"
+                placeholder="예약번호를 입력해주세요."
+              />
+            </div>
+          </div>
+        </div>
+        <!-- 조회 버튼 -->
+        <div class="button">
+          <button class="my-button st_reser" @click="goToLookup">
+            조회하기
+          </button>
         </div>
       </div>
-      <!-- 조회 버튼 -->
-      <button class="st_reser" @click="handleLookup">조회하기</button>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+@use "sass:color";
 @use "@/assets/Main.scss" as *;
 @use "@/assets/_Variables.scss" as *;
 
-$base-width: 350px;
+// 스타일 변수
+$border-gray: #b5b5b5;
+$blue-sky: #279bf3;
+$red-holiday: #e63946;
+$blue-weekend: #1a44ff;
+$gray-past: #cccccc;
+$dark-gray: #333333;
+$radius: 8px;
 
+//전체배경
+.wrap {
+  padding: 100px 0;
+  min-height: 100vh; /* 화면 전체 높이를 확보한 뒤 */
+  background: linear-gradient(
+    to top,
+    #e2f1fc 50%,
+    /* 아래 50% */ transparent 50% /* 위 50% */
+  );
+}
+.wrap {
+  padding: 100px 0;
+  min-height: 100vh; /* 화면 전체 높이를 확보한 뒤 */
+  background: linear-gradient(
+    to top,
+    #e2f1fc 50%,
+    /* 아래 50% */ transparent 50% /* 위 50% */
+  );
+}
+// 전체 래퍼
 .st_wrap {
-  width: 100%;
-  max-width: 700px;
-  margin-top: 100px;
-  margin-bottom: 100px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 1200px;
+  margin: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -141,211 +161,121 @@ $base-width: 350px;
   padding-bottom: 30px;
   .title_txt1 h1 {
     font-size: 40px;
-    font-family: "omyu_pretty";
+    font-family: $font-gothic;
   }
 }
 
 .st_line {
+  min-width: 0;
   width: 100%;
-  padding: 20px;
-  border: 1px solid #007bff;
+  max-width: 600px;
+  border: 1px solid $border-gray;
   box-shadow: $box-shadow;
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  border-radius: $radius;
+  padding: 30px;
+  overflow: visible;
+  height: auto;
+  background-color: #ffffff;
 }
 
 .container {
-  width: 90%;
-  max-width: 380px;
-  margin: 10px auto;
-}
-.tooltip-container {
   width: 100%;
-  max-width: 350px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
+  // background: #f8f9fa;
+  border-radius: $radius;
+  padding: 20px;
+  margin-bottom: 30px;
 }
 
-.st_name,
-.st_look {
-  width: 100%;
-  height: 44px;
-  padding: 10px;
-  margin: 8px auto;
-  border: 1px solid #b5b5b5;
-  border-radius: 10px;
-  box-sizing: border-box;
+// 입력 필드
+:deep(input) ::placeholder {
+  color: $dark-gray;
+  opacity: 1;
 }
-
 input,
 select {
   width: 100%;
   height: 44px;
   padding: 10px;
-  margin: 5px auto;
-  border: 1px solid #b5b5b5;
-  border-radius: 10px;
+  font-size: 15px;
+  border: 1px solid $border-gray;
+  border-radius: $radius;
+  background: #fff;
   box-sizing: border-box;
-}
+  color: $dark-gray;
 
-.st_phone-wrapper {
-  display: flex;
-  flex-direction: column;
-}
-
-.st_phone-group {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  margin: 10px auto;
-
-  select {
-    width: 80px; // 010 선택 부분은 고정 너비
-    text-align: center;
-    height: 44px;
-    border-radius: 10px;
-    padding: 6px;
-    border: 1px solid #b5b5b5;
+  &:focus {
+    outline: 3px solid $blue-sky;
+    outline-offset: -2px;
   }
+}
+//이름
+.name-input {
+  gap: 10px;
+  display: flex;
+  height: 44px;
+  width: 100%;
+  color: $dark-gray;
+  margin-bottom: 10px;
+}
+// 전화번호
+.phone-input {
+  display: flex;
+  gap: 10px;
+  height: 44px;
+  width: 100%;
+  color: $dark-gray;
+  margin-bottom: 10px;
 
   input {
     flex: 1;
-    width: calc($base-width - 90px); // 80px (select의 너비)만큼 차감
     height: 44px;
-    border-radius: 10px;
-    padding: 6px 10px;
-    border: 1px solid #b5b5b5;
-  }
-
-  span {
-    font-size: 18px;
-    font-weight: bold;
+    border-radius: $radius;
+    padding: 10px;
+    border: 1px solid $border-gray;
+    color: $dark-gray;
   }
 }
-.st_reser {
-  width: 150px;
-  height: 50px;
-  line-height: 25px;
-  margin: 20px auto;
-  display: inline-block;
-  padding: 12px 24px;
-  background-color: $main-color;
-  color: white;
-  font-size: 16px;
-  border-radius: 30px;
+
+:deep(.phone-input select:focus),
+:deep(.phone-input input:focus) {
+  outline: 3px solid $blue-sky !important;
+  outline-offset: -2px !important;
+}
+
+.lookup {
+  display: flex;
+  gap: 10px;
+  height: 44px;
+  width: 100%;
+  color: $dark-gray;
+}
+
+// 제출 버튼
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  border: none;
-  transition: background 0.3s;
-}
-
-.st_reser:hover {
-  background-color: $hover;
-}
-.tooltip-bottom {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 6px;
-  background-color: #ff4d4f;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid red;
-  z-index: 10;
-  animation: float 1.8s ease-in-out infinite;
-}
-
-.tooltip-bottom::before {
-  content: "";
-  position: absolute;
-  top: -6px;
-  left: 20px;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-bottom: 6px solid #ff4d4f;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-@media (max-width: 768px) {
-  .yy_title1 .title_txt1 h1 {
-    font-size: 30px;
-    font-family: "omyu_pretty";
-    text-align: center;
-  }
-
-  .st_line {
-    padding: 15px;
-    width: 90%;
-  }
-  .tooltip-container {
-    max-width: 100%;
-  }
-
   .st_reser {
-    width: 150px;
-    height: 50px;
-    line-height: 25px;
+    width: 120px;
+    height: 40px;
+    background-color: color.adjust($main-color, $lightness: 30%);
+    color: #fff;
     font-size: 16px;
-    padding: 12px 24px;
-    margin-top: 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: none;
+    transition: background 0.3s;
+    margin: 15px;
+    display: block;
   }
-
-  .st_name,
-  .st_look {
-    font-size: 14px;
-    height: 42px;
-  }
-
-  input,
-  select {
-    font-size: 14px;
-    height: 42px;
+  .st_reser:hover {
+    background-color: color.adjust($sub-color, $lightness: 20%) !important;
   }
 }
 
-@media (max-width: 390px) {
-  .yy_title1 .title_txt1 h1 {
-    font-size: 30px;
-    font-family: "omyu_pretty";
-    text-align: center;
-  }
-
-  .tooltip-bottom {
-    font-size: 12px;
-    padding: 4px 10px;
-    margin-top: 4px;
-  }
-
-  .tooltip-bottom::before {
-    left: 16px;
-  }
-  .st_reser {
-    width: 150px;
-    height: 50px;
-    line-height: 25px;
-    font-size: 16px;
-    padding: 12px 24px;
-    margin-top: 20px;
-  }
+.my-button {
+  position: relative;
+  z-index: 4000; /* fixed-buttons(1000)보다 높게 */
 }
 </style>

@@ -1,8 +1,21 @@
+<style>
+/*푸터 .fixed-buttons 영역을 클릭 투명하게*/
+:deep(.fixed-buttons) {
+  pointer-events: none !important;
+  z-index: 0 !important;
+}
+/*푸터 안의 a, button 만 클릭 허용*/
+:deep(.fixed-buttons) a,
+:deep(.fixed-buttons) button {
+  pointer-events: auto !important;
+}
+</style>
+
 <script setup>
 import { ref, computed } from "vue";
 
 // 태그 정보
-const tags = ref([{ name: "⭐⭐⭐⭐⭐" }]);
+const tags = ref([{ tag: "⭐⭐⭐⭐⭐" }]);
 
 // 상품 목록
 const products = ref([
@@ -133,7 +146,7 @@ const maskedName = (name) => name.charAt(0) + "*".repeat(name.length - 1);
 
 // 페이지네이션 상태
 const currentPage = ref(1);
-const itemsPerPage = 8; // 한 페이지당 8개 상품 표시
+const itemsPerPage = 9; // 한 페이지당 8개 상품 표시
 
 // 총 페이지 수 계산
 const totalPages = computed(() =>
@@ -160,9 +173,6 @@ const newReview = ref({
   image: "",
 });
 const previewImage = ref("");
-
-// 등록된 후기 목록
-const reviews = ref([]);
 
 // 후기 추가
 const addReview = () => {
@@ -196,6 +206,7 @@ const cancelForm = () => {
   previewImage.value = "";
   showForm.value = false;
 };
+
 //모달
 const showModal = ref(false);
 const selectedReview = ref(null);
@@ -212,146 +223,178 @@ const closeModal = () => {
 </script>
 
 <template>
-  <div class="st_wrap">
-    <div class="st_title1">
-      <!-- 제목 -->
-      <div class="title_txt1">
-        <h1>이용후기</h1>
+  <!-- 전체 -->
+  <div class="wrap">
+    <div class="st_wrap">
+      <!-- 타이틀 -->
+      <div class="st_title1">
+        <div class="title_txt1">
+          <h1>이용후기</h1>
+        </div>
       </div>
-    </div>
-
-    <!-- 리뷰 배너 -->
-    <div class="st_reviewbanner">
-      <img src="/images/cr/st_reviewbanner.jpg" alt="리뷰이벤트" />
-    </div>
-
-    <!-- 카드이용후기 -->
-    <div class="st_bottom">
-      <div class="st_card-container">
-        <div
-          class="st_card"
-          v-for="product in paginatedProducts"
-          :key="product.image"
-          @click="openModal(product)">
-          <div class="st_img-product">
-            <img :src="product.image" alt="Product" />
-          </div>
-          <div class="st_detail">
-            <div class="st_title">
-              <div class="st_tag">
-                <a v-for="tag in tags" :href="tag.link" :key="tag.name">
-                  <span>{{ tag.name }}</span>
-                </a>
-              </div>
-              <div class="st_text">
-                <h6>{{ maskedName(product.name) }}님의 이용후기입니다</h6>
+      <!-- 카드이용후기 -->
+      <div class="st_bottom">
+        <div class="st_card-container">
+          <div
+            class="st_card my-button"
+            v-for="product in paginatedProducts"
+            :key="product.image"
+            @click="openModal(product)"
+          >
+            <div class="st_img-product">
+              <img :src="product.image" alt="Product" />
+            </div>
+            <div class="st_detail">
+              <div class="st_title">
+                <div class="st_tag">
+                  <a v-for="tag in tags" :href="tag.link" :key="tag.name">
+                    <span>{{ tag.tag }}</span>
+                  </a>
+                </div>
+                <div class="st_text">
+                  <h6>{{ maskedName(product.name) }}님의 이용후기입니다</h6>
+                  <span>{{ product.content }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="write-btn-wrapper">
-        <!-- 글쓰기 버튼 -->
-        <button @click="showForm = !showForm" class="write-btn">
-          {{ showForm ? "취소" : "글쓰기" }}
-        </button>
-
-        <!-- 글쓰기 폼 -->
-        <form v-if="showForm" class="review-form">
-          <input type="text" v-model="newReview.name" placeholder="이름" />
-          <textarea
-            v-model="newReview.content"
-            placeholder="후기내용"></textarea>
-          <input type="file" @change="handleImageUpload" accept="image/*" />
-          <img v-if="previewImage" :src="previewImage" width="120" />
-          <div class="form-buttons">
-            <button type="button" @click="addReview">등록</button>
-            <button type="button" @click="cancelForm">취소</button>
-          </div>
-        </form>
-      </div>
-      <!-- 페이지네이션 버튼 -->
-      <div class="st_pagination">
-        <button @click="prevPage" :disabled="currentPage === 1">이전</button>
-        <span>{{ currentPage }} / {{ totalPages }}</span>
-        <button @click="nextPage" :disabled="currentPage === totalPages">
-          다음
-        </button>
+        <!-- 리뷰작성 -->
+        <div class="write-btn-wrapper">
+          <!-- 글쓰기 폼 오픈 버튼 -->
+          <button @click="showForm = !showForm" class="write-btn my-button">
+            {{ showForm ? "취소" : "글쓰기" }}
+          </button>
+          <!-- 글쓰기 폼 -->
+          <form v-if="showForm" class="review-form">
+            <input type="text" v-model="newReview.name" placeholder="이름" />
+            <textarea
+              v-model="newReview.content"
+              placeholder="후기내용"
+            ></textarea>
+            <input type="file" @change="handleImageUpload" accept="image/*" />
+            <img v-if="previewImage" :src="previewImage" width="120" />
+            <!-- 후기 등록·취소버튼 -->
+            <div class="form-buttons my-button">
+              <button class="my-button" type="button" @click="addReview">
+                등록
+              </button>
+              <button class="my-button" type="button" @click="cancelForm">
+                취소
+              </button>
+            </div>
+          </form>
+        </div>
+        <!-- 페이지네이션 -->
+        <div class="st_pagination my-button">
+          <button
+            class="my-button"
+            @click="prevPage"
+            :disabled="currentPage === 1"
+          >
+            이전
+          </button>
+          <span>{{ currentPage }} / {{ totalPages }}</span>
+          <button
+            class="my-button"
+            @click="nextPage"
+            :disabled="currentPage === totalPages"
+          >
+            다음
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- 모달창 내용 -->
-  <div class="st_modal">
-    <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
-      <div class="modal-content">
-        <h3>✨{{ maskedName(selectedReview.name) }}님의 이용후기✨</h3>
-        <img :src="selectedReview.image" alt="후기 이미지" />
-        <p><strong></strong> {{ selectedReview.content || "내용 없음" }}</p>
-        <button @click="closeModal">닫기</button>
+    <!-- 모달창 내용 -->
+    <div class="st_modal">
+      <div
+        v-if="showModal"
+        class="modal-overlay my-button"
+        @click.self="closeModal"
+      >
+        <div class="modal-content">
+          <h3>✨{{ maskedName(selectedReview.name) }}님의 이용후기✨</h3>
+          <img :src="selectedReview.image" alt="후기 이미지" />
+          <p>{{ selectedReview.content || "내용 없음" }}</p>
+          <button class="my-button" @click="closeModal">닫기</button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
+@use "sass:color";
 @use "@/assets/Main.scss" as *;
 @use "@/assets/_Variables.scss" as *;
 
+// 스타일 변수
+$border-gray: #b5b5b5;
+$blue-sky: #279bf3;
+$red-holiday: #e63946;
+$blue-weekend: #1a44ff;
+$gray-past: #cccccc;
+$dark-gray: #333333;
+$radius: 8px;
+
+//전체배경
+.wrap {
+  padding: 100px 0;
+  min-height: 100vh; /* 화면 전체 높이를 확보한 뒤 */
+  background: linear-gradient(
+    to top,
+    #e2f1fc 50%,
+    /* 아래 50% */ transparent 50% /* 위 50% */
+  );
+}
+
+// 전체 래퍼
 .st_wrap {
-  width: 100%;
-  max-width: 700px;
-  margin-top: 100px;
-  margin-bottom: 100px;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 1200px;
+  margin: auto;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
+  justify-content: center;
+  flex-direction: column;
   font-family: $font-family;
 }
 
+// 타이틀
 .st_title1 {
   display: flex;
   gap: 10px;
-  line-height: 40px;
-  flex-wrap: wrap; /* 넘치면 자동 줄바꿈 */
-  align-items: center; /* 세로 중앙 정렬 */
-  justify-content: center; /* 가로 중앙 정렬 */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   padding-bottom: 30px;
   .title_txt1 h1 {
     font-size: 40px;
-    font-family: "omyu_pretty";
+    font-family: $font-gothic;
   }
 }
-// 리뷰 배너
-.st_reviewbanner {
-  justify-content: center;
-  margin-bottom: $margin-L;
+.st_bottom {
+  max-width: 900px;
+  width: 100%;
 }
-
-img {
-  width: 90%;
-  height: 90%;
-}
-
 // 리뷰 카드
 .st_card-container {
-  width: 800px;
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 30px;
   flex-wrap: wrap;
   font-family: none;
+  margin-bottom: 30px;
 }
 
 .st_card {
-  width: 180px;
-  height: 300px;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  width: 250px;
+  height: 450px;
+  background-color: $background-maincolor;
+  border: 1px solid $border-gray;
+  border-radius: $radius;
   transition: transform 0.3s ease-in-out;
+  cursor: pointer;
 }
 
 .st_card:hover {
@@ -362,18 +405,19 @@ img {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 85%;
+  height: 80%;
 }
 
 .st_card .st_img-product img {
-  height: 90%;
-  width: 90%;
-  border-radius: 10px;
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+  border-radius: $radius;
 }
 
 .st_detail {
-  height: 30%;
-  padding-left: 5px;
+  height: 20%;
+  padding: 0 10px;
 }
 
 .st_title {
@@ -381,24 +425,24 @@ img {
   flex-wrap: wrap;
   text-align: left;
   flex-direction: column;
+  gap: 10px;
 }
 .st_text {
   display: flex;
+  flex-direction: column;
   align-items: baseline;
+  gap: 10px;
 }
-
+.st_tag span {
+  font-size: 14px;
+}
 h6 {
-  margin-top: 5px;
-  font-size: 13px;
+  font-size: 16px;
+  font-weight: bold;
 }
-.st_tag a {
-  padding: 5px auto;
-  font-size: 10px;
-  color: black;
-  border-radius: 20px;
-  text-decoration: none;
+span {
+  font-size: 14px;
 }
-
 /* 페이지네이션 스타일 */
 .st_pagination {
   margin-top: 20px;
@@ -407,21 +451,24 @@ h6 {
   align-items: center;
   gap: 10px;
 }
-
 .st_pagination button {
   padding: 5px 10px;
   margin: 0 5px;
   cursor: pointer;
   border: none;
   border-radius: 5px;
-  background-color: $sub-color;
+  background-color: color.adjust($main-color, $lightness: 30%);
   color: #fff;
+  :hover {
+    background-color: color.adjust($sub-color, $lightness: 20%) !important;
+  }
+}
+.st_pagination button:disabled {
+  background: #d4d4d4;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
-.st_pagination button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
 /* 글쓰기 버튼 */
 .write-btn-wrapper {
   width: 100%;
@@ -435,15 +482,19 @@ h6 {
 .write-btn {
   width: 150px;
   height: 50px;
-  line-height: 25px;
-  padding: 8px 16px;
-  margin: 40px 0;
-  background-color: $main-color;
-  width: 100px;
-  color: white;
-  border: none;
-  border-radius: 30px;
+  padding: 12px 24px;
+  background-color: color.adjust($main-color, $lightness: 30%);
+  color: #fff;
+  font-size: 16px;
+  border-radius: 20px;
   cursor: pointer;
+  border: none;
+  transition: background 0.3s;
+  margin: 15px;
+  display: block;
+}
+.write-btn:hover {
+  background-color: color.adjust($sub-color, $lightness: 20%) !important;
 }
 
 .review-form {
@@ -458,17 +509,27 @@ h6 {
 .review-form input,
 .review-form textarea {
   padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  border: 1px solid $border-gray;
+  border-radius: &$radius;
 }
 button {
-  padding: 5px 10px;
-  margin: 0 5px;
-  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  padding: 10px;
+  background-color: color.adjust($main-color, $lightness: 30%);
+  color: white;
+  width: 70px;
+  height: 44px;
   border: none;
-  border-radius: 5px;
-  background-color: #029d2b;
-  color: #fff;
+  border-radius: $radius;
+  cursor: pointer;
+  white-space: nowrap;
+  &:hover {
+    transition: background 0.2s;
+    background-color: #71d575;
+  }
 }
 .form-buttons {
   display: flex;
@@ -486,7 +547,6 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 999;
   }
 
   .modal-content {
@@ -495,8 +555,12 @@ button {
     border-radius: 12px;
     width: 90%;
     max-width: 400px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: $box-shadow;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     text-align: center;
+    flex-direction: column;
 
     img {
       width: 100%;
@@ -505,15 +569,28 @@ button {
     }
 
     button {
-      margin-top: 10px;
-      background-color: $sub-color;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
+      width: 150px;
+      height: 50px;
+      padding: 12px 24px;
+      background-color: color.adjust($main-color, $lightness: 30%);
+      color: #fff;
+      font-size: 16px;
+      border-radius: 20px;
       cursor: pointer;
+      border: none;
+      transition: background 0.3s;
+      margin: 15px;
+      display: block;
+    }
+    :hover {
+      background-color: color.adjust($sub-color, $lightness: 20%) !important;
     }
   }
+}
+
+.my-button {
+  position: relative;
+  z-index: 4000; /* fixed-buttons(1000)보다 높게 */
 }
 @media (max-width: 768px) {
   .st_title1 .title_txt1 h1 {
