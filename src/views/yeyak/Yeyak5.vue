@@ -174,8 +174,7 @@ function goToNextStep() {
                 <div
                   v-else
                   class="value"
-                  :class="[row.highlight ? 'highlight' : '', row.cssClass]"
-                >
+                  :class="[row.highlight ? 'highlight' : '', row.cssClass]">
                   <span>
                     {{ row.value }}
                   </span>
