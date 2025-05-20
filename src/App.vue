@@ -1,5 +1,5 @@
 <template>
-  <div class="wrap">
+  <div class="wrap" :class="{ 'no-padding': isWorkerPage }">
     <Header_subtypeAll v-if="!isWorkerPage" />
     <main class="main">
       <router-view></router-view>
@@ -37,22 +37,23 @@ const isWorkerPage = computed(() => {
 
   return (
     route.path.startsWith("/worker") ||                      // /worker 하위
-    (isMobile && route.path.startsWith("/login")) ||         // 모바일 + /login
-    route.path.startsWith("/signup") ||                      // /signup
+    route.path.startsWith("/admin") ||                      // /worker 하위
+    // (isMobile && route.path.startsWith("/login")) ||         // 모바일 + /login
+    // route.path.startsWith("/signup") ||                      // /signup
     route.meta.hideLayout                                    // 라우트 메타에서 숨김 처리
   );
 });
 </script>
 
 <style lang="scss" scoped>
+.wrap {
+  &.no-padding .main {
+    padding-top: 0 !important;
+  }
+}
+
 .main {
   padding-top: 75px;
 }
 
-.wrap{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
 </style>
-

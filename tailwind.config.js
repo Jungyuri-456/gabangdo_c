@@ -16,7 +16,9 @@ export default {
       boxShadow: {
         login: "0 2px 4px rgba(0, 0, 0, 0.1)",
       },
+      safelist: ['max-[900px]:inline', 'max-[900px]:hidden'],
     },
   },
+  darkMode: "class", 
   plugins: [],
 };
