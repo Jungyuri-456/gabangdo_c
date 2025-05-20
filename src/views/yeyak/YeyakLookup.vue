@@ -35,7 +35,7 @@ const formattedNumber = computed({
   },
 });
 
-// 예시: 버튼 클릭 시 페이지 이동
+//라우터링크
 function goToLookup() {
   router.push("/yeyaklookup2");
 }
@@ -52,14 +52,14 @@ function goToLookup() {
 
       <div class="st_line">
         <div class="container">
-          <!-- 1. 이름 입력 -->
+          <!-- 이름 입력 -->
           <div class="info-row">
             <div class="name-input">
               <input v-model="name" placeholder="이름 입력" />
             </div>
           </div>
 
-          <!-- 2. 연락처 입력 -->
+          <!-- 연락처 입력 -->
           <div class="info-row">
             <div class="phone-input my-button">
               <CustomSelect
@@ -83,7 +83,7 @@ function goToLookup() {
             </div>
           </div>
 
-          <!-- 3. 예약번호 입력 -->
+          <!-- 예약번호 입력 -->
           <div class="info-row">
             <div class="lookup">
               <input

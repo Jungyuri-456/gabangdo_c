@@ -14,7 +14,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
 
-// props
+// Props 및 emits 정의
 const props = defineProps({
   // v-model 값
   modelValue: [String, Number],
@@ -35,7 +35,6 @@ const props = defineProps({
     type: String,
   },
 });
-// Emits 정의
 const emit = defineEmits(["update:modelValue"]);
 
 // 컴포넌트 로컬 상태
@@ -101,16 +100,16 @@ onMounted(() => {
 </script>
 
 <template>
+  <!-- 전체 -->
   <div class="custom-select" ref="picker">
-    <!-- 선택된 값 표시영역 -->
+    <!-- 선택 필드 -->
     <div class="select-input" tabindex="0" @click="toggle">
       <span class="input-text">
         {{ selectedLabel || placeholder }}
       </span>
       <i class="ri-arrow-down-s-line icon" :class="{ open }"></i>
     </div>
-
-    <!-- 옵션 리스트 -->
+    <!-- 번호 팝업 -->
     <teleport to="body">
       <ul v-if="open" class="options" :style="popupPosition">
         <li
@@ -172,6 +171,7 @@ $radius: 8px;
 
     .input-text {
       height: 100%;
+      padding-right: 10px;
       position: relative;
       display: flex;
       align-items: center;
