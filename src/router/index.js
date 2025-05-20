@@ -1,15 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router";
-import Home from "@/Home.vue";
-import Bangbeob1 from "../views/bangbeob/Bangbeob1.vue";
+import Home from "../Home.vue";
 import Bangbeob2 from "../views/bangbeob/Bangbeob2.vue";
-import Yeyak from "@/views/yeyak/Yeyak.vue";
+import Yeyak from "../views/yeyak/Yeyak.vue";
 import Yeyak2 from "../views/yeyak/Yeyak2.vue";
 import Yeyak4 from "../views/yeyak/Yeyak4.vue";
 import Yeyak5 from "../views/yeyak/Yeyak5.vue";
 import YeyakLookup from "../views/yeyak/YeyakLookup.vue";
 import YeyakLookup2 from "../views/yeyak/YeyakLookup2.vue";
-import Yogeum from "@/views/yogeum/Yogeum.vue";
-import Sotong from "@/views/sotong/Sotong.vue";
+import Yogeum from "../views/yogeum/Yogeum.vue";
+import Sotong from "../views/sotong/Sotong.vue";
 import Sotong2 from "../views/sotong/Sotong2.vue";
 import Yeohaeng from "../views/yeohaeng/Yeohaeng.vue";
 import Yh_Festival from "../views/yeohaeng/Yh_Festival.vue";
@@ -18,23 +17,21 @@ import Login from "../views/deliverylogin/Login.vue";
 import Signup from "../views/deliverylogin/Signup.vue";
 import findPassword from "../views/deliverylogin/findPassword.vue";
 // 기사페이지
-import WorkerHome from "@/pages/worker/WorkerHome.vue";
-import DDashboard from "@/pages/worker/DDashboard.vue";
+import DDashboard from "../pages/worker/DDashboard.vue";
 import Assign from "../pages/worker/Assign.vue";
 import AssignedJobs from "../pages/worker/AssignedJobs.vue";
 import Jobhistory from "../pages/worker/Jobhistory.vue";
 // 관리자페이지
-import LoginAdmin from "@/views/LoginAdmin.vue";
+import LoginAdmin from "../views/LoginAdmin.vue";
 import AdminHome from "../pages/admin/AdminHome.vue";
-import Dashboard from "@/pages/admin/Dashboard.vue";
-import Customers from "@/pages/admin/Customers.vue";
-import Settings from "@/pages/admin/Settings.vue";
-import Workers from "@/pages/admin/Workers.vue";
-import Reservations from "@/pages/admin/Reservations.vue";
-import Terminals from "@/pages/admin/Terminals.vue";
+import Dashboard from "../pages/admin/Dashboard.vue";
+import Customers from "../pages/admin/Customers.vue";
+import Settings from "../pages/admin/Settings.vue";
+import Workers from "../pages/admin/Workers.vue";
+import Reservations from "../pages/admin/Reservations.vue";
+import Terminals from "../pages/admin/Terminals.vue";
 const routes = [
   { path: "/", component: Home },
-  { path: "/bangbeob1", component: Bangbeob1 },
   { path: "/bangbeob2", component: Bangbeob2 },
   { path: "/yeyak", component: Yeyak },
   { path: "/yeyak2", component: Yeyak2 },
@@ -60,11 +57,11 @@ const routes = [
   {
     path: "/worker",
     // component: WorkerHome,
-    redirect: "/worker/Ddashboard", //경로 접근시 자동 리다이렉트
+    redirect: "/worker/DDashboard", //경로 접근시 자동 리다이렉트
     children: [
       {
         path: "ddashboard",
-        component: Ddashboard,
+        component: DDashboard,
       },
       {
         path: "assigned-jobs",
@@ -78,8 +75,6 @@ const routes = [
         path: "job-history",
         component: Jobhistory,
       },
-
-
     ],
   },
   // 관리자페이지
