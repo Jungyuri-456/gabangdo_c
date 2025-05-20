@@ -16,81 +16,43 @@ import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useReservationStore } from "@/stores/reservationStore";
 
-// Pinia 스토어 & 라우터
+// 스토어 & 라우터 초기화
 const store = useReservationStore();
 const router = useRouter();
 
-// 가방 + 총 금액 행 생성
-function makeBagRows(sizes) {
-  console.log("▶ sizes:", sizes, "▶ price:", store.totalPrice.value);
-
-  const bagRows = [];
-  const selected = sizes.filter((i) => i.count > 0);
-
-  if (selected.length) {
-    selected.forEach((item, i) => {
-      bagRows.push({
-        label: i === 0 ? "가방 종류 및 수량" : "",
-        bagLabel: item.label,
-        bagTag: item.tag,
-        bagCount: `${item.count}개`,
-      });
-    });
-  } else {
-    bagRows.push({
-      label: "가방 종류 및 수량",
-      bagLabel: "",
-      bagTag: "",
-      bagCount: "선택한 가방이 없습니다.",
-    });
-  }
-
-  const price = store.totalPrice;
-  bagRows.push({
-    label: "총 금액",
-    value: isNaN(price) ? "0원" : `${price.toLocaleString()}원`,
-    highlight: true,
-    cssClass: "total-price",
-  });
-
-  return bagRows;
-}
-
-// 오늘 날짜 포맷
-function getTodayFormatted() {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
+// ISO 문자열을 한국어 날짜로 변환하는 함수
+function formatKoreanDate(iso) {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
   return `${y}년 ${m}월 ${d}일`;
 }
 
-// 페이지 진입 시 가격 조정
+// 페이지 진입 시: 오늘 날짜 선택 여부에 따라 가격 초기화/조정
 onMounted(() => {
-  if (store.selectedDate === getTodayFormatted()) {
+  const todayISO = new Date().toISOString().slice(0, 10);
+  if (store.selectedDate === todayISO) {
     store.handleTodaySelected();
   } else {
     store.resetPrices();
   }
 });
 
-// 요약 배열
+// 전체 요약 배열 생성
 const summaryRows = computed(() => {
   const rows = [
     { label: "이름", value: store.name },
     { label: "전화번호", value: store.fullPhone },
+    // 구분선 추가
+    { divider: true },
     {
       label: "이용날짜 및 시간",
-      value: `${store.selectedDate}  ${store.selectedTime}`,
+      value: `${formatKoreanDate(store.selectedDate)} ${store.selectedTime}`,
     },
   ];
-
   if (store.selectedStart || store.selectedStop) {
     rows.push({
       label: "출발 → 도착",
-      value: `${store.selectedStart || "출발지 없음"} → ${
-        store.selectedStop || "도착지 없음"
-      }`,
+      value: `${store.selectedStart || "—"} → ${store.selectedStop || "—"}`,
     });
   }
   if (store.customStartAddress) {
@@ -107,97 +69,122 @@ const summaryRows = computed(() => {
       cssClass: "addr-stop",
     });
   }
-
+  // 가방, 총 금액, 결제방식 모두 여기서 한 번에 처리
   rows.push(...makeBagRows(store.sizes));
   return rows;
 });
 
-// 결제 수단 선택 후 이동
-const selectedPayment = ref("");
-function submitReservation() {
-  if (!selectedPayment.value) {
-    alert("결제 수단을 선택해주세요.");
-    return;
+// 가방·총액
+function makeBagRows(sizes) {
+  const bagRows = [];
+  const selected = sizes.filter((i) => i.count > 0);
+  // 구분선 추가
+  bagRows.push({ divider: true });
+  if (selected.length) {
+    selected.forEach((item, idx) => {
+      bagRows.push({
+        label: idx === 0 ? "가방 종류 및 수량" : "",
+        bagLabel: item.label,
+        bagTag: item.tag,
+        bagCount: `${item.count}개`,
+      });
+    });
+  } else {
+    bagRows.push({
+      label: "가방 종류 및 수량",
+      value: "선택한 가방이 없습니다",
+    });
   }
-  store.paymentMethod = selectedPayment.value;
-  router.push("/yeyak5");
+  // 구분선 추가
+  bagRows.push({ divider: true });
+  // 총 금액
+  const price = store.totalPrice;
+  bagRows.push({
+    label: "총 금액",
+    value: isNaN(price) ? "원" : `${price.toLocaleString()}원`,
+    highlight: true,
+    cssClass: "total-price",
+  });
+  return bagRows;
 }
 
-// ✅ 결제 수단
+// 결제방식
+const selectedPayment = ref("");
+
+// 결제 수단 텍스트와 아이콘 매핑
 const paymentTexts = {
   bank: "계좌이체",
   card: "카드결제",
   phone: "휴대폰이체",
 };
-
 const paymentIcons = {
   toss: "/images/cr/yy_toss.png",
   naver: "/images/cr/yy_naver.png",
   kakao: "/images/cr/yy_kakao.png",
 };
+
+// 다음 단계 이동
+function submitReservation() {
+  if (!selectedPayment.value) {
+    alert("결제 수단을 선택해주세요");
+    return;
+  }
+  store.paymentMethod = selectedPayment.value;
+  router.push("/yeyak5");
+}
 </script>
 
 <template>
+  <!-- 전체 -->
   <div class="wrap">
+    <!-- 이너 -->
     <div class="st_wrap">
-      <!-- 제목 영역 -->
+      <!-- 타이틀 -->
       <div class="yy_title1">
         <div class="title_txt1">
           <h1>결제하기</h1>
         </div>
       </div>
-
-      <!-- 본문 박스 -->
+      <!-- 본문 테두리 -->
       <div class="st_line">
-        <!-- 예약 정보 요약 -->
-        <div class="payment-info-box">
-          <div v-for="(row, idx) in summaryRows" :key="idx" class="info-row">
-            <span class="label">{{ row.label }}</span>
-
-            <div v-if="row.bagLabel !== undefined" class="summary-item">
-              <span class="bag-label">{{ row.bagLabel }}</span>
-              <span class="bag-tag">{{ row.bagTag }}</span>
-              <span class="bag-count">{{ row.bagCount }}</span>
-            </div>
-            <template v-else>
-              <span
-                class="value"
-                :class="[row.highlight ? 'highlight' : '', row.cssClass]"
-              >
-                {{ row.value }}
-              </span>
+        <!-- 본문 박스 -->
+        <div class="payment-page">
+          <!-- 요약 정보 -->
+          <div class="payment-info-box">
+            <!-- 구분선 -->
+            <template v-for="(row, idx) in summaryRows" :key="idx">
+              <hr v-if="row.divider" class="divider extended" />
+              <!-- 예약자 정보 -->
+              <div v-else class="info-row" :class="row.cssClass">
+                <span class="label">{{ row.label }}</span>
+                <!-- 가방 요약 -->
+                <div v-if="row.bagLabel !== undefined" class="summary-item">
+                  <span class="bag-label">{{ row.bagLabel }}</span>
+                  <span class="bag-tag">{{ row.bagTag }}</span>
+                  <span class="bag-count">{{ row.bagCount }}</span>
+                </div>
+                <!-- 일반 정보 -->
+                <div
+                  v-else
+                  class="value"
+                  :class="[row.highlight ? 'highlight' : '', row.cssClass]"
+                >
+                  <span>
+                    {{ row.value }}
+                  </span>
+                </div>
+              </div>
             </template>
           </div>
-        </div>
-
-        <!-- 결제 수단 선택 영역 -->
-        <div class="payment-wrap">
-          <div class="payment-methods">
-            <!-- 일반 결제 수단 버튼들 -->
-            <label
-              v-for="(val, key) in paymentTexts"
-              :key="key"
-              class="payment-option my-button"
-              :class="{ active: selectedPayment === key }"
-            >
-              <input
-                type="radio"
-                v-model="selectedPayment"
-                :value="key"
-                name="payment"
-                class="my-button"
-              />
-              {{ val }}
-            </label>
-
-            <!-- 간편결제 섹션 -->
-            <div class="payment-icons-wrapper payment-icons-inline">
-              <span class="payment-label">간편결제</span>
-              <div class="payment-radio my-button">
+          <!-- 결제 수단 선택 -->
+          <div class="payment">
+            <div class="payment-wrap">
+              <div class="payment-methods">
+                <!-- 일반결제 -->
                 <label
-                  v-for="(src, key) in paymentIcons"
+                  v-for="(val, key) in paymentTexts"
                   :key="key"
-                  class="payment-image my-button"
+                  class="payment-option my-button"
                   :class="{ active: selectedPayment === key }"
                 >
                   <input
@@ -207,18 +194,38 @@ const paymentIcons = {
                     name="payment"
                     class="my-button"
                   />
-                  <img
-                    :src="src"
-                    :alt="`${key} 아이콘`"
-                    class="payment-icon my-button"
-                  />
+                  {{ val }}
                 </label>
+                <!-- 간편결제 -->
+                <div class="payment-icons-wrapper payment-icons-inline">
+                  <span class="payment-label">간편결제</span>
+                  <div class="payment-radio my-button">
+                    <label
+                      v-for="(src, key) in paymentIcons"
+                      :key="key"
+                      class="payment-image my-button"
+                      :class="{ active: selectedPayment === key }"
+                    >
+                      <input
+                        type="radio"
+                        v-model="selectedPayment"
+                        :value="key"
+                        name="payment"
+                        class="my-button"
+                      />
+                      <img
+                        :src="src"
+                        :alt="`${key} 아이콘`"
+                        class="payment-icon my-button"
+                      />
+                    </label>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- 결제 버튼 -->
+        <!--버튼 -->
         <div class="button">
           <button
             class="my-button st_reser"
@@ -229,9 +236,7 @@ const paymentIcons = {
           </button>
         </div>
       </div>
-      <!-- .st_line 끝 -->
     </div>
-    <!-- .st_wrap 끝 -->
   </div>
 </template>
 
@@ -260,8 +265,9 @@ $radius: 8px;
 }
 // 전체 래퍼
 .st_wrap {
+  width: 100%;
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   text-align: center;
@@ -286,8 +292,10 @@ $radius: 8px;
 
 .st_line {
   width: 100%;
-  max-width: 550px;
-  // border: 1px solid $border-gray;
+  max-width: 600px;
+  box-sizing: border-box;
+  margin: 0 auto;
+  border: 1px solid $border-gray;
   box-shadow: $box-shadow;
   border-radius: $radius;
   padding: 30px;
@@ -301,94 +309,74 @@ $radius: 8px;
   flex-direction: column;
   align-items: center;
 }
-
 .payment-info-box {
   width: 100%;
-  background: #f8f9fa;
-  border-radius: $radius;
   padding: 20px;
   margin-bottom: 30px;
-
-  .info-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    border-bottom: 1px dashed $border-gray;
-    padding: 10px 0;
-    margin: 0;
-
-    &:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .label {
-      flex: 0 0 auto;
-      margin-right: 15px;
-      font-weight: 500;
-      color: #505050;
-      font-size: 17px;
-    }
-
-    .value {
-      flex: 1;
-      font-weight: 600;
-      color: $dark-gray;
-      font-size: 15px;
-      text-align: right;
-      white-space: pre;
-
-      &.highlight {
-        font-size: 16px;
-        font-weight: 600;
-        color: #00bfa5;
-      }
-
-      &.addr-start,
-      &.addr-stop {
-        font-size: 13px;
-        color: #707070;
-        margin-top: 2px;
-        text-align: right;
-      }
-    }
-  }
 }
-
-.summary-item {
+.info-row {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 15px;
-  text-align: right;
+  text-align: left;
+  padding: 5px 20px;
+  margin: 0;
 
-  .bag-label {
+  &.addr-start,
+  &.addr-stop {
+    font-weight: normal;
+    font-size: 14px;
+    color: #707070;
+    padding: 1px 50px;
+  }
+  .label {
+    width: 40%;
+    text-align: right;
+    margin-right: 15px;
+    flex: 0 0 auto;
+    color: #505050;
+    font-size: 16px;
+  }
+  .value .summary-item {
     color: $dark-gray;
-  }
-
-  .bag-tag {
-    font-size: 13px;
-    color: color.adjust($dark-gray, $lightness: 20%);
-  }
-
-  .bag-count {
-    font-weight: 600;
-    color: $blue-sky;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-align: right;
+    white-space: pre;
+    font-weight: bold;
+    &.addr-start,
+    &.addr-stop {
+      font-weight: normal;
+      font-size: 14px;
+      color: #707070;
+    }
   }
 }
+
+//구분선
+.divider.extended {
+  border: none;
+  border-top: 1px solid #d6d6d6;
+  width: 100%;
+  margin: 3px auto;
+}
+
 // 결제 수단
+.payment {
+  margin-bottom: 30px;
+}
 .payment-wrap {
   display: flex;
   flex-direction: column;
-  align-items: center; // ✅ 내부 항목 수평 가운데
+  align-items: center;
   gap: 20px;
   width: 100%;
-  margin-bottom: 30px;
 }
 
 .payment-methods {
   display: grid;
-  min-height: 44px;
+  height: 40px;
   align-items: center;
   justify-content: center;
   grid-template-columns: repeat(3, 1fr);
@@ -397,7 +385,7 @@ $radius: 8px;
 
 .payment-option {
   display: flex;
-  height: 44px;
+  height: 40px;
   align-items: center;
   justify-content: center;
   border: 1px solid $border-gray;
@@ -410,7 +398,7 @@ $radius: 8px;
   color: $dark-gray;
 
   input[type="radio"] {
-    display: none; // 텍스트 항목에서는 라디오 숨김
+    display: none;
   }
 
   .payment-icon {
@@ -430,7 +418,7 @@ $radius: 8px;
 
 .payment-icons-wrapper {
   display: flex;
-  height: 44px;
+  height: 40px;
   background-color: #fff;
   align-items: center;
   justify-content: space-between;
@@ -446,7 +434,7 @@ $radius: 8px;
 
 .payment-icons-inline {
   display: flex;
-  height: 44px;
+  height: 40px;
   align-items: center;
   justify-content: space-between;
 }
@@ -463,7 +451,7 @@ $radius: 8px;
 
 .payment-icons-inline {
   display: flex;
-  height: 44px;
+  height: 40px;
   align-items: center;
   gap: 3px;
   padding: 10px;
@@ -479,7 +467,7 @@ $radius: 8px;
 }
 .payment-radio {
   display: flex;
-  height: 44px;
+  height: 40px;
   align-items: center;
   gap: 15px;
   justify-content: flex-end;
@@ -495,7 +483,7 @@ $radius: 8px;
   box-sizing: border-box;
 
   .payment-icon {
-    max-height: 30px; // 아이콘 크기 고정
+    max-height: 30px;
     width: auto;
   }
 
@@ -511,7 +499,7 @@ $radius: 8px;
   }
 }
 .payment-methods {
-  grid-auto-rows: 44px; /* 모든 그리드 행을 44px로 강제 */
+  grid-auto-rows: 40px;
 }
 
 /* ── 진짜 높이·패딩·마진 완전 초기화 ── */
@@ -519,9 +507,9 @@ $radius: 8px;
 .payment-icons-wrapper,
 .payment-icons-inline,
 .payment-radio {
-  margin: 0; /* 기본 마진 제거 */
-  padding: 0 10px; /* 위/아래 0, 좌/우 10px */
-  height: 44px !important; /* 고정 높이 */
+  margin: 0;
+  padding: 0 10px;
+  height: 40px !important;
   box-sizing: border-box !important;
   line-height: normal !important;
   display: flex;

@@ -12,7 +12,14 @@
 </style>
 
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
+import {
+  ref,
+  computed,
+  watch,
+  nextTick,
+  onMounted,
+  onBeforeUnmount,
+} from "vue";
 
 // Props 및 emits 정의
 const props = defineProps({
@@ -21,9 +28,9 @@ const props = defineProps({
 const emit = defineEmits(["update:modelValue"]);
 
 // 로컬 상태
-const picker = ref(null);
+const anchor = ref(null);
 const showCalendar = ref(false);
-const selectedDate = ref(props.modelValue || "");
+const selectedDate = ref("");
 
 // 화면에 표시할 날짜 문자열
 const display = computed(() => selectedDate.value);
@@ -37,7 +44,7 @@ watch(
       return;
     }
     const [Y, M, D] = iso.split("-");
-    selectedDate.value = `${Y}년\u00A0${M}월\u00A0${D}일`;
+    selectedDate.value = `${Y}년 ${M}월 ${D}일`;
   },
   { immediate: true }
 );
@@ -47,7 +54,6 @@ const now = new Date();
 const todayYear = now.getFullYear();
 const todayMonth = now.getMonth();
 const todayDay = now.getDate();
-
 const year = ref(todayYear);
 const month = ref(todayMonth);
 const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
@@ -70,13 +76,11 @@ function isPast(day) {
   return false;
 }
 
-// 선택된 날짜인지 판단
+// 선택된 날
 function isSelected(day) {
-  if (!selectedDate.value) return false;
-  const [y, m, d] = selectedDate.value
-    .match(/(\d+)년\s?(\d+)월\s?(\d+)일/)
-    .slice(1)
-    .map(Number);
+  const match = selectedDate.value.match(/(\d+)년\s?(\d+)월\s?(\d+)일/);
+  if (!match) return false;
+  const [y, m, d] = match.slice(1).map(Number);
   return y === year.value && m - 1 === month.value && d === day;
 }
 
@@ -85,9 +89,7 @@ function prevMonth() {
   if (month.value === 0) {
     year.value--;
     month.value = 11;
-  } else {
-    month.value--;
-  }
+  } else month.value--;
 }
 
 // 다음 달로
@@ -95,9 +97,7 @@ function nextMonth() {
   if (month.value === 11) {
     year.value++;
     month.value = 0;
-  } else {
-    month.value++;
-  }
+  } else month.value++;
 }
 
 // 공휴일 목록
@@ -149,7 +149,7 @@ function selectDay(day) {
 const popupPosition = ref({
   top: "0px",
   left: "0px",
-  width: "100%",
+  width: "100px",
   zIndex: 6000,
 });
 
@@ -164,8 +164,9 @@ const popupStyle = computed(() => ({
 
 // 위치 계산 함수
 function updatePopupPosition() {
-  if (!picker.value) return;
-  const r = picker.value.getBoundingClientRect();
+  const el = anchor.value;
+  if (!el) return;
+  const r = el.getBoundingClientRect();
   popupPosition.value.top = `${r.bottom + window.scrollY}px`;
   popupPosition.value.left = `${r.left + window.scrollX}px`;
   popupPosition.value.width = `${r.width}px`;
@@ -173,14 +174,10 @@ function updatePopupPosition() {
 
 // 달력 토글(팝업이 닫혀 있다가 열릴 때 오늘 기준으로 초기화)
 function toggleCalendar() {
-  if (!showCalendar.value) {
-    year.value = todayYear;
-    month.value = todayMonth;
-  }
   showCalendar.value = !showCalendar.value;
   if (showCalendar.value) {
     // 팝업을 연 직후 위치 초기 계산
-    updatePopupPosition();
+    nextTick(updatePopupPosition);
     // 스크롤(수평+수직) 과 리사이즈 이벤트에 붙이기
     window.addEventListener("scroll", updatePopupPosition);
     window.addEventListener("resize", updatePopupPosition);
@@ -193,25 +190,28 @@ function toggleCalendar() {
 
 // 영역 외 클릭 시 닫기
 function onClickOutside(e) {
-  if (picker.value && !picker.value.contains(e.target)) {
+  if (anchor.value && !anchor.value.contains(e.target)) {
     showCalendar.value = false;
-    // 닫을 때에도 릴스너 해제
-    window.removeEventListener("scroll", updatePopupPosition);
-    window.removeEventListener("resize", updatePopupPosition);
   }
 }
 
 // 마운트/언마운트 훅
-onMounted(() => document.addEventListener("click", onClickOutside));
-onBeforeUnmount(() => document.removeEventListener("click", onClickOutside));
-window.removeEventListener("scroll", updatePopupPosition);
-window.removeEventListener("resize", updatePopupPosition);
+onMounted(() => {
+  document.addEventListener("click", onClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", onClickOutside);
+  window.removeEventListener("scroll", updatePopupPosition);
+  window.removeEventListener("resize", updatePopupPosition);
+});
 </script>
 
 <template>
-  <div class="calendar-wrapper" ref="picker">
-    <!-- 입력 필드 -->
-    <div class="datetime-input-wrapper" @click="toggleCalendar">
+  <!-- 전체 -->
+  <div class="calendar-wrapper">
+    <!-- 선택 필드 -->
+    <div class="datetime-input-wrapper" ref="anchor" @click="toggleCalendar">
       <i class="ri-calendar-event-line icon"></i>
       <input
         type="text"
@@ -221,12 +221,10 @@ window.removeEventListener("resize", updatePopupPosition);
         placeholder="날짜를 선택해주세요"
       />
     </div>
-
-    <!-- 팝업 달력 -->
+    <!-- 달력 팝업 -->
     <teleport to="body">
       <div
         v-if="showCalendar"
-        ref="popupRef"
         class="calendar-popup"
         :style="popupStyle"
         @click.stop
@@ -240,7 +238,7 @@ window.removeEventListener("resize", updatePopupPosition);
           <div v-for="wd in weekdays" :key="wd">{{ wd }}</div>
         </div>
         <div class="calendar-grid calendar-days">
-          <div v-for="n in firstDay" :key="'e-' + n" class="empty-cell"></div>
+          <div v-for="n in firstDay" :key="`e-${n}`" class="empty-cell"></div>
           <button
             v-for="day in days"
             :key="day"

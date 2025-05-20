@@ -12,88 +12,63 @@
 </style>
 
 <script setup>
-import { ref, computed } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, onMounted } from "vue";
 import { useReservationStore } from "@/stores/reservationStore";
+import { useRouter } from "vue-router";
 
-// 1) 스토어 & 라우터
+// 스토어 & 라우터 초기화
 const store = useReservationStore();
 const router = useRouter();
 
-// 2) 예약번호 생성
+// 예약번호 생성 함수 & ref
 function generateReservationNumber(digits = 4) {
   const now = new Date();
   const yy = String(now.getFullYear()).slice(-2);
   const dd = String(now.getDate()).padStart(2, "0");
-  const max = 4 ** digits;
-  const rnd = String(Math.floor(Math.random() * max)).padStart(digits, "0");
+  const rnd = String(Math.floor(Math.random() * 4 ** digits)).padStart(
+    digits,
+    "0"
+  );
   return `R${yy}${dd}${rnd}`;
 }
 const reservationNumber = ref(generateReservationNumber());
 
-// 3) 가방 및 총액 요약 헬퍼
-function makeBagRows(sizes, totalPrice) {
-  const bagRows = [];
-  const selected = sizes.filter((i) => i.count > 0);
-
-  if (selected.length) {
-    selected.forEach((item, idx) => {
-      bagRows.push({
-        label: idx === 0 ? "가방 종류 및 수량" : "",
-        bagLabel: item.label,
-        bagTag: item.tag,
-        bagCount: `${item.count}개`,
-      });
-    });
-  } else {
-    bagRows.push({
-      label: "가방 종류 및 수량",
-      bagLabel: "",
-      bagTag: "",
-      bagCount: "선택한 가방이 없습니다.",
-    });
-  }
-
-  // 총 금액
-  const price = store.totalPrice;
-  bagRows.push({
-    label: "총 금액",
-    value: isNaN(price) ? "0원" : `${price.toLocaleString()}원`,
-    highlight: true,
-    cssClass: "total-price",
-  });
-  return bagRows;
+// ISO 문자열을 한국어 날짜로 변환하는 함수
+function formatKoreanDate(iso) {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-");
+  return `${y}년 ${m}월 ${d}일`;
 }
 
-// 4) 결제방식 명칭 매핑
-const paymentNames = {
-  bank: "계좌이체",
-  card: "카드결제",
-  phone: "휴대폰이체",
-  toss: "토스",
-  naver: "네이버페이",
-  kakao: "카카오페이",
-};
+// 페이지 진입 시: 오늘 날짜 선택 여부에 따라 가격 초기화/조정
+onMounted(() => {
+  const todayISO = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  if (store.selectedDate === todayISO) {
+    store.handleTodaySelected();
+  } else {
+    store.resetPrices();
+  }
+});
 
-// 5) 전체 요약 테이블 생성
+// 전체 요약 테이블 데이터 생성
 const summaryRows = computed(() => {
   const rows = [
     { label: "예약번호", value: reservationNumber.value },
     { label: "이름", value: store.name },
     { label: "전화번호", value: store.fullPhone },
+    // 구분선 추가
+    { divider: true },
     {
       label: "이용날짜 및 시간",
-      value: `${store.selectedDate}\u00A0\u00A0${store.selectedTime}`,
+      value: `${formatKoreanDate(store.selectedDate)} ${store.selectedTime}`,
     },
   ];
-
   if (store.selectedStart || store.selectedStop) {
     rows.push({
       label: "출발 → 도착",
       value: `${store.selectedStart || "—"} → ${store.selectedStop || "—"}`,
     });
   }
-
   if (store.customStartAddress) {
     rows.push({
       label: "",
@@ -108,57 +83,107 @@ const summaryRows = computed(() => {
       cssClass: "addr-stop",
     });
   }
-
-  rows.push(...makeBagRows(store.sizes, store.totalPrice));
-  rows.push({
-    label: "결제방식",
-    value: paymentNames[store.paymentMethod] || "선택안됨",
-  });
+  // 가방, 총 금액, 결제방식 모두 여기서 한 번에 처리
+  rows.push(...makeBagRows(store.sizes));
   return rows;
 });
 
-// 6) 버튼 핸들러
+// 가방·총액·결제방식
+function makeBagRows(sizes) {
+  const bagRows = [];
+  const selected = sizes.filter((i) => i.count > 0);
+  // 구분선 추가
+  bagRows.push({ divider: true });
+  // 가방 종류 및 수량
+  if (selected.length) {
+    selected.forEach((item, i) => {
+      bagRows.push({
+        label: i === 0 ? "가방 종류 및 수량" : "",
+        bagLabel: item.label,
+        bagTag: item.tag,
+        bagCount: `${item.count}개`,
+      });
+    });
+  } else {
+    bagRows.push({
+      label: "가방 종류 및 수량",
+      value: "선택한 가방이 없습니다.",
+    });
+  }
+  // 구분선 추가
+  bagRows.push({ divider: true });
+  // 총 금액
+  const price = store.totalPrice;
+  bagRows.push({
+    label: "총 금액",
+    value: isNaN(price) ? "0원" : `${price.toLocaleString()}원`,
+    highlight: true,
+    cssClass: "total-price",
+  });
+
+  // 결제방식
+  bagRows.push({
+    label: "결제방식",
+    value:
+      {
+        bank: "계좌이체",
+        card: "카드결제",
+        phone: "휴대폰이체",
+        toss: "토스",
+        naver: "네이버페이",
+        kakao: "카카오페이",
+      }[store.paymentMethod] || "선택안됨",
+  });
+
+  return bagRows;
+}
+//라우터링크
 function goToNextStep() {
   router.push("/");
 }
 </script>
 
 <template>
+  <!-- 전체 -->
   <div class="wrap">
+    <!-- 이너 -->
     <div class="st_wrap">
-      <!-- 제목 영역 -->
+      <!-- 타이틀 -->
       <div class="yy_title1">
         <div class="title_txt1"><h1>예약완료</h1></div>
       </div>
-
-      <!-- 본문 박스 -->
+      <!-- 본문 테두리 -->
       <div class="st_line">
-        <div class="payment-page">
+        <!-- 본문 박스 -->
+        <div class="text-box">
           <!-- 요약 정보 -->
-          <div class="payment-info-box">
-            <div v-for="(row, idx) in summaryRows" :key="idx" class="info-row">
-              <span class="label">{{ row.label }}</span>
-
-              <!-- 가방 요약 행 -->
-              <div v-if="row.bagLabel !== undefined" class="summary-item">
-                <span class="bag-label">{{ row.bagLabel }}</span>
-                <span class="bag-tag">{{ row.bagTag }}</span>
-                <span class="bag-count">{{ row.bagCount }}</span>
-              </div>
-
-              <!-- 일반 정보 행 -->
-              <template v-else>
-                <span
+          <div class="info-box">
+            <!-- 구분선 -->
+            <template v-for="(row, idx) in summaryRows" :key="idx">
+              <hr v-if="row.divider" class="divider extended" />
+              <!-- 예약자 정보 -->
+              <div v-else class="info-row" :class="row.cssClass">
+                <span class="label">{{ row.label }}</span>
+                <!-- 가방 요약 -->
+                <div v-if="row.bagLabel" class="summary-item">
+                  <span class="bag-label">{{ row.bagLabel }}</span>
+                  <span class="bag-tag">{{ row.bagTag }}</span>
+                  <span class="bag-count">{{ row.bagCount }}</span>
+                </div>
+                <!-- 일반 정보 -->
+                <div
+                  v-else
                   class="value"
                   :class="[row.highlight ? 'highlight' : '', row.cssClass]"
                 >
-                  {{ row.value }}
-                </span>
-              </template>
-            </div>
+                  <span>
+                    {{ row.value }}
+                  </span>
+                </div>
+              </div>
+            </template>
           </div>
-
-          <!-- 돌아가기 버튼 -->
+          <!-- 버튼 -->
           <div class="button">
             <button class="my-button st_reser" @click="goToNextStep">
               처음으로
@@ -196,8 +221,9 @@ $radius: 8px;
 }
 // 전체 래퍼
 .st_wrap {
+  width: 100%;
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   text-align: center;
@@ -222,7 +248,9 @@ $radius: 8px;
 
 .st_line {
   width: 100%;
-  max-width: 550px;
+  max-width: 600px;
+  box-sizing: border-box;
+  margin: 0 auto;
   border: 1px solid $border-gray;
   box-shadow: $box-shadow;
   border-radius: $radius;
@@ -232,83 +260,65 @@ $radius: 8px;
   background-color: #ffffff;
 }
 
-.payment-page {
+.text-box {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.payment-info-box {
+.info-box {
   width: 100%;
-  background: #f8f9fa;
-  border-radius: $radius;
   padding: 20px;
   margin-bottom: 30px;
-  .info-row {
+}
+.info-row {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  padding: 5px 20px;
+  margin: 0;
+
+  &.addr-start,
+  &.addr-stop {
+    font-weight: normal;
+    font-size: 14px;
+    color: #707070;
+    padding: 1px 50px;
+  }
+  .label {
+    width: 40%;
+    text-align: right;
+    margin-right: 15px;
+    flex: 0 0 auto;
+    color: #505050;
+    font-size: 16px;
+  }
+  .value .summary-item {
+    color: $dark-gray;
+    font-size: 17px;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    border-bottom: 1px dashed $border-gray;
-    padding: 10px 0;
-    margin: 0;
-
-    &:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .label {
-      flex: 0 0 auto;
-      margin-right: 15px;
-      font-weight: 500;
-      color: #505050;
-      font-size: 17px;
-    }
-
-    .value {
-      flex: 1;
-      font-weight: 600;
-      color: $dark-gray;
-      font-size: 15px;
-      text-align: right;
-      white-space: pre;
-
-      &.highlight {
-        font-size: 16px;
-        font-weight: 600;
-        color: #00bfa5;
-      }
-      &.addr-start,
-      &.addr-stop {
-        font-size: 13px;
-        color: #707070;
-        margin-top: 2px;
-        text-align: right;
-      }
+    align-items: center;
+    gap: 5px;
+    text-align: right;
+    white-space: pre;
+    font-weight: bold;
+    &.addr-start,
+    &.addr-stop {
+      font-weight: normal;
+      font-size: 14px;
+      color: #707070;
     }
   }
 }
-.summary-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 15px;
-  text-align: right;
 
-  .bag-label {
-    color: $dark-gray;
-  }
-
-  .bag-tag {
-    font-size: 13px;
-    color: color.adjust($dark-gray, $lightness: 20%);
-  }
-
-  .bag-count {
-    font-weight: 600;
-    color: $blue-sky;
-  }
-} // 제출 버튼
+//구분선
+.divider.extended {
+  border: none;
+  border-top: 1px solid #d6d6d6;
+  width: 100%;
+  margin: 3px auto;
+}
+// 제출 버튼
 .button {
   display: flex;
   justify-content: center;
