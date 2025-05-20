@@ -221,47 +221,40 @@ function goToNextPage() {
 </script>
 
 <template>
+  <!-- 전체 -->
   <div class="wrap">
+    <!-- 이너 -->
     <div class="st_wrap">
+      <!-- 타이틀 -->
       <div class="yy_title1">
         <div class="title_txt1"><h1>예약조회</h1></div>
       </div>
-
+      <!-- 본문 테두리 -->
       <div class="st_line">
-        <div class="payment-page">
-          <div class="payment-info-box">
-            <div
-              v-for="(row, idx) in summaryRows"
-              :key="idx"
-              :class="['info-row', row.cssClass]"
-            >
-              <!-- 1) 구분선 -->
-              <template v-if="row.divider">
-                <hr v-if="row.divider" class="divider extended" />
-              </template>
-
-              <!-- 2) 일반 데이터(구분선 아닐 때) -->
-              <template v-else>
+        <!-- 본문 박스 -->
+        <div class="text-box">
+          <!-- 요약 정보 -->
+          <div class="info-box">
+            <!-- 구분선 -->
+            <template v-for="(row, idx) in summaryRows" :key="idx">
+              <hr v-if="row.divider" class="divider extended" />
+              <!-- 목록 -->
+              <div v-else class="info-row" :class="row.cssClass">
                 <span class="label">{{ row.label }}</span>
-
-                <!-- 2-1) 값이 있을 때 -->
-                <template v-if="row.value !== undefined">
-                  <span class="value" :class="row.cssClass">
-                    {{ row.value }}
-                  </span>
-                </template>
-
-                <!-- 2-2) 값 없으면 가방 정보 -->
-                <template v-else>
-                  <div class="summary-item">
-                    <span class="bag-label">{{ row.bagLabel }}</span>
-                    <span class="bag-tag">{{ row.bagTag }}</span>
-                    <span class="bag-count">{{ row.bagCount }}</span>
-                  </div>
-                </template>
-              </template>
-            </div>
+                <!-- 가방 요약 -->
+                <div v-if="row.bagLabel" class="value">
+                  <span class="bag-label">{{ row.bagLabel }}</span>
+                  <span class="bag-tag">{{ row.bagTag }}</span>
+                  <span class="bag-count">{{ row.bagCount }}</span>
+                </div>
+                <!-- 내용 -->
+                <span v-else class="value">
+                  {{ row.value }}
+                </span>
+              </div>
+            </template>
           </div>
+          <!-- 버튼 -->
           <div class="st_button">
             <div class="button">
               <button class="st_cancle my-button" @click="openCancelModal">
@@ -316,8 +309,9 @@ $radius: 8px;
 }
 // 전체 래퍼
 .st_wrap {
+  width: 100%;
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   text-align: center;
@@ -338,29 +332,35 @@ $radius: 8px;
     font-family: $font-gothic;
   }
 }
+.divider.extended {
+  border: none;
+  border-top: 1px solid #d6d6d6;
+  width: 110%;
+  margin: 0 -5%;
+}
 
 .st_line {
   width: 100%;
   max-width: 600px;
+  box-sizing: border-box;
+  margin: 0 auto;
   border: 1px solid $border-gray;
   box-shadow: $box-shadow;
   border-radius: $radius;
-  padding: 20px;
+  padding: 30px;
   overflow: visible;
   height: auto;
   background-color: #ffffff;
 }
 
-.payment-page {
+.text-box {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.payment-info-box {
+.info-box {
   width: 100%;
-  // background: #f8f9fa;
-  border-radius: $radius;
   padding: 20px;
   margin-bottom: 30px;
 }
@@ -368,10 +368,16 @@ $radius: 8px;
   display: flex;
   align-items: center;
   text-align: left;
-  // border-bottom: 1px dashed $border-gray;
-  padding: 10px 20px;
+  padding: 5px 20px;
   margin: 0;
 
+  &.addr-start,
+  &.addr-stop {
+    font-weight: normal;
+    font-size: 14px;
+    color: #707070;
+    padding: 1px 50px;
+  }
   .label {
     width: 40%;
     text-align: right;
@@ -380,42 +386,30 @@ $radius: 8px;
     color: #505050;
     font-size: 16px;
   }
-
-  .value {
+  .value .summary-item {
     color: $dark-gray;
     font-size: 17px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
     text-align: right;
     white-space: pre;
     font-weight: bold;
+    &.addr-start,
+    &.addr-stop {
+      font-weight: normal;
+      font-size: 14px;
+      color: #707070;
+    }
   }
 }
 
-.info-row .value.addr-start,
-.info-row .value.addr-stop {
-  font-weight: normal;
-  font-size: 14px;
-  color: #707070;
-}
+//구분선
 .divider.extended {
   border: none;
   border-top: 1px solid #d6d6d6;
-  width: 110%;
-  margin: 0 -5%;
-}
-
-.summary-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-
-  .bag-label,
-  .bag-tag,
-  .bag-count {
-    font-weight: bold;
-    white-space: nowrap;
-    color: $dark-gray;
-  }
+  width: 100%;
+  margin: 3px auto;
 }
 .st_button {
   display: flex;

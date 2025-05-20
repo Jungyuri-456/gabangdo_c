@@ -13,14 +13,21 @@
 
 <script setup>
 // 1. Imports
-import { ref, reactive, computed, watch, nextTick } from "vue";
+import {
+  ref,
+  reactive,
+  computed,
+  watch,
+  nextTick,
+  onMounted,
+  onBeforeUnmount,
+} from "vue";
 import { useRouter } from "vue-router";
 import { useReservationStore } from "@/stores/reservationStore";
 import CalendarPicker from "./CalendarPicker.vue";
 import TimePicker from "./TimePicker.vue";
 import CustomSelect from "./CustomSelect.vue";
 import ProgressStepper from "./ProgressStepper.vue";
-
 //스텝인덱스
 const steps = [
   "예약자정보",
@@ -29,36 +36,109 @@ const steps = [
   "가방선택",
   "예약하기",
 ];
+
 const step1 = ref(null);
 const step2 = ref(null);
 const step3 = ref(null);
 const step4 = ref(null);
 const step5 = ref(null);
 const stepIndex = ref(1);
-const stepRefs = [step1, step2, step3, step4, step5];
+const showStepper = ref(true);
 
-// 이전/다음 클릭 핸들러
-function goNext() {
-  if (stepIndex.value < steps.length) {
-    stepIndex.value++;
-    scrollToStep(stepIndex.value);
-  }
-}
-function goPrev() {
-  if (stepIndex.value > 1) {
-    stepIndex.value--;
-    scrollToStep(stepIndex.value);
-  }
-}
-// 해당 ref로 스크롤
+let updateStickyPosition;
+let scrollHandler;
+
+// 클릭 이동: 단순히 해당 .step-container 으로 scrollIntoView
 function scrollToStep(idx) {
+  const containers = document.querySelectorAll(".step-container");
+  if (idx < 1 || idx > containers.length) return;
+  stepIndex.value = idx; // 즉시 활성화 표시
+  showStepper.value = true;
+
   nextTick(() => {
-    const el = stepRefs[idx - 1].value;
-    if (!el) return;
-    el.scrollIntoView({ behavior: "smooth" });
+    const stepperEl = document.querySelector(".sticky-stepper");
+    const stepH = stepperEl ? stepperEl.offsetHeight : 0;
+    const extra = 50; // 마진탑 여유 10px
+
+    // 마지막 섹션 클릭 시 페이지 끝까지 가도록
+    let targetY;
+    if (idx === containers.length) {
+      targetY = document.body.scrollHeight - window.innerHeight;
+    } else {
+      const title = containers[idx - 1].querySelector(".st_section-title");
+      if (!title) return;
+      const titleY = title.getBoundingClientRect().top + window.scrollY;
+      targetY = titleY - stepH - extra;
+    }
+
+    // 음수 방어
+    if (targetY < 0) targetY = 0;
+
+    // 페이지에 여유가 없어서 마지막이 안 내려간다면
+    // form-section 에 패딩을 잠깐 추가
+    const form = document.querySelector(".form-section");
+    if (idx === containers.length && form) {
+      form.style.paddingBottom = `${stepH + extra}px`;
+    }
+
+    window.scrollTo({ top: targetY, behavior: "smooth" });
   });
 }
 
+function handlePrev() {
+  scrollToStep(stepIndex.value - 1);
+}
+function handleNext() {
+  scrollToStep(stepIndex.value + 1);
+}
+function handleGo(n) {
+  scrollToStep(n);
+}
+
+onMounted(() => {
+  const stepperEl = document.querySelector(".sticky-stepper");
+  const menuEl = document.querySelector(".header");
+  const containers = Array.from(document.querySelectorAll(".step-container"));
+  const extra = 50;
+
+  scrollHandler = () => {
+    const stepH = stepperEl?.offsetHeight || 0;
+    const offset = stepH + extra;
+    const y0 = offset;
+    let current = 1;
+    containers.forEach((sec, i) => {
+      if (sec.getBoundingClientRect().top <= y0) {
+        current = i + 1;
+      }
+    });
+    stepIndex.value = current;
+  };
+  if (!stepperEl || !menuEl) return;
+  function updateStickyPosition() {
+    const menuH = menuEl.getBoundingClientRect().height || 0;
+    // 메뉴 바로 아래 10px, z-index도 메뉴 위로
+    stepperEl.style.setProperty("top", `${menuH + 10}px`, "important");
+    stepperEl.style.setProperty("z-index", "5998", "important");
+  }
+
+  // 최초 설정
+  updateStickyPosition();
+  scrollHandler();
+
+  // 리사이즈에 대응
+  window.addEventListener("resize", updateStickyPosition);
+  window.addEventListener("scroll", scrollHandler, { passive: true });
+});
+
+onBeforeUnmount(() => {
+  // clean up
+  const stepperEl = document.querySelector(".sticky-stepper");
+  const menuEl = document.querySelector(".header");
+  if (stepperEl && menuEl) {
+    window.removeEventListener("resize", updateStickyPosition);
+    window.removeEventListener("scroll", scrollHandler);
+  }
+});
 //달력선택함수
 const todayDate = new Date();
 todayDate.setHours(0, 0, 0, 0);
@@ -339,78 +419,75 @@ watch(selectedDate, (val) => {
 </script>
 
 <template>
+  <!-- 전체 -->
   <div class="wrap">
+    <!-- 이너 -->
     <div class="st_wrap">
-      <!-- 페이지 제목 -->
+      <!-- 타이틀 -->
       <div class="yy_title1">
         <div class="title_txt1">
           <h1>예약하기</h1>
         </div>
       </div>
       <div class="grid-container">
-        <div class="sticky-stepper">
-          <div class="step-nav">
-            <button @click="goPrev" :disabled="stepIndex === 1">이전</button>
-          </div>
-          <ProgressStepper :steps="steps" :current-step="stepIndex" />
-          <div class="step-nav">
-            <button @click="goNext" :disabled="stepIndex === steps.length">
-              다음
-            </button>
-          </div>
-        </div>
+        <!-- 스텝퍼 네비바 -->
+        <ProgressStepper
+          v-show="showStepper"
+          :steps="steps"
+          :show="showStepper"
+          :current-step="stepIndex"
+          @prev="handlePrev"
+          @next="handleNext"
+          @go="handleGo" />
         <div class="form-section">
-          <div class="wrap-input">
-            <!-- 예약자 정보 -->
-            <div class="check">
-              <section
-                ref="step1"
-                v-show="stepIndex === 1"
-                class="step-content">
+          <div ref="step1" id="step1" class="step-container">
+            <div class="wrap-input">
+              <div class="check">
+                <!-- 제목 -->
                 <p class="st_section-title">예약자 정보</p>
-              </section>
-              <label>
-                <input type="checkbox" v-model="useLoginInfo" />
-                로그인 정보로 자동입력
-              </label>
-            </div>
-            <!-- 이름 입력 -->
-            <div class="name-input">
-              <input v-model="name" placeholder="이름 입력" />
-            </div>
-            <!-- 전화번호 입력 -->
-            <div class="phone-input my-button">
-              <CustomSelect v-model="telPrefix" placeholder="전화번호 앞자리" />
-              <input
-                v-model="formattedNumber"
-                maxlength="9"
-                placeholder="전화번호 입력(8자리)"
-                class="datetime-input" />
+                <label>
+                  <input type="checkbox" v-model="useLoginInfo" />
+                  로그인 정보로 자동입력
+                </label>
+              </div>
+              <!-- 이름 입력 -->
+              <div class="name-input">
+                <input v-model="name" placeholder="이름 입력" />
+              </div>
+              <!-- 전화번호 입력 -->
+              <div class="phone-input my-button">
+                <CustomSelect
+                  v-model="telPrefix"
+                  placeholder="전화번호 앞자리" />
+                <input
+                  v-model="formattedNumber"
+                  maxlength="9"
+                  placeholder="전화번호 입력(8자리)"
+                  class="datetime-input" />
+              </div>
             </div>
           </div>
           <!-- 날짜&시간 -->
           <div class="reservation-form" ref="picker">
-            <div class="date-time">
-              <!-- 날짜 -->
-              <div class="date">
-                <section
-                  ref="step2"
-                  v-show="stepIndex === 2"
-                  class="step-content">
+            <div ref="step2" id="step2" class="step-container">
+              <div class="date-time">
+                <!-- 날짜 -->
+                <div class="date">
                   <p class="st_section-title">맡길날짜</p>
-                </section>
-                <div class="my-button">
-                  <CalendarPicker class="wrapper" v-model="selectedDate" />
+
+                  <div class="my-button">
+                    <CalendarPicker class="wrapper" v-model="selectedDate" />
+                  </div>
                 </div>
-              </div>
-              <!-- 시간 -->
-              <div class="time">
-                <p class="st_section-title">맡길시간</p>
-                <div class="my-button">
-                  <TimePicker
-                    class="wrapper"
-                    v-model="selectedTime"
-                    :selectedDate="selectedDate" />
+                <!-- 시간 -->
+                <div class="time">
+                  <p class="st_section-title">맡길시간</p>
+                  <div class="my-button">
+                    <TimePicker
+                      class="wrapper"
+                      v-model="selectedTime"
+                      :selectedDate="selectedDate" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -433,117 +510,115 @@ watch(selectedDate, (val) => {
             </div>
           </div>
           <!-- 출발지 선택 -->
-          <div class="button-group">
-            <section ref="step3" v-show="stepIndex === 3" class="step-content">
+          <div ref="step3" id="step3" class="step-container">
+            <div class="button-group">
               <p class="st_section-title">출발지</p>
-            </section>
-            <div class="start-btn my-button">
+              <div class="start-btn my-button">
+                <button
+                  class="my-button"
+                  v-for="place in startPlaces"
+                  :key="place"
+                  type="button"
+                  :class="{
+                    active: selectedStart === place,
+                  }"
+                  @click="toggleStart(place)">
+                  {{ place }}
+                </button>
+              </div>
+            </div>
+            <!-- 숙소명 직접 입력 -->
+            <div
+              v-if="selectedStart === '숙소'"
+              class="custom-start-input my-button">
+              <input
+                type="text"
+                v-model="customStartInput"
+                placeholder="목적지의 주소를 입력하세요"
+                @focus="isStartConfirmed = false" />
               <button
-                class="my-button"
-                v-for="place in startPlaces"
-                :key="place"
+                class="custom-start my-button"
                 type="button"
-                :class="{
-                  active: selectedStart === place,
-                }"
-                @click="toggleStart(place)">
-                {{ place }}
+                @click="confirmCustomStart"
+                :disabled="!customStartInput.trim()"
+                :class="{ confirmed: isStartConfirmed }">
+                <!-- 플래그에 따라 텍스트 변경 -->
+                {{ isStartConfirmed ? "입력완료" : "입력" }}
               </button>
             </div>
-          </div>
-          <!-- 숙소명 직접 입력 -->
-          <div
-            v-if="selectedStart === '숙소'"
-            class="custom-start-input my-button">
-            <input
-              type="text"
-              v-model="customStartInput"
-              placeholder="목적지의 주소를 입력하세요"
-              @focus="isStartConfirmed = false" />
-            <button
-              class="custom-start my-button"
-              type="button"
-              @click="confirmCustomStart"
-              :disabled="!customStartInput.trim()"
-              :class="{ confirmed: isStartConfirmed }">
-              <!-- 플래그에 따라 텍스트 변경 -->
-              {{ isStartConfirmed ? "입력완료" : "입력" }}
-            </button>
-          </div>
-          <!-- 도착지 선택 -->
-          <div class="button-group">
-            <p class="st_section-title">도착지</p>
-            <div class="stop-btn my-button">
+            <!-- 도착지 선택 -->
+            <div class="button-group">
+              <p class="st_section-title">도착지</p>
+              <div class="stop-btn my-button">
+                <button
+                  class="my-button"
+                  v-for="place in stopPlaces"
+                  :key="place"
+                  type="button"
+                  :class="{
+                    active: selectedStop === place,
+                  }"
+                  @click="toggleStop(place)">
+                  {{ place }}
+                </button>
+              </div>
+            </div>
+            <!-- 숙소명 직접 입력 -->
+            <div
+              v-if="selectedStop === '숙소'"
+              class="custom-stop-input my-button">
+              <input
+                type="text"
+                v-model="customStopInput"
+                placeholder="목적지의 주소를 입력하세요"
+                @focus="isStopConfirmed = false" />
               <button
-                class="my-button"
-                v-for="place in stopPlaces"
-                :key="place"
+                class="custom-stop my-button"
                 type="button"
-                :class="{
-                  active: selectedStop === place,
-                }"
-                @click="toggleStop(place)">
-                {{ place }}
+                @click="confirmCustomStop"
+                :disabled="!customStopInput.trim()"
+                :class="{ confirmed: isStopConfirmed }">
+                <!-- 플래그에 따라 텍스트 변경 -->
+                {{ isStopConfirmed ? "입력완료" : "입력" }}
               </button>
             </div>
-          </div>
-          <!-- 숙소명 직접 입력 -->
-          <div
-            v-if="selectedStop === '숙소'"
-            class="custom-stop-input my-button">
-            <input
-              type="text"
-              v-model="customStopInput"
-              placeholder="목적지의 주소를 입력하세요"
-              @focus="isStopConfirmed = false" />
-            <button
-              class="custom-stop my-button"
-              type="button"
-              @click="confirmCustomStop"
-              :disabled="!customStopInput.trim()"
-              :class="{ confirmed: isStopConfirmed }">
-              <!-- 플래그에 따라 텍스트 변경 -->
-              {{ isStopConfirmed ? "입력완료" : "입력" }}
-            </button>
           </div>
           <!-- 가방 종류 및 수량 선택 -->
-          <div class="bag-input">
-            <section ref="step4" v-show="stepIndex === 4" class="step-content">
+          <div ref="step4" id="step4" class="step-container">
+            <div class="bag-input">
               <p class="st_section-title">여행가방 종류 및 수량</p>
-            </section>
-            <div class="bag-list">
-              <div
-                v-for="(item, idx) in sizes"
-                :key="idx"
-                :class="['bag-item', { disabled }]">
-                <div class="bag-info">
-                  <div class="bag-wrap">
-                    <p class="st_label">{{ item.label }}</p>
-                    <p class="st_tag">{{ item.tag }}</p>
+              <div class="bag-list">
+                <div
+                  v-for="(item, idx) in sizes"
+                  :key="idx"
+                  :class="['bag-item']">
+                  <div class="bag-info">
+                    <div class="bag-wrap">
+                      <p class="st_label">{{ item.label }}</p>
+                      <p class="st_tag">{{ item.tag }}</p>
+                    </div>
+                    <p class="st_about">{{ item.about }}</p>
+                    <p class="st_pri">
+                      {{
+                        typeof item.price === "number"
+                          ? item.price.toLocaleString() + "원"
+                          : item.price
+                      }}
+                    </p>
                   </div>
-                  <p class="st_about">{{ item.about }}</p>
-                  <p class="st_pri">
-                    {{
-                      typeof item.price === "number"
-                        ? item.price.toLocaleString() + "원"
-                        : item.price
-                    }}
-                  </p>
-                </div>
-                <div class="bag-controls-wrap">
-                  <div class="bag-controls my-button">
-                    <button
-                      @click="item.count > 0 && item.count--"
-                      class="ctrl-btn my-button">
-                      -
-                    </button>
-                    <span>{{ item.count }}</span>
-                    <button
-                      @click="item.count++"
-                      :disabled="item.label === '기타사이즈'"
-                      class="ctrl-btn my-button">
-                      +
-                    </button>
+                  <div class="bag-controls-wrap">
+                    <div class="bag-controls my-button">
+                      <button
+                        @click="item.count > 0 && item.count--"
+                        class="ctrl-btn my-button"
+                        :disabled="item.count === 0">
+                        -
+                      </button>
+                      <span>{{ item.count }}</span>
+                      <button @click="item.count++" class="ctrl-btn my-button">
+                        +
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -730,15 +805,12 @@ watch(selectedDate, (val) => {
             </transition>
           </div>
           <!-- 예약하기버튼 -->
-          <div class="button">
-            <button class="my-button st_reser" @click="submitReservation">
-              <section
-                ref="step5"
-                v-show="stepIndex === 5"
-                class="step-content">
+          <div ref="step5" id="step5" class="step-container">
+            <div class="button">
+              <button class="my-button st_reser" @click="submitReservation">
                 예약하기
-              </section>
-            </button>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -777,15 +849,6 @@ watch(selectedDate, (val) => {
 @use "@/assets/Main.scss" as *;
 @use "@/assets/_Variables.scss" as *;
 
-// 스타일 변수
-$border-gray: #b5b5b5;
-$blue-sky: #279bf3;
-$red-holiday: #e63946;
-$blue-weekend: #1a44ff;
-$gray-past: #cccccc;
-$dark-gray: #333333;
-$radius: 8px;
-
 //전체배경
 .wrap {
   padding: 100px 0;
@@ -821,6 +884,31 @@ $radius: 8px;
     font-family: $font-gothic;
   }
 }
+//스텝바
+html,
+body {
+  overflow: visible !important;
+  transform: none;
+}
+.wrap,
+.st_wrap,
+.grid-container,
+.form-section {
+  overflow: visible !important;
+  transform: none;
+}
+.sticky-stepper {
+  position: sticky;
+  top: 10px;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+  z-index: 5998;
+  max-width: 500px;
+}
+:root {
+  --stepper-height: 60px;
+}
 
 .grid-container {
   display: flex;
@@ -830,40 +918,21 @@ $radius: 8px;
   width: 100%;
 }
 
-.sticky-stepper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: sticky;
-  top: 100px;
-  left: 0;
-  right: 0;
-  background: #fff;
-  z-index: 6000;
-  padding: 10px 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 살짝 그림자 넣으면 떠 있는 느낌 */
-}
-/* 스크롤 시 헤더 높이만큼 띄워줌 */
-.step-content {
-  scroll-margin-top: 100px;
-}
-
 .form-section {
   min-width: 0;
   width: 100%;
   max-width: 600px;
-  // border: 1px solid $border-gray;
+  border: 1px solid $border-gray;
   box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.2);
   border-radius: $radius;
   padding: 30px;
   padding-top: 0;
-  overflow: visible;
   height: auto;
   background-color: #fff;
 }
 
 //예약폼 타이틀
-p.st_section-title {
+.st_section-title {
   padding: 40px 0 10px;
   padding-left: 10px;
   font-weight: bold;

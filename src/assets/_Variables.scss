@@ -32,12 +32,13 @@ $font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI",
 $font-ownglyph: "omyu_pretty", sans-serif;
 
 @font-face {
-    font-family: 'JalnanGothic';
-    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
+  font-family: "JalnanGothic";
+  src: url("https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_231029@1.1/JalnanGothic.woff")
+    format("woff");
+  font-weight: normal;
+  font-style: normal;
 }
-$font-gothic: 'JalnanGothic', sans-serif;
+$font-gothic: "JalnanGothic", sans-serif;
 
 $title-font-size-L: 40px;
 $title-font-size-m: 30px;
@@ -81,3 +82,12 @@ $hover: #2aaae2;
 $backgroudcolor-color: rgba(0, 0, 0, 0.7);
 // 버튼
 $modal-txt: 17px;
+
+// 스타일 변수
+$border-gray: #b5b5b5;
+$blue-sky: #279bf3;
+$red-holiday: #e63946;
+$blue-weekend: #1a44ff;
+$gray-past: #cccccc;
+$dark-gray: #333333;
+$radius: 8px;

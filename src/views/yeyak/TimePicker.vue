@@ -14,7 +14,7 @@
 <script setup>
 import { ref, computed, nextTick, watch } from "vue";
 
-// Props 및 이벤트 정의
+// Props 및 emits 정의
 const props = defineProps({
   modelValue: String,
   selectedDate: String,
@@ -135,7 +135,7 @@ function isTimeDisabled(time) {
   if (!props.selectedDate || !isToday(props.selectedDate)) return false;
 
   const now = new Date();
-  now.setHours(now.getHours() + 3);
+  now.setHours(now.getHours() + 2);
 
   const [h12, m] = time.split(":").map(Number);
   let hour = h12;
@@ -183,7 +183,9 @@ function scrollToCurrentTime() {
 </script>
 
 <template>
+  <!-- 전체 -->
   <div class="time-picker-wrapper" ref="picker">
+    <!-- 선택 필드 -->
     <div class="datetime-input-wrapper" @click.stop="togglePopup">
       <i class="ri-time-line icon"></i>
       <input
@@ -191,24 +193,21 @@ function scrollToCurrentTime() {
         :value="selected"
         placeholder="시간을 선택해주세요"
         readonly
-        class="datetime-input"
-      />
+        class="datetime-input" />
     </div>
-
+    <!-- 시간 팝업 -->
     <teleport to="body">
       <div v-if="openPopup" class="overlay" @click.self="openPopup = false">
         <div class="time-popup" :style="popupPosition" @click.stop>
           <div class="period-list">
             <button
               :class="{ active: selectedPeriod === 'AM' }"
-              @click="selectedPeriod = 'AM'"
-            >
+              @click="selectedPeriod = 'AM'">
               오전
             </button>
             <button
               :class="{ active: selectedPeriod === 'PM' }"
-              @click="selectedPeriod = 'PM'"
-            >
+              @click="selectedPeriod = 'PM'">
               오후
             </button>
           </div>
@@ -220,8 +219,7 @@ function scrollToCurrentTime() {
                   : afternoonTimes"
                 :key="t"
                 :class="{ disabled: isTimeDisabled(t) }"
-                @click="!isTimeDisabled(t) && selectTime(t)"
-              >
+                @click="!isTimeDisabled(t) && selectTime(t)">
                 {{ t }}
               </li>
             </ul>
