@@ -5,19 +5,17 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { createPinia } from "pinia";
+import i18n from "./i18n"; // ✅ 이걸 그대로 사용
 
-// createApp(App).mount('#app')
 const app = createApp(App);
 const pinia = createPinia();
 
 app.use(pinia);
 app.use(router);
+app.use(i18n); // ✅ 중복 생성 없이 그대로 사용
+
 app.mount("#app");
+
 if (import.meta.env.PROD) {
-  // 전역 훅 차단: Devtools가 이걸 찾지 못하면 연동이 안 됨
-  Object.defineProperty(window, "__VUE_DEVTOOLS_GLOBAL_HOOK__", {
-    value: {},
-    configurable: false,
-    writable: false,
-  });
+  app.config.devtools = false;
 }
