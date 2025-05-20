@@ -46,7 +46,7 @@ const isWorkerPage = computed(() => {
 
 <style lang="scss" scoped>
 .main {
-  padding-top: 75px;
+  // padding-top: 75px;
 }
 
 .wrap{

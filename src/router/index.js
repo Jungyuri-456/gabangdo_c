@@ -19,7 +19,11 @@ import Signup from "../views/deliverylogin/Signup.vue";
 import findPassword from "../views/deliverylogin/findPassword.vue";
 // 기사페이지
 import WorkerHome from "@/pages/worker/WorkerHome.vue";
-import DDashboard from "@/pages/worker/DDashboard.vue";
+import Ddashboard from "@/pages/worker/DDashboard.vue";
+import Assign from "../pages/worker/Assign.vue";
+import AssignedJobs from "../pages/worker/AssignedJobs.vue";
+import Jobhistory from "../pages/worker/Jobhistory.vue";
+
 const routes = [
   { path: "/", component: Home },
   { path: "/bangbeob1", component: Bangbeob1 },
@@ -47,29 +51,27 @@ const routes = [
   // 기사페이지
   {
     path: "/worker",
-    component: WorkerHome,
-    redirect: "/worker/ddashboard", //경로 접근시 자동 리다이렉트
+    // component: WorkerHome,
+    redirect: "/worker/Ddashboard", //경로 접근시 자동 리다이렉트
     children: [
       {
         path: "ddashboard",
-        component: DDashboard,
+        component: Ddashboard,
       },
-      // {
-      //   path: "assigned-jobs",
-      //   component: AssingnedJobs,
-      // },
-      // {
-      //   path: "assing",
-      //   component: Assing,
-      // },
-      // {
-      //   path: "job-history",
-      //   component: Jobhistory,
-      // },
-      // {
-      //   path: "profile",
-      //   component: Profile,
-      // },
+      {
+        path: "assigned-jobs",
+        component: AssignedJobs,
+      },
+      {
+        path: "assign",
+        component: Assign,
+      },
+      {
+        path: "job-history",
+        component: Jobhistory,
+      },
+
+
     ],
   },
 ];
