@@ -1,16 +1,3 @@
-<style>
-/*푸터 .fixed-buttons 영역을 클릭 투명하게*/
-:deep(.fixed-buttons) {
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-/*푸터 안의 a, button 만 클릭 허용*/
-:deep(.fixed-buttons) a,
-:deep(.fixed-buttons) button {
-  pointer-events: auto !important;
-}
-</style>
-
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useReservationStore } from "@/stores/reservationStore";
@@ -50,7 +37,7 @@ onMounted(() => {
   }
 });
 
-// 전체 요약 테이블 데이터 생성
+// 전체 요약 데이터 생성
 const summaryRows = computed(() => {
   const rows = [
     { label: "예약번호", value: reservationNumber.value },
@@ -60,7 +47,9 @@ const summaryRows = computed(() => {
     { divider: true },
     {
       label: "이용날짜 및 시간",
-      value: `${formatKoreanDate(store.selectedDate)} ${store.selectedTime}`,
+      value: `${formatKoreanDate(store.selectedDate)}\u00A0\u00A0${
+        store.selectedTime
+      }`,
     },
   ];
   if (store.selectedStart || store.selectedStop) {
@@ -83,12 +72,12 @@ const summaryRows = computed(() => {
       cssClass: "addr-stop",
     });
   }
-  // 가방, 총 금액, 결제방식 모두 여기서 한 번에 처리
+  // 가방 & 총 금액 & 결제방식 모두 여기서 한 번에 처리
   rows.push(...makeBagRows(store.sizes));
   return rows;
 });
 
-// 가방·총액·결제방식
+// 가방 & 총액 & 결제방식
 function makeBagRows(sizes) {
   const bagRows = [];
   const selected = sizes.filter((i) => i.count > 0);
@@ -137,7 +126,7 @@ function makeBagRows(sizes) {
 
   return bagRows;
 }
-//라우터링크
+// 다음 단계 이동
 function goToNextStep() {
   router.push("/");
 }
@@ -145,7 +134,7 @@ function goToNextStep() {
 
 <template>
   <!-- 전체 -->
-  <div class="wrap">
+  <div class="wrap_total">
     <!-- 이너 -->
     <div class="st_wrap">
       <!-- 타이틀 -->
@@ -161,7 +150,7 @@ function goToNextStep() {
             <!-- 구분선 -->
             <template v-for="(row, idx) in summaryRows" :key="idx">
               <hr v-if="row.divider" class="divider extended" />
-              <!-- 예약자 정보 -->
+              <!-- 예약 정보 1 -->
               <div v-else class="info-row" :class="row.cssClass">
                 <span class="label">{{ row.label }}</span>
                 <!-- 가방 요약 -->
@@ -170,7 +159,7 @@ function goToNextStep() {
                   <span class="bag-tag">{{ row.bagTag }}</span>
                   <span class="bag-count">{{ row.bagCount }}</span>
                 </div>
-                <!-- 일반 정보 -->
+                <!-- 예약 정보 2 -->
                 <div
                   v-else
                   class="value"
@@ -196,28 +185,9 @@ function goToNextStep() {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "@/assets/Main.scss" as *;
-@use "@/assets/_Variables.scss" as *;
+@use "/src/assets/Main.scss" as *;
+@use "/src/assets/Variables.scss" as *;
 
-// 스타일 변수
-$border-gray: #b5b5b5;
-$blue-sky: #279bf3;
-$red-holiday: #e63946;
-$blue-weekend: #1a44ff;
-$gray-past: #cccccc;
-$dark-gray: #333333;
-$radius: 8px;
-
-//전체배경
-.wrap {
-  padding: 100px 0;
-  min-height: 100vh; /* 화면 전체 높이를 확보한 뒤 */
-  background: linear-gradient(
-    to top,
-    #e2f1fc 50%,
-    /* 아래 50% */ transparent 50% /* 위 50% */
-  );
-}
 // 전체 래퍼
 .st_wrap {
   width: 100%;
@@ -234,14 +204,13 @@ $radius: 8px;
 // 타이틀
 .yy_title1 {
   display: flex;
-  gap: 10px;
   align-items: center;
   justify-content: center;
   text-align: center;
   padding-bottom: 30px;
   .title_txt1 h1 {
     font-size: 40px;
-    font-family: $font-gothic;
+    font-family: $font-ownglyph;
   }
 }
 
@@ -274,7 +243,7 @@ $radius: 8px;
   display: flex;
   align-items: center;
   text-align: left;
-  padding: 5px 20px;
+  padding: 3px 20px;
   margin: 0;
 
   &.addr-start,
@@ -283,6 +252,10 @@ $radius: 8px;
     font-size: 14px;
     color: #707070;
     padding: 1px 50px;
+    padding-left: 19ch;
+    text-indent: -8.5ch;
+    line-height: 1.3;
+    word-break: keep-all;
   }
   .label {
     width: 40%;
@@ -301,21 +274,15 @@ $radius: 8px;
     text-align: right;
     white-space: pre;
     font-weight: bold;
-    &.addr-start,
-    &.addr-stop {
-      font-weight: normal;
-      font-size: 14px;
-      color: #707070;
-    }
   }
 }
 
 //구분선
 .divider.extended {
   border: none;
-  border-top: 1px solid #d6d6d6;
-  width: 100%;
-  margin: 3px auto;
+  border-top: 1px dashed #d6d6d6;
+  width: 90%;
+  margin: 10px auto;
 }
 // 제출 버튼
 .button {

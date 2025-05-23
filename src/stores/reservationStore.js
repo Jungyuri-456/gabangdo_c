@@ -12,7 +12,7 @@ export const useReservationStore = defineStore("reservationStore", () => {
     get() {
       const digits = phoneRaw.value.replace(/\D/g, "").slice(0, 8);
       return digits.length > 4
-        ? `${digits.slice(0, 4)}-${digits.slice(4)}`
+        ? `${digits.slice(0, 4)}${digits.slice(4)}`
         : digits;
     },
     set(val) {
@@ -23,7 +23,7 @@ export const useReservationStore = defineStore("reservationStore", () => {
   // 요약에서는 “010-1234-5678” 전체 폰번호 출력
   const fullPhone = computed(() => {
     if (!phoneRaw.value) return "";
-    return `${telPrefix.value}-${formattedNumber.value}`;
+    return `${telPrefix.value}${formattedNumber.value}`;
   });
 
   // ▶︎ 기존 예약 정보
@@ -110,7 +110,7 @@ export const useReservationStore = defineStore("reservationStore", () => {
     name.value = data.name;
     // data.phone 이 "010-1234-5678" 형태라고 가정하고 분해
     if (data.phone) {
-      const [prefix, rest] = data.phone.split("-", 2);
+      const [prefix, rest] = data.phone.split("", 2);
       telPrefix.value = prefix; // "010"
       phoneRaw.value = rest.replace(/\D/g, ""); // "12345678"
     } else {

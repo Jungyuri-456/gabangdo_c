@@ -1,105 +1,105 @@
 <template>
-  <div class="bb_tracking-container">
-    <div class="bb_title1">
-      <!-- 제목 -->
-      <div class="bb_title_txt1">
-        <h1>가방도 한눈에</h1>
+  <div class="wrap_total">
+    <div class="bb_tracking-container">
+      <div class="bb_title1">
+        <!-- 제목 -->
+        <div class="bb_title_txt1">
+          <h1>가방도 한눈에</h1>
+        </div>
+      </div>
+
+      <!-- 상단 프로그레스 -->
+      <div class="bb_progress-bar">
+        <div class="bb_progress-present">
+          <!-- 1번쨰 -->
+          <div class="bb_step bb_completed">
+            <div class="bb_circle">✓</div>
+          </div>
+          <div class="bb_line bb_completed">
+            <div class="bb_realLine"></div>
+          </div>
+
+          <!-- 2번째 -->
+          <div class="bb_step bb_completed">
+            <div class="bb_circle">✓</div>
+          </div>
+          <div class="bb_line bb_completed">
+            <div class="bb_realLine"></div>
+          </div>
+
+          <!-- 3번째 -->
+          <div class="bb_step bb_current">
+            <div class="bb_circle bb_someMore">✓</div>
+          </div>
+          <div class="bb_line">
+            <div class="bb_realLine bb_changColorLine"></div>
+          </div>
+
+          <!-- 4번째 -->
+          <div class="bb_step">
+            <div class="bb_line"></div>
+            <div class="bb_circle"></div>
+          </div>
+        </div>
+        <!-- 프로세스 글씨 -->
+        <div class="bb_progress-letter">
+          <div class="bb_more">예약 완료</div>
+          <div class="bb_more bb_moremore">직원 만남</div>
+          <div class="bb_more">짐전달 완료</div>
+          <div class="">수령 확인</div>
+        </div>
+      </div>
+
+      <!-- 하단 시간표시 -->
+      <div class="bb_log">
+        <!-- 왼쪽 -->
+        <div class="bb_logleft">
+          <!-- 동글뱅이 -->
+          <div class="bb_loglist">
+            <!-- 첫번째 -->
+            <div class="bb_logCircle"></div>
+            <div class="bb_logLineTray">
+              <div class="bb_logLine"></div>
+            </div>
+            <!-- 두번째 -->
+            <div class="bb_logCircle"></div>
+            <div class="bb_logLineTray">
+              <div class="bb_logLine"></div>
+            </div>
+            <!-- 세번째 -->
+            <div class="bb_logCircle bb_logCircleMore"></div>
+            <div class="bb_logLineTray">
+              <div class="bb_logLine bb_logLinegray"></div>
+            </div>
+            <!-- 네번째 -->
+            <div class="bb_logCircle bb_logCirclegray"></div>
+            <div class="bb_logLineTray"></div>
+          </div>
+          <!-- 동글뱅이 옆글씨 -->
+          <div class="bb_logLetter">
+            <div class="bb_logLetterP">예약완료</div>
+            <div class="bb_logLetterP">직원만남</div>
+            <div class="bb_logLetterP bb_plus">짐전달 완료</div>
+            <div class="bb_logLetterP">수령 완료</div>
+          </div>
+        </div>
+        <!-- 시간표시 -->
+        <div class="bb_logTime">
+          <div class="bb_logTime1">{{ currentTime }}</div>
+          <div class="bb_logTime1">{{ timeOneHourAgo }}</div>
+          <div class="bb_logTime1">{{ timeOneDayAgo }}</div>
+          <div class="bb_logTime1"></div>
+        </div>
       </div>
     </div>
-
-    <!-- 상단 프로그레스 -->
-    <div class="bb_progress-bar">
-      <div class="bb_progress-present">
-        <!-- 1번쨰 -->
-        <div class="bb_step bb_completed">
-          <div class="bb_circle">✓</div>
-        </div>
-        <div class="bb_line bb_completed">
-          <div class="bb_realLine"></div>
-        </div>
-
-        <!-- 2번째 -->
-        <div class="bb_step bb_completed">
-          <div class="bb_circle">✓</div>
-        </div>
-        <div class="bb_line bb_completed">
-          <div class="bb_realLine"></div>
-        </div>
-
-        <!-- 3번째 -->
-        <div class="bb_step bb_current">
-          <div class="bb_circle bb_someMore">✓</div>
-        </div>
-        <div class="bb_line">
-          <div class="bb_realLine bb_changColorLine"></div>
-        </div>
-
-        <!-- 4번째 -->
-        <div class="bb_step">
-          <div class="bb_line"></div>
-          <div class="bb_circle"></div>
-        </div>
+    <div class="bb_allBg">
+      <div class="bb_kakao-banner">
+        <p>카카오톡으로 조회하고 싶다면?</p>
+        <button class="bb_kakao-btn">
+          <img src="/images/yr/loginpage/loginKT.png" alt="카카오 아이콘" />
+          <span>가방도</span>
+        </button>
       </div>
-      <!-- 프로세스 글씨 -->
-      <div class="bb_progress-letter">
-        <div class="bb_more">예약 완료</div>
-        <div class="bb_more bb_moremore">직원 만남</div>
-        <div class="bb_more">짐전달 완료</div>
-        <div class="">수령 확인</div>
-      </div>
-    </div>
-
-    <!-- 하단 시간표시 -->
-    <div class="bb_log">
-      <!-- 왼쪽 -->
-      <div class="bb_logleft">
-        <!-- 동글뱅이 -->
-        <div class="bb_loglist">
-          <!-- 첫번째 -->
-          <div class="bb_logCircle"></div>
-          <div class="bb_logLineTray">
-            <div class="bb_logLine"></div>
-          </div>
-          <!-- 두번째 -->
-          <div class="bb_logCircle"></div>
-          <div class="bb_logLineTray">
-            <div class="bb_logLine"></div>
-          </div>
-          <!-- 세번째 -->
-          <div class="bb_logCircle bb_logCircleMore"></div>
-          <div class="bb_logLineTray">
-            <div class="bb_logLine bb_logLinegray"></div>
-          </div>
-          <!-- 네번째 -->
-          <div class="bb_logCircle bb_logCirclegray"></div>
-          <div class="bb_logLineTray"></div>
-        </div>
-        <!-- 동글뱅이 옆글씨 -->
-        <div class="bb_logLetter">
-          <div class="bb_logLetterP">예약완료</div>
-          <div class="bb_logLetterP">직원만남</div>
-          <div class="bb_logLetterP bb_plus">짐전달 완료</div>
-          <div class="bb_logLetterP">수령 완료</div>
-        </div>
-      </div>
-      <!-- 시간표시 -->
-      <div class="bb_logTime">
-        <div class="bb_logTime1">{{ currentTime }}</div>
-        <div class="bb_logTime1">{{ timeOneHourAgo }}</div>
-        <div class="bb_logTime1">{{ timeOneDayAgo }}</div>
-        <div class="bb_logTime1"></div>
-      </div>
-    </div>
-  </div>
-  <div class="bb_allBg">
-    <div class="bb_kakao-banner">
-      <p>카카오톡으로 조회하고 싶다면?</p>
-      <button class="bb_kakao-btn">
-        <img
-          src="/public/images/yr/loginpage/loginKT.png"
-          alt="카카오 아이콘" />
-        <span>가방도</span>
-      </button>
     </div>
   </div>
 </template>
@@ -135,7 +135,10 @@ const timeOneDayAgo = ref(formatDate(oneDayAgo));
 </script>
 
 <style lang="scss" scoped>
-@use "/src/assets/_Variables.scss" as *;
+@use "sass:color";
+@use "/src/assets/Main.scss" as *;
+@use "/src/assets/Variables.scss" as *;
+
 .bb_tracking-container {
   width: 80%;
   position: relative;
@@ -149,13 +152,10 @@ const timeOneDayAgo = ref(formatDate(oneDayAgo));
   padding: 4% 0 2% 0;
   .bb_title1 {
     display: flex;
-    gap: 10px;
-    line-height: 40px;
-    flex-wrap: wrap; /* 넘치면 자동 줄바꿈 */
-    align-items: center; /* 세로 중앙 정렬 */
-    justify-content: center; /* 가로 중앙 정렬 */
-    padding-bottom: 50px;
-
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding-bottom: 30px;
     .bb_title_txt1 h1 {
       font-size: 40px;
       font-family: $font-ownglyph;
@@ -230,7 +230,7 @@ const timeOneDayAgo = ref(formatDate(oneDayAgo));
       text-align: center;
       padding-bottom: 4%;
       font-size: 14px;
-      div{
+      div {
         flex: 1;
       }
     }
@@ -240,11 +240,10 @@ const timeOneDayAgo = ref(formatDate(oneDayAgo));
     display: flex;
     justify-content: space-between;
     padding: 8% 10% 1% 10%;
-    .bb_logleft{
+    .bb_logleft {
       display: flex;
       justify-content: space-between;
       width: 20%;
-      
     }
     .bb_loglist {
       width: 10%;
@@ -357,15 +356,14 @@ const timeOneDayAgo = ref(formatDate(oneDayAgo));
 }
 
 @media screen and (max-width: 940px) {
-  .bb_logleft{
+  .bb_logleft {
     width: 30% !important;
   }
-
 }
 
 @media screen and (max-width: 520px) {
-  .bb_logleft{
+  .bb_logleft {
     width: 40% !important;
-}
+  }
 }
 </style>

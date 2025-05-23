@@ -1,16 +1,3 @@
-<style>
-/*푸터 .fixed-buttons 영역을 클릭 투명하게*/
-:deep(.fixed-buttons) {
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-/*푸터 안의 a, button 만 클릭 허용*/
-:deep(.fixed-buttons) a,
-:deep(.fixed-buttons) button {
-  pointer-events: auto !important;
-}
-</style>
-
 <script setup>
 // 1. Imports
 import { ref, reactive, computed, watch } from "vue";
@@ -247,7 +234,9 @@ const summaryList = computed(() => [
   { l: "전화번호", v: fullPhone },
   {
     l: "이용날짜 및 시간",
-    v: `${formatKoreanDate(selectedDate.value)} ${selectedTime.value}`,
+    v: `${formatKoreanDate(selectedDate.value)}\u00A0\u00A0${
+      selectedTime.value
+    }`,
   },
 ]);
 // 예약 제출 처리
@@ -325,7 +314,7 @@ watch(selectedDate, (val) => {
 </script>
 
 <template>
-  <div class="wrap">
+  <div class="wrap_total">
     <div class="st_wrap">
       <!-- 페이지 제목 -->
       <div class="yy_title1">
@@ -356,14 +345,12 @@ watch(selectedDate, (val) => {
               <CustomSelect
                 class="wrapper"
                 v-model="telPrefix"
-                placeholder="전화번호 앞자리"
-              />
+                placeholder="전화번호 앞자리" />
               <input
                 v-model="formattedNumber"
                 maxlength="9"
                 placeholder="전화번호 입력(8자리)"
-                class="datetime-input"
-              />
+                class="datetime-input" />
             </div>
           </div>
           <!-- 날짜&시간 -->
@@ -385,8 +372,7 @@ watch(selectedDate, (val) => {
                   <TimePicker
                     class="wrapper"
                     v-model="selectedTime"
-                    :selectedDate="selectedDate"
-                  />
+                    :selectedDate="selectedDate" />
                 </div>
               </div>
             </div>
@@ -420,8 +406,7 @@ watch(selectedDate, (val) => {
                 :class="{
                   active: selectedStart === place,
                 }"
-                @click="toggleStart(place)"
-              >
+                @click="toggleStart(place)">
                 {{ place }}
               </button>
             </div>
@@ -429,21 +414,18 @@ watch(selectedDate, (val) => {
           <!-- 숙소명 직접 입력 -->
           <div
             v-if="selectedStart === '숙소'"
-            class="custom-start-input my-button"
-          >
+            class="custom-start-input my-button">
             <input
               type="text"
               v-model="customStartInput"
               placeholder="목적지의 주소를 입력하세요"
-              @focus="isStartConfirmed = false"
-            />
+              @focus="isStartConfirmed = false" />
             <button
               class="custom-start my-button"
               type="button"
               @click="confirmCustomStart"
               :disabled="!customStartInput.trim()"
-              :class="{ confirmed: isStartConfirmed }"
-            >
+              :class="{ confirmed: isStartConfirmed }">
               <!-- 플래그에 따라 텍스트 변경 -->
               {{ isStartConfirmed ? "입력완료" : "입력" }}
             </button>
@@ -461,8 +443,7 @@ watch(selectedDate, (val) => {
                 :class="{
                   active: selectedStop === place,
                 }"
-                @click="toggleStop(place)"
-              >
+                @click="toggleStop(place)">
                 {{ place }}
               </button>
             </div>
@@ -470,21 +451,18 @@ watch(selectedDate, (val) => {
           <!-- 숙소명 직접 입력 -->
           <div
             v-if="selectedStop === '숙소'"
-            class="custom-stop-input my-button"
-          >
+            class="custom-stop-input my-button">
             <input
               type="text"
               v-model="customStopInput"
               placeholder="목적지의 주소를 입력하세요"
-              @focus="isStopConfirmed = false"
-            />
+              @focus="isStopConfirmed = false" />
             <button
               class="custom-stop my-button"
               type="button"
               @click="confirmCustomStop"
               :disabled="!customStopInput.trim()"
-              :class="{ confirmed: isStopConfirmed }"
-            >
+              :class="{ confirmed: isStopConfirmed }">
               <!-- 플래그에 따라 텍스트 변경 -->
               {{ isStopConfirmed ? "입력완료" : "입력" }}
             </button>
@@ -497,8 +475,7 @@ watch(selectedDate, (val) => {
               <div
                 v-for="(item, idx) in sizes"
                 :key="idx"
-                :class="['bag-item']"
-              >
+                :class="['bag-item']">
                 <div class="bag-info">
                   <div class="bag-wrap">
                     <p class="st_label">{{ item.label }}</p>
@@ -518,8 +495,7 @@ watch(selectedDate, (val) => {
                     <button
                       @click="item.count > 0 && item.count--"
                       class="ctrl-btn my-button"
-                      :disabled="item.count === 0"
-                    >
+                      :disabled="item.count === 0">
                       -
                     </button>
                     <span>{{ item.count }}</span>
@@ -566,8 +542,7 @@ watch(selectedDate, (val) => {
               <ul class="summary-value">
                 <li
                   v-for="(item, i) in sizes.filter((i) => i.count > 0)"
-                  :key="i"
-                >
+                  :key="i">
                   {{ item.label }} ({{ item.count }}개)
                 </li>
                 <li v-if="sizes.every((i) => i.count === 0)">
@@ -600,8 +575,7 @@ watch(selectedDate, (val) => {
                 <button
                   type="button"
                   class="expand-btn my-button"
-                  @click.prevent="toggleAllContent"
-                >
+                  @click.prevent="toggleAllContent">
                   {{ showAllContent ? "닫기" : "보기" }}
                 </button>
               </div>
@@ -670,8 +644,7 @@ watch(selectedDate, (val) => {
                 <button
                   type="button"
                   class="expand-btn my-button"
-                  @click.prevent="togglePrivacyContent"
-                >
+                  @click.prevent="togglePrivacyContent">
                   {{ showPrivacyContent ? "닫기" : "보기" }}
                 </button>
               </div>
@@ -712,8 +685,7 @@ watch(selectedDate, (val) => {
                 <button
                   type="button"
                   class="expand-btn my-button"
-                  @click.prevent="toggleTermsContent"
-                >
+                  @click.prevent="toggleTermsContent">
                   {{ showTermsContent ? "닫기" : "보기" }}
                 </button>
               </div>
@@ -769,15 +741,13 @@ watch(selectedDate, (val) => {
                 v-for="(val, key) in paymentTexts"
                 :key="key"
                 class="payment-option my-button"
-                :class="{ active: selectedPayment === key }"
-              >
+                :class="{ active: selectedPayment === key }">
                 <input
                   class="my-button"
                   type="radio"
                   v-model="selectedPayment"
                   :value="key"
-                  name="payment"
-                />
+                  name="payment" />
                 {{ val }}
               </label>
 
@@ -788,20 +758,17 @@ watch(selectedDate, (val) => {
                     v-for="(src, key) in paymentIcons"
                     :key="key"
                     class="payment-image my-button"
-                    :class="{ active: selectedPayment === key }"
-                  >
+                    :class="{ active: selectedPayment === key }">
                     <input
                       class="my-button"
                       type="radio"
                       v-model="selectedPayment"
                       :value="key"
-                      name="payment"
-                    />
+                      name="payment" />
                     <img
                       :src="src"
                       :alt="`${key} 아이콘`"
-                      class="payment-icon my-button"
-                    />
+                      class="payment-icon my-button" />
                   </label>
                 </div>
               </div>
@@ -811,8 +778,7 @@ watch(selectedDate, (val) => {
             <button
               class="my-button st_reser"
               @click="submitReservation"
-              :disabled="!canSubmit"
-            >
+              :disabled="!canSubmit">
               결제하기
             </button>
           </div>
@@ -851,32 +817,13 @@ watch(selectedDate, (val) => {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "@/assets/Main.scss" as *;
-@use "@/assets/_Variables.scss" as *;
+@use "/src/assets/Main.scss" as *;
+@use "/src/assets/Variables.scss" as *;
 
-// 스타일 변수
-$border-gray: #b5b5b5;
-$blue-sky: #279bf3;
-$red-holiday: #e63946;
-$blue-weekend: #1a44ff;
-$gray-past: #cccccc;
-$dark-gray: #333333;
-$radius: 8px;
-
-//전체배경
-.wrap {
-  padding: 100px 0;
-  min-height: 100vh; /* 화면 전체 높이를 확보한 뒤 */
-  background: linear-gradient(
-    to top,
-    #e2f1fc 50%,
-    /* 아래 50% */ transparent 50% /* 위 50% */
-  );
-}
 // 전체 래퍼
 .st_wrap {
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   text-align: center;
@@ -888,14 +835,13 @@ $radius: 8px;
 // 타이틀
 .yy_title1 {
   display: flex;
-  gap: 10px;
   align-items: center;
   justify-content: center;
   text-align: center;
   padding-bottom: 30px;
   .title_txt1 h1 {
     font-size: 40px;
-    font-family: $font-gothic;
+    font-family: $font-ownglyph;
   }
 }
 // 레이아웃: form 70%, summary 30%

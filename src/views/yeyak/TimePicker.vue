@@ -1,16 +1,3 @@
-<style>
-/*푸터 .fixed-buttons 영역을 클릭 투명하게*/
-:deep(.fixed-buttons) {
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-/*푸터 안의 a, button 만 클릭 허용*/
-:deep(.fixed-buttons) a,
-:deep(.fixed-buttons) button {
-  pointer-events: auto !important;
-}
-</style>
-
 <script setup>
 import { ref, computed, nextTick, watch } from "vue";
 
@@ -232,17 +219,8 @@ function scrollToCurrentTime() {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "@/assets/Main.scss" as *;
-@use "@/assets/_Variables.scss" as *;
-
-// 스타일 변수
-$border-gray: #b5b5b5;
-$blue-sky: #279bf3;
-$red-holiday: #e63946;
-$blue-weekend: #1a44ff;
-$gray-past: #cccccc;
-$dark-gray: #333333;
-$radius: 8px;
+@use "/src/assets/Main.scss" as *;
+@use "/src/assets/Variables.scss" as *;
 
 .time-picker-wrapper {
   height: 100%;
@@ -290,7 +268,9 @@ $radius: 8px;
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 25px;
+  background: none;
+  border: none;
+  font-size: 20px;
   color: #888888;
   pointer-events: none;
   z-index: 5500;
