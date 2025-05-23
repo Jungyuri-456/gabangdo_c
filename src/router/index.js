@@ -21,6 +21,7 @@ import DDashboard from "../pages/worker/DDashboard.vue";
 import Assign from "../pages/worker/Assign.vue";
 import AssignedJobs from "../pages/worker/AssignedJobs.vue";
 import Jobhistory from "../pages/worker/Jobhistory.vue";
+import Profile from "@/pages/worker/Profile.vue";
 // 관리자페이지
 import LoginAdmin from "../views/LoginAdmin.vue";
 import AdminHome from "../pages/admin/AdminHome.vue";
@@ -74,6 +75,10 @@ const routes = [
       {
         path: "job-history",
         component: Jobhistory,
+      },
+      {
+        path: "profile",
+        component: Profile,
       },
     ],
   },

@@ -1,144 +1,19 @@
-<style>
-/*푸터 .fixed-buttons 영역을 클릭 투명하게*/
-:deep(.fixed-buttons) {
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-/*푸터 안의 a, button 만 클릭 허용*/
-:deep(.fixed-buttons) a,
-:deep(.fixed-buttons) button {
-  pointer-events: auto !important;
-}
-</style>
-
 <script setup>
-// 1. Imports
-import {
-  ref,
-  reactive,
-  computed,
-  watch,
-  nextTick,
-  onMounted,
-  onBeforeUnmount,
-} from "vue";
+import { ref, reactive, computed, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useReservationStore } from "@/stores/reservationStore";
-import CalendarPicker from "./CalendarPicker.vue";
-import TimePicker from "./TimePicker.vue";
-import CustomSelect from "./CustomSelect.vue";
-import ProgressStepper from "./ProgressStepper.vue";
-//스텝인덱스
-const steps = [
-  "예약자정보",
-  "날짜/시간",
-  "출발/도착장소",
-  "가방선택",
-  "예약하기",
-];
+import CalendarPicker from "@/views/yeyak/CalendarPicker.vue";
+import TimePicker from "@/views/yeyak/TimePicker.vue";
+import CustomSelect from "@/views/yeyak/CustomSelect.vue";
+import ProgressStepper from "@//views/yeyak/ProgressStepper.vue";
 
-const step1 = ref(null);
-const step2 = ref(null);
-const step3 = ref(null);
-const step4 = ref(null);
-const step5 = ref(null);
-const stepIndex = ref(1);
-const showStepper = ref(true);
-
-let updateStickyPosition;
-let scrollHandler;
-
-// 클릭 이동: 단순히 해당 .step-container 으로 scrollIntoView
-function scrollToStep(idx) {
-  const containers = document.querySelectorAll(".step-container");
-  if (idx < 1 || idx > containers.length) return;
-  stepIndex.value = idx; // 즉시 활성화 표시
-  showStepper.value = true;
-
-  nextTick(() => {
-    const stepperEl = document.querySelector(".sticky-stepper");
-    const stepH = stepperEl ? stepperEl.offsetHeight : 0;
-    const extra = 50; // 마진탑 여유 10px
-
-    // 마지막 섹션 클릭 시 페이지 끝까지 가도록
-    let targetY;
-    if (idx === containers.length) {
-      targetY = document.body.scrollHeight - window.innerHeight;
-    } else {
-      const title = containers[idx - 1].querySelector(".st_section-title");
-      if (!title) return;
-      const titleY = title.getBoundingClientRect().top + window.scrollY;
-      targetY = titleY - stepH - extra;
-    }
-
-    // 음수 방어
-    if (targetY < 0) targetY = 0;
-
-    // 페이지에 여유가 없어서 마지막이 안 내려간다면
-    // form-section 에 패딩을 잠깐 추가
-    const form = document.querySelector(".form-section");
-    if (idx === containers.length && form) {
-      form.style.paddingBottom = `${stepH + extra}px`;
-    }
-
-    window.scrollTo({ top: targetY, behavior: "smooth" });
-  });
+const currentStep = ref(1);
+// ProgressStepper 의 @go 이벤트를 받을 핸들러
+function onStepChange(newIdx) {
+  currentStep.value = newIdx;
+  // 필요하면 추가 로직: reservationStore 설정, 라우터 이동 등
 }
 
-function handlePrev() {
-  scrollToStep(stepIndex.value - 1);
-}
-function handleNext() {
-  scrollToStep(stepIndex.value + 1);
-}
-function handleGo(n) {
-  scrollToStep(n);
-}
-
-onMounted(() => {
-  const stepperEl = document.querySelector(".sticky-stepper");
-  const menuEl = document.querySelector(".header");
-  const containers = Array.from(document.querySelectorAll(".step-container"));
-  const extra = 50;
-
-  scrollHandler = () => {
-    const stepH = stepperEl?.offsetHeight || 0;
-    const offset = stepH + extra;
-    const y0 = offset;
-    let current = 1;
-    containers.forEach((sec, i) => {
-      if (sec.getBoundingClientRect().top <= y0) {
-        current = i + 1;
-      }
-    });
-    stepIndex.value = current;
-  };
-  if (!stepperEl || !menuEl) return;
-  function updateStickyPosition() {
-    const menuH = menuEl.getBoundingClientRect().height || 0;
-    // 메뉴 바로 아래 10px, z-index도 메뉴 위로
-    stepperEl.style.setProperty("top", `${menuH + 10}px`, "important");
-    stepperEl.style.setProperty("z-index", "5998", "important");
-  }
-
-  // 최초 설정
-  updateStickyPosition();
-  scrollHandler();
-
-  // 리사이즈에 대응
-  window.addEventListener("resize", updateStickyPosition);
-  window.addEventListener("scroll", scrollHandler, { passive: true });
-});
-
-onBeforeUnmount(() => {
-  // clean up
-  const stepperEl = document.querySelector(".sticky-stepper");
-  const menuEl = document.querySelector(".header");
-  if (stepperEl && menuEl) {
-    window.removeEventListener("resize", updateStickyPosition);
-    window.removeEventListener("scroll", scrollHandler);
-  }
-});
 //달력선택함수
 const todayDate = new Date();
 todayDate.setHours(0, 0, 0, 0);
@@ -204,13 +79,12 @@ const showAllContent = ref(false);
 const showPrivacyContent = ref(false);
 const showTermsContent = ref(false);
 
-// 3. Computed Properties
 // 전화번호 포맷팅
 const formattedNumber = computed({
   get() {
     const digits = phoneRaw.value.replace(/\D/g, "").slice(0, 8);
     return digits.length > 4
-      ? `${digits.slice(0, 4)}-${digits.slice(4)}`
+      ? `${digits.slice(0, 4)}${digits.slice(4)}`
       : digits;
   },
   set(val) {
@@ -420,7 +294,7 @@ watch(selectedDate, (val) => {
 
 <template>
   <!-- 전체 -->
-  <div class="wrap">
+  <div class="wrap_total">
     <!-- 이너 -->
     <div class="st_wrap">
       <!-- 타이틀 -->
@@ -432,13 +306,15 @@ watch(selectedDate, (val) => {
       <div class="grid-container">
         <!-- 스텝퍼 네비바 -->
         <ProgressStepper
-          v-show="showStepper"
-          :steps="steps"
-          :show="showStepper"
-          :current-step="stepIndex"
-          @prev="handlePrev"
-          @next="handleNext"
-          @go="handleGo" />
+          :steps="[
+            '예약자정보',
+            '날짜/시간',
+            '출발/도착장소',
+            '가방선택',
+            '예약하기',
+          ]"
+          :selectors="['#step1', '#step2', '#step3', '#step4', '#step5']"
+          @go="onStepChange" />
         <div class="form-section">
           <div ref="step1" id="step1" class="step-container">
             <div class="wrap-input">
@@ -454,11 +330,9 @@ watch(selectedDate, (val) => {
               <div class="name-input">
                 <input v-model="name" placeholder="이름 입력" />
               </div>
-              <!-- 전화번호 입력 -->
+              <!-- 연락처 입력 -->
               <div class="phone-input my-button">
-                <CustomSelect
-                  v-model="telPrefix"
-                  placeholder="전화번호 앞자리" />
+                <CustomSelect v-model="telPrefix" />
                 <input
                   v-model="formattedNumber"
                   maxlength="9"
@@ -473,7 +347,7 @@ watch(selectedDate, (val) => {
               <div class="date-time">
                 <!-- 날짜 -->
                 <div class="date">
-                  <p class="st_section-title">맡길날짜</p>
+                  <p class="st_section-title">이용날짜</p>
 
                   <div class="my-button">
                     <CalendarPicker class="wrapper" v-model="selectedDate" />
@@ -481,7 +355,7 @@ watch(selectedDate, (val) => {
                 </div>
                 <!-- 시간 -->
                 <div class="time">
-                  <p class="st_section-title">맡길시간</p>
+                  <p class="st_section-title">이용시간</p>
                   <div class="my-button">
                     <TimePicker
                       class="wrapper"
@@ -496,9 +370,9 @@ watch(selectedDate, (val) => {
               <span class="tooltip">
                 당일예약 <i class="ri-question-line"></i>
               </span>
-              <p class="memo-1">서비스이용 1일 전 오후 6시부터</p>
-              <p class="memo-2">당일예약</p>
-              <p class="memo-1">으로 접수됩니다.</p>
+              <p class="memo-1">당일예약은 서비스이용시간</p>
+              <p class="memo-2">2시간</p>
+              <p class="memo-1">이후부터 접수됩니다.</p>
             </div>
             <div v-else-if="reservationType === 'future'" class="date-info">
               <span class="tooltip">
@@ -846,24 +720,13 @@ watch(selectedDate, (val) => {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "@/assets/Main.scss" as *;
-@use "@/assets/_Variables.scss" as *;
-
-//전체배경
-.wrap {
-  padding: 100px 0;
-  min-height: 100vh; /* 화면 전체 높이를 확보한 뒤 */
-  background: linear-gradient(
-    to top,
-    #e2f1fc 50%,
-    /* 아래 50% */ transparent 50% /* 위 50% */
-  );
-}
+@use "/src/assets/Main.scss" as *;
+@use "/src/assets/Variables.scss" as *;
 
 // 전체 래퍼
 .st_wrap {
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
   display: flex;
   align-items: stretch;
   text-align: center;
@@ -874,40 +737,29 @@ watch(selectedDate, (val) => {
 // 타이틀
 .yy_title1 {
   display: flex;
-  gap: 10px;
   align-items: center;
   justify-content: center;
   text-align: center;
   padding-bottom: 30px;
   .title_txt1 h1 {
     font-size: 40px;
-    font-family: $font-gothic;
+    font-family: $font-ownglyph;
   }
 }
-//스텝바
+// 스텝퍼
 html,
 body {
   overflow: visible !important;
   transform: none;
 }
-.wrap,
-.st_wrap,
-.grid-container,
-.form-section {
-  overflow: visible !important;
-  transform: none;
-}
 .sticky-stepper {
   position: sticky;
-  top: 10px;
-  margin: 0 auto;
+  top: 0;
   left: 0;
   right: 0;
-  z-index: 5998;
-  max-width: 500px;
-}
-:root {
-  --stepper-height: 60px;
+  margin: 0 auto;
+  width: 500px;
+  height: auto;
 }
 
 .grid-container {
@@ -930,7 +782,6 @@ body {
   height: auto;
   background-color: #fff;
 }
-
 //예약폼 타이틀
 .st_section-title {
   padding: 40px 0 10px;

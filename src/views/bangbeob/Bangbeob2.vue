@@ -4,7 +4,7 @@ import Tab from "../../components/Tab.vue";
 
 <template>
   <!-- 전체 -->
-  <div class="bb_wrap">
+  <div class="wrap_total">
     <!-- 전체 이너 -->
     <div class="bb_inner">
       <!-- 이용절차 -->
@@ -227,7 +227,7 @@ import Tab from "../../components/Tab.vue";
             </div>
           </div>
 
-                    <!-- 이용안내_요금안내 -->
+          <!-- 이용안내_요금안내 -->
           <div class="bb_luggagepriceInfo bb_luggagePlusMinus">
             <!-- 요금안내_위 -->
             <div class="bb_priceInfoTop">
@@ -340,10 +340,8 @@ import Tab from "../../components/Tab.vue";
                   <li class="bb_purple">5,000</li>
                 </ul>
               </div>
-
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -493,469 +491,466 @@ import Tab from "../../components/Tab.vue";
 </template>
 
 <style lang="scss" scoped>
-@use "/src/assets/_Variables.scss" as *;
-.bb_wrap {
+@use "sass:color";
+@use "/src/assets/Main.scss" as *;
+@use "/src/assets/Variables.scss" as *;
+
+.bb_inner {
   position: relative;
-  padding-top: 100px;
-  .bb_inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  // 컨테이너1
+  .bb_container1 {
     position: relative;
-    max-width: 1300px;
-    margin: 0 auto;
-    // 컨테이너1
-    .bb_container1 {
-      position: relative;
-      width: 100%;
-      // background-color: bisque;
+    width: 100%;
+    // background-color: bisque;
+    text-align: center;
+    padding-bottom: 10%;
+    // 타이틀
+    .bb_title1 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      padding-bottom: 10%;
-      // 타이틀
-      .bb_title1 {
-        display: flex;
-        gap: 10px;
-        line-height: 25px;
-        flex-wrap: wrap; /* 넘치면 자동 줄바꿈 */
-        align-items: center; /* 세로 중앙 정렬 */
-        justify-content: center; /* 가로 중앙 정렬 */
-        padding-bottom: 10px;
-        .title_txt1 h1 {
-          font-size: 40px;
-          font-family: $font-ownglyph;
-        }
-      }
-      // 이용절차
-      .bb_orderProcess {
-        position: relative;
-        // background-color: aqua;
-        width: 100%;
-        display: flex;
-        padding-right: 4%;
-        padding-left: 4%;
-        justify-content: space-between;
-
-        .bb_processIcon1 {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-align: center;
-          position: relative;
-
-          flex-direction: column;
-
-          .bb_processIcon1_img {
-            display: flex; // ★ 추가 필수
-            justify-content: center; // 수평 가운데
-            align-items: center; // 수직 가운데
-            flex-direction: column;
-            width: 70%;
-            height: 70%; // 필요 시 명확히 지정
-            text-align: center;
-
-            img {
-              width: 100%;
-              height: auto; // 비율 유지
-            }
-          }
-          .bb_span{
-            font-size: 20px;
-          }
-          span.bb_spanPlus {
-            font-size: 20px;
-          }
-        }
-
-        .arrow {
-          position: relative;
-          padding: 90px 0 120px 0;
-        }
-
-        .bb_kakao {
-          display: flex;
-          background-color: #f4f4f4;
-          border-radius: 80px;
-          width: 45%;
-          position: relative;
-          margin-top: 20px;
-          cursor: pointer;
-          .bb_kakaoIcon {
-            padding: 3px;
-
-            img {
-              border-radius: 50px;
-              width: 30px;
-              height: 30px;
-            }
-          }
-        }
-      }
-      .bb_plus {
-        display: none;
+      padding-bottom: 30px;
+      .title_txt1 h1 {
+        font-size: 40px;
+        font-family: $font-ownglyph;
       }
     }
+    // 이용절차
+    .bb_orderProcess {
+      position: relative;
+      // background-color: aqua;
+      width: 100%;
+      display: flex;
+      padding-right: 4%;
+      padding-left: 4%;
+      justify-content: space-between;
+
+      .bb_processIcon1 {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+
+        flex-direction: column;
+
+        .bb_processIcon1_img {
+          display: flex; // ★ 추가 필수
+          justify-content: center; // 수평 가운데
+          align-items: center; // 수직 가운데
+          flex-direction: column;
+          width: 70%;
+          height: 70%; // 필요 시 명확히 지정
+          text-align: center;
+
+          img {
+            width: 100%;
+            height: auto; // 비율 유지
+          }
+        }
+        .bb_span {
+          font-size: 20px;
+        }
+        span.bb_spanPlus {
+          font-size: 20px;
+        }
+      }
+
+      .arrow {
+        position: relative;
+        padding: 90px 0 120px 0;
+      }
+
+      .bb_kakao {
+        display: flex;
+        background-color: #f4f4f4;
+        border-radius: 80px;
+        width: 45%;
+        position: relative;
+        margin-top: 20px;
+        cursor: pointer;
+        .bb_kakaoIcon {
+          padding: 3px;
+
+          img {
+            border-radius: 50px;
+            width: 30px;
+            height: 30px;
+          }
+        }
+      }
+    }
+    .bb_plus {
+      display: none;
+    }
   }
-  // 짐보관 이용안내
-  .bb_container2 {
-    background-color: $background-maincolor;
-    width: 100%;
-    padding-bottom: 6%;
-    padding-top: 2%;
-    .bb_title2 {
-      padding-top: 6%;
+}
+// 짐보관 이용안내
+.bb_container2 {
+  background-color: $background-maincolor;
+  width: 100%;
+  padding-bottom: 6%;
+  padding-top: 2%;
+  .bb_title2 {
+    padding-top: 6%;
+    display: flex;
+    gap: 10px;
+    line-height: 40px;
+    padding-bottom: 3%;
+    .bb_titleLine {
+      width: 3px;
+      height: 35px;
+      background-color: $main-color;
+    }
+    .bb_title_txt2 h1 {
+      font-size: 25px;
+      font-weight: bold;
+    }
+    .bb_title_txt2 p {
+      font-size: 17;
+    }
+  }
+  // 이용안내_수화물규격
+  .bb_luggageNotice {
+    .bb_luggageImgNotice {
+      display: flex;
+      flex-wrap: wrap; /* 요소가 넘치면 자동 줄바꿈 */
+
+      gap: 2%;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 3%;
+
+      .bb_luggage {
+        padding: 1.5%;
+        width: calc((100% - 6%) / 4);
+
+        background-color: #fff;
+        border-radius: 20px;
+        border: $main-color 1px solid;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .bb_luggageTitleM {
+          font-size: 25px;
+          font-weight: bold;
+          padding-bottom: 3%;
+        }
+        .bb_luggageTitle {
+          font-size: 17px;
+          font-weight: bold;
+          color: #264884;
+        }
+        .bb_luggageimg {
+          width: 50%;
+          height: 50%;
+          .bb_smaller {
+            padding: 40%;
+            margin-top: 10%;
+            margin-bottom: 10%;
+          }
+          img {
+            width: 100%;
+            height: 100%;
+            padding: 5%;
+          }
+          .bb_smaller {
+            padding: 10%;
+          }
+        }
+        .bb_luggagedetail {
+          font-size: 14px;
+          color: #8f8f8f;
+          font-weight: bold;
+        }
+      }
+    }
+    .bb_luggagepriceInfo {
+      width: 100%;
+      background-color: #fff;
+      border-radius: 20px;
+      // border: $main-color solid 1px;
+      padding: 2%;
+      .bb_priceInfoTop {
+        .bb_priceInfoTime {
+          width: 18%;
+          padding: 6px 10px 6px 10px;
+          background-color: #d7d7d7;
+          border-radius: 20px;
+          text-align: center;
+          p {
+            font-size: 22px;
+          }
+        }
+        .bb_priceInfoDetail {
+          ul {
+            padding-top: 12px;
+            padding-bottom: 18px;
+            li {
+              font-size: 15px;
+              padding-top: 6px;
+              padding-left: 10px;
+            }
+          }
+        }
+      }
+      .bb_priceInfoBottom {
+        .bb_priceInfoMenu {
+          background-color: $main-color;
+          width: 100%;
+          padding: 6px;
+          border-radius: 20px;
+          ul {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            .bb_leftTum {
+              padding-left: 8%;
+            }
+            .bb_rightTum0 {
+              padding-right: 8%;
+            }
+            li {
+              font-size: 22px;
+              color: #fff;
+            }
+          }
+        }
+        .bb_priceInfoMenuDetail {
+          width: 100%;
+          padding: 6px;
+          border-radius: 20px;
+          padding-top: 3%;
+          padding-bottom: 4%;
+          ul {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding-top: 2.5%;
+            // padding-right: 8%;
+            .bb_leftTum {
+              padding-left: 8%;
+            }
+
+            .bb_leftTumMore1 {
+              padding-left: 7.2%;
+            }
+            .bb_leftTumMore2 {
+              padding-right: 8.8%;
+            }
+
+            .bb_middleTum {
+              padding-right: 7%;
+            }
+            .bb_middleTumMore {
+              padding-right: 7.8%;
+            }
+            .bb_rightTum {
+              padding-right: 15%;
+            }
+            li {
+              font-size: 22px;
+            }
+          }
+        }
+      }
+    }
+    .bb_luggagePlus {
+      display: none;
+    }
+  }
+}
+// 무인보관함 위치안내
+.bb_container3 {
+  // position: relative;
+  // width: 100%;
+  // height: 110vh;
+  padding: 6% 0 1% 0;
+  .bb_inner {
+    // width: 100%;
+    // height: 100%;
+    // 타이틀
+    .bb_title3 {
+      padding-bottom: 4%;
       display: flex;
       gap: 10px;
       line-height: 40px;
-      padding-bottom: 3%;
+      font-weight: bold;
       .bb_titleLine {
         width: 3px;
         height: 35px;
         background-color: $main-color;
       }
-      .bb_title_txt2 h1 {
+      .bb_title_txt3 h1 {
+        font-size: 25px;
+      }
+    }
+  }
+}
+.bb_container4 {
+  padding-bottom: 70px;
+  padding-left: 15%;
+  position: relative;
+  width: 100%;
+  background-color: #fff;
+  .bb_inner {
+    position: relative;
+    max-width: 1300px;
+    margin: 0 auto;
+    display: flex;
+    // 유의사항 왼쪽
+    .bb_contain3Left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 70px;
+      .bb_yongdal {
+        width: 80%;
+        img {
+          width: 100%;
+        }
+      }
+      p {
+        font-size: 20px;
+        font-weight: bold;
+      }
+    }
+    // 유의사항 오른쪽
+    .bb_contain3Right {
+      .bb_noteTop {
+        .bb_notice1 {
+          .indent {
+            display: inline-block;
+            padding-left: 1em; /* 또는 margin-left: 1em; */
+          }
+          li {
+            line-height: 30px;
+            font-size: 17.5px;
+          }
+        }
+      }
+      .bb_noteDown1 {
+        width: 70%;
+        margin-top: 1%;
+        background-color: #ffcccc;
+        border-radius: 10px;
+        border: #f60000 1px solid;
+        padding: 2% 2% 2% 2%;
+        .bb_noticeSubtitle {
+          font-size: 17px;
+          font-weight: bold;
+          padding-bottom: 5px;
+        }
+
+        .bb_notice2 {
+          li {
+            line-height: 22px;
+            font-size: 15px;
+            .bb_stron1 {
+              display: inline;
+              font-weight: bold;
+              color: #a42626;
+            }
+          }
+        }
+      }
+      .bb_noticeButton button {
+        background-color: #c0c0c0;
+        border: none;
+        border-radius: 50px;
+        padding: 7px 12px 7px 12px;
+        color: #fff;
+        font-size: 15px;
+        margin-top: 10px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .bb_noteDown2 {
+        width: 70%;
+        margin-top: 1%;
+        background-color: #fff3cd;
+        border-radius: 10px;
+        border: #f4ff71 1px solid;
+        padding: 2% 2% 2% 2%;
+
+        .bb_noticeSubtitle {
+          font-size: 17px;
+          font-weight: bold;
+          padding-bottom: 10px;
+          padding-left: 3%;
+        }
+
+        .bb_notice2 {
+          li {
+            line-height: 22px;
+            font-size: 17.5px;
+            padding-left: 3%;
+            .bb_Strong2 {
+              font-weight: bold;
+              display: inline-block;
+              color: #f60000;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+// 유의사항2
+.bb_container5 {
+  background-color: #fff;
+  padding-bottom: 60px;
+  .bb_innerBottom {
+    max-width: 1300px;
+    margin: 0 auto;
+    .bb_title3 {
+      display: flex;
+      gap: 10px;
+      line-height: 40px;
+      padding-bottom: 20px;
+      .bb_titleLine {
+        width: 3px;
+        height: 35px;
+        background-color: $main-color;
+      }
+      .bb_title_txt3 {
         font-size: 25px;
         font-weight: bold;
       }
-      .bb_title_txt2 p {
-        font-size: 17;
-      }
-    }
-    // 이용안내_수화물규격
-    .bb_luggageNotice {
-      .bb_luggageImgNotice {
-        display: flex;
-        flex-wrap: wrap; /* 요소가 넘치면 자동 줄바꿈 */
-
-        gap: 2%;
-        justify-content: space-between;
-        align-items: center;
-        padding-bottom: 3%;
-
-        .bb_luggage {
-          padding: 1.5%;
-          width: calc((100% - 6%) / 4);
-
-          background-color: #fff;
-          border-radius: 20px;
-          border: $main-color 1px solid;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-
-          .bb_luggageTitleM {
-            font-size: 25px;
-            font-weight: bold;
-            padding-bottom: 3%;
-          }
-          .bb_luggageTitle {
-            font-size: 17px;
-            font-weight: bold;
-            color: #264884;
-          }
-          .bb_luggageimg {
-            width: 50%;
-            height: 50%;
-            .bb_smaller {
-              padding: 40%;
-              margin-top: 10%;
-              margin-bottom: 10%;
-            }
-            img {
-              width: 100%;
-              height: 100%;
-              padding: 5%;
-            }
-            .bb_smaller {
-              padding: 10%;
-            }
-          }
-          .bb_luggagedetail {
-            font-size: 14px;
-            color: #8f8f8f;
-            font-weight: bold;
-          }
-        }
-      }
-      .bb_luggagepriceInfo {
-        width: 100%;
-        background-color: #fff;
-        border-radius: 20px;
-        // border: $main-color solid 1px;
-        padding: 2%;
-        .bb_priceInfoTop {
-          .bb_priceInfoTime {
-            width: 18%;
-            padding: 6px 10px 6px 10px;
-            background-color: #d7d7d7;
-            border-radius: 20px;
-            text-align: center;
-            p {
-              font-size: 22px;
-            }
-          }
-          .bb_priceInfoDetail {
-            ul {
-              padding-top: 12px;
-              padding-bottom: 18px;
-              li {
-                font-size: 15px;
-                padding-top: 6px;
-                padding-left: 10px;
-              }
-            }
-          }
-        }
-        .bb_priceInfoBottom {
-          .bb_priceInfoMenu {
-            background-color: $main-color;
-            width: 100%;
-            padding: 6px;
-            border-radius: 20px;
-            ul {
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              width: 100%;
-              .bb_leftTum {
-                padding-left: 8%;
-              }
-              .bb_rightTum0 {
-                padding-right: 8%;
-              }
-              li {
-                font-size: 22px;
-                color: #fff;
-              }
-            }
-          }
-          .bb_priceInfoMenuDetail {
-            width: 100%;
-            padding: 6px;
-            border-radius: 20px;
-            padding-top: 3%;
-            padding-bottom: 4%;
-            ul {
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              width: 100%;
-              padding-top: 2.5%;
-              // padding-right: 8%;
-              .bb_leftTum {
-                padding-left: 8%;
-              }
-
-              .bb_leftTumMore1 {
-                padding-left: 7.2%;
-              }
-              .bb_leftTumMore2 {
-                padding-right: 8.8%;
-              }
-
-              .bb_middleTum {
-                padding-right: 7%;
-              }
-              .bb_middleTumMore {
-                padding-right: 7.8%;
-              }
-              .bb_rightTum {
-                padding-right: 15%;
-              }
-              li {
-                font-size: 22px;
-              }
-            }
-          }
-        }
-      }
-      .bb_luggagePlus{
-        display: none;
-      }
     }
   }
-  // 무인보관함 위치안내
-  .bb_container3 {
-    // position: relative;
-    // width: 100%;
-    // height: 110vh;
-    padding: 6% 0 1% 0;
+  .bb_container4Bg {
+    background-color: #ffffff;
     .bb_inner {
-      // width: 100%;
-      // height: 100%;
-      // 타이틀
-      .bb_title3 {
-        padding-bottom: 4%;
-        display: flex;
-        gap: 10px;
-        line-height: 40px;
-        font-weight: bold;
-        .bb_titleLine {
-          width: 3px;
-          height: 35px;
-          background-color: $main-color;
-        }
-        .bb_title_txt3 h1 {
-          font-size: 25px;
-        }
-      }
-    }
-  }
-  .bb_container4 {
-    padding-bottom: 70px;
-    padding-left: 15%;
-    position: relative;
-    width: 100%;
-    background-color: #fff;
-    .bb_inner {
-      position: relative;
-      max-width: 1300px;
-      margin: 0 auto;
-      display: flex;
-      // 유의사항 왼쪽
-      .bb_contain3Left {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding-top: 70px;
-        .bb_yongdal {
-          width: 80%;
-          img {
-            width: 100%;
-          }
+      background-color: rgba(42, 170, 226, 0.06);
+      border-radius: 15px;
+      padding-left: 2%;
+      .bb_notice {
+        color: #5a5a5a;
+        padding-top: 2%;
+        padding-bottom: 1%;
+        h3 {
+          font-size: 22px;
+          padding-bottom: 12px;
+          color: #000;
         }
         p {
-          font-size: 20px;
-          font-weight: bold;
+          padding-bottom: 20px;
+          font-size: 17.5px;
         }
-      }
-      // 유의사항 오른쪽
-      .bb_contain3Right {
-        .bb_noteTop {
-          .bb_notice1 {
-            .indent {
-              display: inline-block;
-              padding-left: 1em; /* 또는 margin-left: 1em; */
-            }
-            li {
-              line-height: 30px;
-              font-size: 17.5px;
-            }
-          }
+        li {
+          padding-bottom: 15px;
+          font-size: 17.5px;
         }
-        .bb_noteDown1 {
-          width: 70%;
-          margin-top: 1%;
-          background-color: #ffcccc;
-          border-radius: 10px;
-          border: #f60000 1px solid;
-          padding: 2% 2% 2% 2%;
-          .bb_noticeSubtitle {
-            font-size: 17px;
-            font-weight: bold;
-            padding-bottom: 5px;
-          }
-
-          .bb_notice2 {
-            li {
-              line-height: 22px;
-              font-size: 15px;
-              .bb_stron1 {
-                display: inline;
-                font-weight: bold;
-                color: #a42626;
-              }
-            }
-          }
-        }
-        .bb_noticeButton button {
-          background-color: #c0c0c0;
-          border: none;
-          border-radius: 50px;
-          padding: 7px 12px 7px 12px;
-          color: #fff;
-          font-size: 15px;
-          margin-top: 10px;
-          cursor: pointer;
-          font-weight: bold;
-        }
-        .bb_noteDown2 {
-          width: 70%;
-          margin-top: 1%;
-          background-color: #fff3cd;
-          border-radius: 10px;
-          border: #f4ff71 1px solid;
-          padding: 2% 2% 2% 2%;
-
-          .bb_noticeSubtitle {
-            font-size: 17px;
-            font-weight: bold;
-            padding-bottom: 10px;
-            padding-left: 3%;
-          }
-
-          .bb_notice2 {
-            li {
-              line-height: 22px;
-              font-size: 17.5px;
-              padding-left: 3%;
-              .bb_Strong2 {
-                font-weight: bold;
-                display: inline-block;
-                color: #f60000;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  // 유의사항2
-  .bb_container5 {
-    background-color: #fff;
-    padding-bottom: 60px;
-    .bb_innerBottom {
-      max-width: 1300px;
-      margin: 0 auto;
-      .bb_title3 {
-        display: flex;
-        gap: 10px;
-        line-height: 40px;
-        padding-bottom: 20px;
-        .bb_titleLine {
-          width: 3px;
-          height: 35px;
-          background-color: $main-color;
-        }
-        .bb_title_txt3 {
-          font-size: 25px;
-          font-weight: bold;
-        }
-      }
-    }
-    .bb_container4Bg {
-      background-color: #ffffff;
-      .bb_inner {
-        background-color: rgba(42, 170, 226, 0.06);
-        border-radius: 15px;
-        padding-left: 2%;
-        .bb_notice {
-          color: #5a5a5a;
-          padding-top: 2%;
-          padding-bottom: 1%;
-          h3 {
-            font-size: 22px;
-            padding-bottom: 12px;
-            color: #000;
-          }
-          p {
-            padding-bottom: 20px;
-            font-size: 17.5px;
-          }
-          li {
-            padding-bottom: 15px;
-            font-size: 17.5px;
-          }
-          ._bbTum {
-            padding-top: 10px;
-          }
+        ._bbTum {
+          padding-top: 10px;
         }
       }
     }
@@ -1052,7 +1047,7 @@ import Tab from "../../components/Tab.vue";
     align-self: flex-start;
     padding-bottom: 3%;
   }
-  .bb_notice{
+  .bb_notice {
     padding-top: 30px !important;
   }
   .bb_noticeButton button {
@@ -1065,7 +1060,7 @@ import Tab from "../../components/Tab.vue";
     width: 100% !important;
   }
   // 맨아래 안내사항
-  .bb_container5{
+  .bb_container5 {
     padding: 0 !important;
     margin-bottom: 30px;
   }
@@ -1080,7 +1075,7 @@ import Tab from "../../components/Tab.vue";
   .title_txt1 h1 {
     font-size: 25px !important;
   }
-  .bb_title1{
+  .bb_title1 {
     padding-bottom: 30px !important;
   }
 
@@ -1090,11 +1085,11 @@ import Tab from "../../components/Tab.vue";
   .bb_plusMinar {
     display: none !important;
   }
-  .bb_orderProcess.bb_plus{
+  .bb_orderProcess.bb_plus {
     display: flex !important;
     justify-content: space-evenly !important;
-  flex-wrap: wrap;
-  gap: 10px; /* 간격 */
+    flex-wrap: wrap;
+    gap: 10px; /* 간격 */
   }
 
   .bb_processIcon1 {
@@ -1105,19 +1100,18 @@ import Tab from "../../components/Tab.vue";
   .bb_plus {
     display: block !important;
   }
-  .bb_plus span{
+  .bb_plus span {
     font-size: 15px !important;
   }
   // 컨테이너2
-    // 타이틀
-    .bb_title_txt2 h1 {
+  // 타이틀
+  .bb_title_txt2 h1 {
     font-size: 20px !important;
     font-weight: bold;
     line-height: 20px !important;
   }
   .bb_title_txt2 p {
     font-size: 14px !important;
-
   }
   // 수화물 그림안내
   .bb_luggageImgNotice {
@@ -1133,18 +1127,18 @@ import Tab from "../../components/Tab.vue";
   .bb_luggageTitleM {
     font-size: 18px !important;
   }
-  .bb_luggageTitle p{
+  .bb_luggageTitle p {
     font-size: 11px !important;
   }
-  .bb_luggagedetail p{
+  .bb_luggagedetail p {
     font-size: 8px !important;
   }
 
   // 수화물 표안내
-  .bb_luggagePlusMinus{
+  .bb_luggagePlusMinus {
     display: none !important;
   }
-  .bb_luggagePlus{
+  .bb_luggagePlus {
     display: block !important;
   }
   .bb_priceInfoTime p {
@@ -1161,7 +1155,7 @@ import Tab from "../../components/Tab.vue";
   .bb_priceInfoDetail li {
     font-size: 12px !important;
   }
-  .bb_priceInfoMenu ul{
+  .bb_priceInfoMenu ul {
     justify-content: space-around !important;
     padding-right: 6%;
   }
@@ -1170,54 +1164,54 @@ import Tab from "../../components/Tab.vue";
     text-align: center;
   }
   .bb_priceInfoMenuDetail ul {
-    border:none;
+    border: none;
     padding-left: 3%;
     padding-right: 3%;
-    
   }
-  .bb_priceInfoMenuDetail li{
+  .bb_priceInfoMenuDetail li {
     font-size: 18px !important;
   }
   // 분류별 색깔주기
-  .bb_red{
+  .bb_red {
     color: #000000;
   }
-  .bb_blue{
+  .bb_blue {
     color: #000000;
   }
-  .bb_green{
+  .bb_green {
     color: #000000;
   }
-  .bb_purple{
+  .bb_purple {
     color: #000000;
   }
-  .bb_someMore{
+  .bb_someMore {
     padding-left: 8px !important;
   }
-  .bb_sizeControll{
+  .bb_sizeControll {
     font-size: 20px !important;
   }
 
-  .bb_container4 li{
+  .bb_container4 li {
     font-size: 14px !important;
   }
 
-  .bb_container5{
+  .bb_container5 {
     margin-bottom: 30px;
   }
-  .bb_container5 .bb_title3 h1{
+  .bb_container5 .bb_title3 h1 {
     padding-bottom: 5px !important;
   }
-  .bb_container5 .bb_title3{
+  .bb_container5 .bb_title3 {
     padding-bottom: 5px !important;
   }
-  .bb_container5 h3{
+  .bb_container5 h3 {
     font-size: 18px !important;
   }
-  .bb_container5 li, p{
+  .bb_container5 li,
+  p {
     font-size: 14px !important;
   }
-  .bb_notice{
+  .bb_notice {
     padding-top: 20px !important;
   }
 }

@@ -336,6 +336,7 @@ watch(activeTab, () => {
 
 <style lang="scss" scoped>
 @charset "UTF-8";
+@use "/src/assets/Main" as *;
 @use "/src/assets/Variables" as *;
 @use "/src/assets/Variables" as *;
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
@@ -343,11 +344,10 @@ watch(activeTab, () => {
 // 제목
 .bb_title1 {
   display: flex;
-  gap: 10px;
-  line-height: 40px;
-  flex-wrap: wrap; /* 넘치면 자동 줄바꿈 */
-  align-items: center; /* 세로 중앙 정렬 */
-  justify-content: center; /* 가로 중앙 정렬 */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-bottom: 30px;
   .title_txt1 h1 {
     font-family: "omyu_pretty";
     font-size: 40px;
@@ -579,7 +579,6 @@ header.main.fix .hd-gnb .hd-menu > li:after {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: $margin-L;
 }
 .main-slide-list2-title .festival-title {
   font-size: 25px;
@@ -759,13 +758,12 @@ header.main.fix .hd-gnb .hd-menu > li:after {
   background-size: cover;
   background-repeat: no-repeat;
   border-top-right-radius: 20px;
-  border-bottom-right-radius: 20px; 
-  
+  border-bottom-right-radius: 20px;
 }
 
 .slide-wrap .right .player {
   position: absolute;
-  top: 0;  
+  top: 0;
   max-width: 560px;
   height: 100%;
   overflow: hidden;
@@ -1099,6 +1097,7 @@ header.main.fix .hd-gnb .hd-menu > li:after {
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 1;
+  line-clamp: 1;
   -webkit-box-orient: vertical;
   max-width: 70%;
 }
@@ -1306,6 +1305,7 @@ header.main.fix .hd-gnb .hd-menu > li:after {
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     line-height: 1.5;
   }

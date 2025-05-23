@@ -13,28 +13,33 @@
             <!-- 메인메뉴  -->
             <ul
               @mouseenter="showAllSubMenu = true"
-              @mouseleave="showAllSubMenu = false">
+              @mouseleave="showAllSubMenu = false"
+            >
               <li
                 v-for="(item, index) in menuItems"
                 :key="index"
-                @click="handleMenuClick(item)">
+                @click="handleMenuClick(item)"
+              >
                 <router-link
                   v-if="!item.sub"
                   :to="item.to"
-                  :class="{ mainMenu: item.label === '예약도' }">
+                  :class="{ mainMenu: item.label === '예약도' }"
+                >
                   <span class="menu-label">{{ item.label }}</span>
                 </router-link>
                 <a
                   v-else
                   href="#"
-                  :class="{ mainMenu: item.label === '예약도' }">
+                  :class="{ mainMenu: item.label === '예약도' }"
+                >
                   {{ item.label }}
                 </a>
                 <!-- 서브메뉴영역 -->
                 <ul
                   v-if="item.sub"
                   class="subMenu"
-                  :class="{ show: showAllSubMenu }">
+                  :class="{ show: showAllSubMenu }"
+                >
                   <li v-for="(sub, idx) in item.sub" :key="idx">
                     <router-link :to="sub.to">{{ sub.label }}</router-link>
                   </li>
@@ -81,14 +86,16 @@
               :class="{ show: shortMenu, leave: isLeaving }"
               v-show="shortMenu"
               @mouseleave="handleMouseLeave"
-              @mouseenter="clearLeave">
+              @mouseenter="clearLeave"
+            >
               <span @click.prevent="closeMobileMenu" role="button">X</span>
               <ul>
                 <li v-for="(item, index) in menuItems" :key="index">
                   <router-link
                     v-if="!item.sub"
                     :to="item.to"
-                    @click="handleMenuClick(item)">
+                    @click="handleMenuClick(item)"
+                  >
                     <span>{{ item.label }}</span>
                   </router-link>
                   <div v-else>
@@ -181,10 +188,7 @@ const showAllSubMenu = ref(false); // 현재 열린 서브메뉴 li의 index
 const menuItems = [
   {
     label: "방법도",
-    sub: [
-      { label: "짐 운송", to: "/bangbeob1" },
-      { label: "짐 보관", to: "/bangbeob2" },
-    ],
+    to: "/bangbeob2",
   },
   {
     label: "요금도",
@@ -256,7 +260,7 @@ onUnmounted(() => {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  height: 75px;
+  height: 70px;
   z-index: 999999;
   background-color: #fff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -281,7 +285,7 @@ header .inner {
 }
 .hd_wideMenu {
   width: 100%;
-  height: 7cap;
+  height: 6cap;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -297,7 +301,7 @@ body.modal-open {
 
   img {
     margin: 8px auto;
-    width: 100px;
+    width: 90px;
   }
 }
 .hd_mobileMenu {
@@ -308,15 +312,15 @@ body.modal-open {
 // 메뉴
 .hd_menu {
   width: 500px;
-  margin-top: 7px;
+  height: 70px;
   display: flex;
   justify-content: space-evenly;
   align-items: center;
   ul {
     display: flex;
+    align-items: center;
     width: 100%;
     height: 100%;
-    margin-top: -10px;
     li {
       position: relative;
       flex: 1;
@@ -324,15 +328,13 @@ body.modal-open {
       &:hover .subMenu {
         display: flex; // hover 중에는 항상 보이게
       }
-
       a {
         display: inline-block;
-        padding: 10px 15px;
+        padding: 5px 15px;
         transition: all 0.3s ease;
         border-radius: 5px;
         font-weight: normal;
       }
-
       a:hover {
         color: #279bf4 !important;
         font-weight: bold;
@@ -349,15 +351,14 @@ body.modal-open {
         z-index: 10;
         padding: 10px 0;
         li {
-          height: 25px;
+          height: 40px;
           a {
             display: flex; // 플렉스 박스로 설정
             align-items: center; // 수직 가운데 정렬
             justify-content: center;
             width: 100%;
-            height: 40px;
+            height: 20px;
             padding: 0;
-            padding-top: 0;
           }
         }
       }
@@ -373,7 +374,7 @@ body.modal-open {
 .hd_menu1 {
   pointer-events: none;
   position: fixed;
-  top: 75px;
+  top: 70px;
   left: 0;
   width: 200px;
   height: 100vh;
@@ -539,10 +540,10 @@ body.modal-open {
 }
 .hd_subMenubg {
   position: fixed;
-  top: 75px;
+  top: 70px;
   left: 0;
   width: 100%;
-  height: 100px;
+  height: 70px;
   background-color: rgba(255, 255, 255, 0.8);
   z-index: 8;
   opacity: 0;

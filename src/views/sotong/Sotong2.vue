@@ -1,16 +1,3 @@
-<style>
-/*푸터 .fixed-buttons 영역을 클릭 투명하게*/
-:deep(.fixed-buttons) {
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-/*푸터 안의 a, button 만 클릭 허용*/
-:deep(.fixed-buttons) a,
-:deep(.fixed-buttons) button {
-  pointer-events: auto !important;
-}
-</style>
-
 <script setup>
 import { ref, computed } from "vue";
 
@@ -224,7 +211,7 @@ const closeModal = () => {
 
 <template>
   <!-- 전체 -->
-  <div class="wrap">
+  <div class="wrap_total">
     <div class="st_wrap">
       <!-- 타이틀 -->
       <div class="st_title1">
@@ -239,8 +226,7 @@ const closeModal = () => {
             class="st_card my-button"
             v-for="product in paginatedProducts"
             :key="product.image"
-            @click="openModal(product)"
-          >
+            @click="openModal(product)">
             <div class="st_img-product">
               <img :src="product.image" alt="Product" />
             </div>
@@ -270,8 +256,7 @@ const closeModal = () => {
             <input type="text" v-model="newReview.name" placeholder="이름" />
             <textarea
               v-model="newReview.content"
-              placeholder="후기내용"
-            ></textarea>
+              placeholder="후기내용"></textarea>
             <input type="file" @change="handleImageUpload" accept="image/*" />
             <img v-if="previewImage" :src="previewImage" width="120" />
             <!-- 후기 등록·취소버튼 -->
@@ -290,16 +275,14 @@ const closeModal = () => {
           <button
             class="my-button"
             @click="prevPage"
-            :disabled="currentPage === 1"
-          >
+            :disabled="currentPage === 1">
             이전
           </button>
           <span>{{ currentPage }} / {{ totalPages }}</span>
           <button
             class="my-button"
             @click="nextPage"
-            :disabled="currentPage === totalPages"
-          >
+            :disabled="currentPage === totalPages">
             다음
           </button>
         </div>
@@ -310,8 +293,7 @@ const closeModal = () => {
       <div
         v-if="showModal"
         class="modal-overlay my-button"
-        @click.self="closeModal"
-      >
+        @click.self="closeModal">
         <div class="modal-content">
           <h3>✨{{ maskedName(selectedReview.name) }}님의 이용후기✨</h3>
           <img :src="selectedReview.image" alt="후기 이미지" />
@@ -325,33 +307,13 @@ const closeModal = () => {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "@/assets/Main.scss" as *;
-@use "@/assets/_Variables.scss" as *;
-
-// 스타일 변수
-$border-gray: #b5b5b5;
-$blue-sky: #279bf3;
-$red-holiday: #e63946;
-$blue-weekend: #1a44ff;
-$gray-past: #cccccc;
-$dark-gray: #333333;
-$radius: 8px;
-
-//전체배경
-.wrap {
-  padding: 100px 0;
-  min-height: 100vh; /* 화면 전체 높이를 확보한 뒤 */
-  background: linear-gradient(
-    to top,
-    #e2f1fc 50%,
-    /* 아래 50% */ transparent 50% /* 위 50% */
-  );
-}
+@use "/src/assets/Main.scss" as *;
+@use "/src/assets/Variables.scss" as *;
 
 // 전체 래퍼
 .st_wrap {
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   text-align: center;
@@ -363,7 +325,6 @@ $radius: 8px;
 // 타이틀
 .st_title1 {
   display: flex;
-  gap: 10px;
   align-items: center;
   justify-content: center;
   text-align: center;
