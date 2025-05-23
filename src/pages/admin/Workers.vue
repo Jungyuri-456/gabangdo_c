@@ -146,7 +146,7 @@
               <button
                 @click="$emit('close')"
                 class="text-gray-400 hover:text-gray-500">
-                <i class="fas fa-times"></i>
+                <i @click.stop="closeModal" class="fas fa-times"></i>
               </button>
             </div>
           </div>
@@ -245,10 +245,10 @@
                       프로필 수정
                     </button>
                     <button
-                      @click.stop="closeModal"
+                      @click.stop="cancelEditing"
                       class="px-6 py-3 bg-red-500 text-white rounded-lg flex items-center gap-2 hover:bg-red-600 transition-colors">
                       <i class="fas fa-times"></i>
-                      취소
+                      저장취소
                     </button>
                   </div>
                   <div v-else class="flex justify-end gap-4">
@@ -260,7 +260,7 @@
                     </button>
                     <button
                       type="submit"
-                      @click="cancelEditing"
+                      @click="closeModal"
                       class="px-6 py-3 bg-red-500 text-white rounded-lg flex items-center gap-2 hover:bg-red-600 transition-colors">
                       <i class="fas fa-times"></i>
                       취소
@@ -336,8 +336,7 @@
 <script setup>
 import WorkersList from "./components/WorkersList.vue";
 import { ref, computed, watch } from "vue";
-import SearchSelect from "./components/SearchSelect.vue";
-import SearchDateSelect from "./components/SearchDateSelect.vue";
+
 const date = ref("오늘");
 const pickup = ref("all");
 const area = ref("all");
@@ -683,6 +682,10 @@ const openAddModal = () => {
   };
   document.body.style.overflow = "hidden";
 };
+const closeModal = () => {
+  isAddModalOpen.value = false;
+  document.body.style.overflow = "auto";
+};
 
 const profileImage = ref("/images/people1.png");
 const showImageModal = ref(false);
@@ -742,24 +745,53 @@ const startEditing = () => {
   isEditing.value = true;
 };
 const saveProfile = () => {
-  // 실제 API 호출 로직 추가 예정
   const profile = {
     name: driverName.value,
     phone: driverPhone.value,
     email: driverEmail.value,
     vehicle: vehicleInfo.value,
   };
-  alert(
-    `프로필 저장 완료 :이름 : ${profile.name}전화번호 : ${profile.phone} 이메일:${profile.email} 차랑종류:${profile.vehicle}`
-  );
-  isEditing.value = false;
+
+  const confirmMessage = `
+  아래 정보를 저장하시겠습니까?
+
+  이름: ${profile.name}
+  전화번호: ${profile.phone}
+  이메일: ${profile.email}
+  차량 정보: ${profile.vehicle}
+  `;
+
+  if (confirm(confirmMessage)) {
+    // 사용자가 확인을 눌렀을 때 실행
+    alert("프로필이 저장되었습니다.");
+    isEditing.value = false;
+    closeModal(); // 모달 닫기
+  } else {
+    // 사용자가 취소를 눌렀을 때 실행
+    alert("저장이 취소되었습니다.");
+  }
 };
 const cancelEditing = () => {
-  driverName.value = oring.value.name;
-  driverPhone.value = oring.value.phone;
-  driverEmail.value = oring.value.email;
-  vehicleInfo.value = oring.value.vehicle;
-  isEditing.value = false;
+    const hasChanged =
+    driverName.value !== oring.value.name ||
+    driverPhone.value !== oring.value.phone ||
+    driverEmail.value !== oring.value.email ||
+    vehicleInfo.value !== oring.value.vehicle;
+
+  if (hasChanged) {
+    if (confirm("정말 저장을 취소하시겠습니까?")) {
+      isEditing.value = false;
+      // 원래 값으로 되돌림
+      driverName.value = oring.value.name;
+      driverPhone.value = oring.value.phone;
+      driverEmail.value = oring.value.email;
+      vehicleInfo.value = oring.value.vehicle;
+      closeModal();
+    }
+  } else {
+    isEditing.value = false;
+    closeModal(); // 변경사항 없을 경우 그냥 닫기
+  } return
 };
 const oring = ref({
   name: driverName.value,
@@ -842,7 +874,7 @@ const oring = ref({
   }
 }
 
-@media screen and (max-width: 430px) {
+@media screen and (max-width: 440px) {
   .infoP {
     display: none;
   }

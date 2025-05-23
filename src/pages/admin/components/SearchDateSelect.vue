@@ -2,20 +2,6 @@
   <div class="flex justify-start items-center -ml-3 ">
     <label class="text-sm text-center font-medium text-gray-700">{{ label }}</label>
     
-    <!-- 기준일 선택 -->
-    <!-- <select
-      v-model="localValue"
-      @change="$emit('change')"
-      class="rounded-md text-center border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-    >
-      <option
-        v-for="option in options"
-        :key="option.value"
-        :value="option.value"
-      >
-        {{ option.label }}
-      </option>
-    </select> -->
 
     <!-- 날짜 범위 입력 -->
     <input

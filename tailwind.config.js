@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
-  safelist: ['max-[900px]:inline', 'max-[900px]:hidden','max-[510px]:block', 'max-[510px]:hidden'],
+  safelist: ['max-[1090px]:hidden', 'max-[900px]:inline', 'max-[900px]:hidden','max-[510px]:block', 'max-[510px]:hidden'],
   theme: {
     extend: {
       colors: {

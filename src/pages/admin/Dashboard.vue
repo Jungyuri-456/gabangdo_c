@@ -280,12 +280,12 @@
       </div>
 
       <!-- 최근 예약 -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 dark:text-white">
+      <div class="bg-white dark:bg-gray-600 rounded-lg shadow p-6 dark:text-white">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
           매출 현황
         </h2>
-        <div class="h-64">
-          <ChartRound />
+        <div class="h-64 dark:text-white ">
+          <ChartRound  />
         </div>
       </div>
     </div>
