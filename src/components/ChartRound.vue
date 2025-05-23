@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import { reactive, ref, watchEffect } from "vue";
 import { Pie } from "vue-chartjs";
 
 // Chart.js 요소 등록
@@ -24,26 +25,37 @@ const data = {
 };
 
 // 차트 옵션
-const options = {
+const options = reactive({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     datalabels: {
-      color: '#fff',
+      color: '#000000', // 기본값, watchEffect에서 업데이트됨
       font: {
         weight: 'normal',
         size: 10,
       },
       formatter: (value: number, context: any) => {
         const label = context.chart.data.labels[context.dataIndex];
-        return [label, value];  // 줄바꿈 표시
+        return [label, value]; // 줄바꿈 표시
       },
       anchor: 'center',
       align: 'center',
     },
     legend: {
       position: 'bottom',
+      labels: {
+        color: '#000000', // 기본값, watchEffect에서 업데이트됨
+      },
     },
   },
-};
+});
+// 다크 모드 감지
+const isDarkMode = ref(false);
+// 다크모드 여부에 따라 색상 업데이트
+watchEffect(() => {
+  const textColor = isDarkMode.value ? '#000000': '#ffffff';
+  options.plugins.datalabels.color = textColor;
+  options.plugins.legend.labels.color = textColor;
+});
 </script>
