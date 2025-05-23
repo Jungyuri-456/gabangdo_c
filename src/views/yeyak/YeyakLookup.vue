@@ -1,16 +1,3 @@
-<style>
-/*푸터 .fixed-buttons 영역을 클릭 투명하게*/
-:deep(.fixed-buttons) {
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-/*푸터 안의 a, button 만 클릭 허용*/
-:deep(.fixed-buttons) a,
-:deep(.fixed-buttons) button {
-  pointer-events: auto !important;
-}
-</style>
-
 <script setup>
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
@@ -27,7 +14,7 @@ const formattedNumber = computed({
   get() {
     const digits = phoneRaw.value.replace(/\D/g, "").slice(0, 8);
     return digits.length > 4
-      ? `${digits.slice(0, 4)}-${digits.slice(4)}`
+      ? `${digits.slice(0, 4)}${digits.slice(4)}`
       : digits;
   },
   set(val) {
@@ -42,7 +29,7 @@ function goToLookup() {
 </script>
 
 <template>
-  <div class="wrap">
+  <div class="wrap_total">
     <div class="st_wrap">
       <div class="yy_title1">
         <div class="title_txt1">
@@ -58,40 +45,23 @@ function goToLookup() {
               <input v-model="name" placeholder="이름 입력" />
             </div>
           </div>
-
           <!-- 연락처 입력 -->
           <div class="info-row">
             <div class="phone-input my-button">
-              <CustomSelect
-                v-model="telPrefix"
-                :options="[
-                  { value: '010', label: '010' },
-                  { value: '011', label: '011' },
-                  { value: '016', label: '016' },
-                  { value: '017', label: '017' },
-                  { value: '018', label: '018' },
-                  { value: '019', label: '019' },
-                ]"
-                placeholder="전화번호 앞자리"
-              />
+              <CustomSelect v-model="telPrefix" />
               <input
                 v-model="formattedNumber"
                 maxlength="9"
-                placeholder="전화번호 입력(8자리)"
-                class="datetime-input"
-              />
+                placeholder="전화번호 입력(8자리)" />
             </div>
           </div>
-
           <!-- 예약번호 입력 -->
           <div class="info-row">
-            <div class="lookup">
+            <div class="lookup-input">
               <input
-                class="st_look"
                 v-model="reservationNumber"
                 type="text"
-                placeholder="예약번호를 입력해주세요."
-              />
+                placeholder="예약번호를 입력해주세요." />
             </div>
           </div>
         </div>
@@ -108,41 +78,14 @@ function goToLookup() {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "@/assets/Main.scss" as *;
-@use "@/assets/_Variables.scss" as *;
+@use "/src/assets/Main.scss" as *;
+@use "/src/assets/Variables.scss" as *;
 
-// 스타일 변수
-$border-gray: #b5b5b5;
-$blue-sky: #279bf3;
-$red-holiday: #e63946;
-$blue-weekend: #1a44ff;
-$gray-past: #cccccc;
-$dark-gray: #333333;
-$radius: 8px;
-
-//전체배경
-.wrap {
-  padding: 100px 0;
-  min-height: 100vh; /* 화면 전체 높이를 확보한 뒤 */
-  background: linear-gradient(
-    to top,
-    #e2f1fc 50%,
-    /* 아래 50% */ transparent 50% /* 위 50% */
-  );
-}
-.wrap {
-  padding: 100px 0;
-  min-height: 100vh; /* 화면 전체 높이를 확보한 뒤 */
-  background: linear-gradient(
-    to top,
-    #e2f1fc 50%,
-    /* 아래 50% */ transparent 50% /* 위 50% */
-  );
-}
 // 전체 래퍼
 .st_wrap {
+  width: 100%;
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -153,22 +96,21 @@ $radius: 8px;
 
 .yy_title1 {
   display: flex;
-  gap: 10px;
-  line-height: 40px;
-  flex-wrap: wrap; /* 넘치면 자동 줄바꿈 */
-  align-items: center; /* 세로 중앙 정렬 */
-  justify-content: center; /* 가로 중앙 정렬 */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   padding-bottom: 30px;
   .title_txt1 h1 {
     font-size: 40px;
-    font-family: $font-gothic;
+    font-family: $font-ownglyph;
   }
 }
 
 .st_line {
-  min-width: 0;
   width: 100%;
   max-width: 600px;
+  box-sizing: border-box;
+  margin: 0 auto;
   border: 1px solid $border-gray;
   box-shadow: $box-shadow;
   border-radius: $radius;
@@ -180,8 +122,6 @@ $radius: 8px;
 
 .container {
   width: 100%;
-  // background: #f8f9fa;
-  border-radius: $radius;
   padding: 20px;
   margin-bottom: 30px;
 }
@@ -194,7 +134,7 @@ $radius: 8px;
 input,
 select {
   width: 100%;
-  height: 44px;
+  height: 40px;
   padding: 10px;
   font-size: 15px;
   border: 1px solid $border-gray;
@@ -202,7 +142,6 @@ select {
   background: #fff;
   box-sizing: border-box;
   color: $dark-gray;
-
   &:focus {
     outline: 3px solid $blue-sky;
     outline-offset: -2px;
@@ -212,7 +151,7 @@ select {
 .name-input {
   gap: 10px;
   display: flex;
-  height: 44px;
+  height: 40px;
   width: 100%;
   color: $dark-gray;
   margin-bottom: 10px;
@@ -221,33 +160,48 @@ select {
 .phone-input {
   display: flex;
   gap: 10px;
-  height: 44px;
+  height: 40px;
   width: 100%;
   color: $dark-gray;
   margin-bottom: 10px;
-
   input {
+    display: flex;
+    align-items: center;
     flex: 1;
-    height: 44px;
+    height: 40px;
     border-radius: $radius;
     padding: 10px;
     border: 1px solid $border-gray;
     color: $dark-gray;
+    .phone-input input:focus {
+      outline: 3px solid $blue-sky;
+      outline-offset: -2px;
+    }
   }
 }
 
-:deep(.phone-input select:focus),
-:deep(.phone-input input:focus) {
-  outline: 3px solid $blue-sky !important;
-  outline-offset: -2px !important;
-}
-
-.lookup {
+//예약번호
+.lookup-input {
   display: flex;
   gap: 10px;
-  height: 44px;
+  height: 40px;
   width: 100%;
   color: $dark-gray;
+  margin-bottom: 10px;
+  input {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    height: 40px;
+    border-radius: $radius;
+    padding: 10px;
+    border: 1px solid $border-gray;
+    color: $dark-gray;
+    .phone-input input:focus {
+      outline: 3px solid $blue-sky;
+      outline-offset: -2px;
+    }
+  }
 }
 
 // 제출 버튼

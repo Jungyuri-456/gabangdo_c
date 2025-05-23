@@ -57,77 +57,76 @@ const handleLogin = () => {
 </script>
 
 <template>
-  <div class="login-container">
-    <div class="login-box">
-      <div class="loginImg">
-        <img src="/images/yr/loginpage/newLogo.png" alt="" />
-      </div>
-
-      <!-- 유형 선택 아이콘 -->
-      <div class="form-group">
-        <!-- <label>유형</label> -->
-        <div class="role-options">
-          <!-- <p>여행의 시작은 가방도와 함께</p> -->
-          <button
-            type="button"
-            :class="{ active: formData.role === 'customer' }"
-            @click="formData.role = 'customer'"
-          >
-            <img src="/images/yr/loginpage/owner.png" alt="고객" />
-            <!-- <span>고객</span>  -->
-          </button>
-
-          <button
-            type="button"
-            :class="{ active: formData.role === 'worker' }"
-            @click="formData.role = 'worker'"
-          >
-            <img src="/images/yr/loginpage/deliveryman.png" alt="기사" />
-            <!-- <span>기사</span> -->
-          </button>
-        </div>
-      </div>
-      <form @submit.prevent="handleLogin" class="login-form">
-        <div class="form-group">
-          <!-- <label for="email">이메일</label> -->
-          <input
-            type="email"
-            id="email"
-            v-model="formData.email"
-            placeholder="이메일을 입력하세요"
-            required
-          />
+  <div class="wrap_total">
+    <div class="login-container">
+      <div class="login-box">
+        <div class="loginImg">
+          <img src="/images/yr/loginpage/newLogo.png" alt="" />
         </div>
 
+        <!-- 유형 선택 아이콘 -->
         <div class="form-group">
-          <!-- <label for="password">비밀번호</label> -->
-          <div class="password-input">
-            <input
-              id="password"
-              :type="showPassword ? 'text' : 'password'"
-              v-model="formData.password"
-              placeholder="비밀번호를 입력하세요"
-              required
-            />
+          <!-- <label>유형</label> -->
+          <div class="role-options">
+            <!-- <p>여행의 시작은 가방도와 함께</p> -->
             <button
-              @click="togglePassword"
               type="button"
-              class="toggle-password"
-            >
-              <img
-                :src="
-                  showPassword
-                    ? '/images/yr/loginpage/eye-off.png'
-                    : '/images/yr/loginpage/eye.png'
-                "
-                alt="비밀번호 보기 토글"
-                class="eye-icon"
-              />
+              :class="{ active: formData.role === 'customer' }"
+              @click="formData.role = 'customer'">
+              <img src="/images/yr/loginpage/owner.png" alt="고객" />
+              <!-- <span>고객</span>  -->
+            </button>
+
+            <button
+              type="button"
+              :class="{ active: formData.role === 'worker' }"
+              @click="formData.role = 'worker'">
+              <img src="/images/yr/loginpage/deliveryman.png" alt="기사" />
+              <!-- <span>기사</span> -->
             </button>
           </div>
         </div>
+        <form @submit.prevent="handleLogin" class="login-form">
+          <div class="form-group">
+            <!-- <label for="email">이메일</label> -->
+            <input
+              type="email"
+              id="email"
+              name="email"
+              v-model="formData.email"
+              placeholder="이메일을 입력하세요"
+              autocomplete="username"
+              required />
+          </div>
 
-        <!-- 유형추가 고객 / 기사
+          <div class="form-group">
+            <!-- <label for="password">비밀번호</label> -->
+            <div class="password-input">
+              <input
+                id="password"
+                name="password"
+                :type="showPassword ? 'text' : 'password'"
+                v-model="formData.password"
+                placeholder="비밀번호를 입력하세요"
+                autocomplete="current-password"
+                required />
+              <button
+                @click="togglePassword"
+                type="button"
+                class="toggle-password">
+                <img
+                  :src="
+                    showPassword
+                      ? '/images/yr/loginpage/eye-off.png'
+                      : '/images/yr/loginpage/eye.png'
+                  "
+                  alt="비밀번호 보기 토글"
+                  class="eye-icon" />
+              </button>
+            </div>
+          </div>
+
+          <!-- 유형추가 고객 / 기사
         <div class="form-group">
           <label for="role">유형</label>
           <select id="role" v-model="formData.role" required>
@@ -136,7 +135,7 @@ const handleLogin = () => {
           </select>
         </div> -->
 
-        <!-- <div class="form-options">
+          <!-- <div class="form-options">
           <label class="remember-me">
             <input type="checkbox" />
             <span>로그인 상태 유지</span>
@@ -146,58 +145,55 @@ const handleLogin = () => {
           </router-link>
         </div> -->
 
-        <button type="submit" class="login-btn">로그인</button>
-      </form>
+          <button type="submit" class="login-btn">로그인</button>
+        </form>
 
-      <div class="signup-link">
-        아직 회원이 아니신가요?
-        <router-link to="/signup">회원가입</router-link>
+        <div class="signup-link">
+          아직 회원이 아니신가요?
+          <router-link to="/signup">회원가입</router-link>
+        </div>
       </div>
-    </div>
-    <div class="bb_sns-login">
-      <div class="bb_grayline"></div>
-      <p>간편 로그인</p>
-      <div class="bb_grayline"></div>
-    </div>
-    <div class="bb_sns-icons">
-      <a
-        href="https://accounts.kakao.com/login/?continue=https%3A%2F%2Faccounts.kakao.com%2Fweblogin%2Faccount#login"
-        ><img src="/images/yr/loginpage/loginKT.png" alt="깨톡"
-      /></a>
-      <a
-        href="https://nid.naver.com/nidlogin.login?mode=form&url=https://www.naver.com/"
-        ><img src="/images/yr/loginpage/loginN.png" alt="네이버"
-      /></a>
+      <div class="bb_sns-login">
+        <div class="bb_grayline"></div>
+        <p>간편 로그인</p>
+        <div class="bb_grayline"></div>
+      </div>
+      <div class="bb_sns-icons">
+        <a
+          href="https://accounts.kakao.com/login/?continue=https%3A%2F%2Faccounts.kakao.com%2Fweblogin%2Faccount#login"
+          ><img src="/images/yr/loginpage/loginKT.png" alt="깨톡"
+        /></a>
+        <a
+          href="https://nid.naver.com/nidlogin.login?mode=form&url=https://www.naver.com/"
+          ><img src="/images/yr/loginpage/loginN.png" alt="네이버"
+        /></a>
 
-      <a
-        href="https://accounts.google.com/InteractiveLogin/signinchooser?continue=https%3A%2F%2Ftakeout.google.com%2F%3Fhl%3Dko&followup=https%3A%2F%2Ftakeout.google.com%2F%3Fhl%3Dko&hl=ko&osid=1&passive=1209600&ifkv=AXH0vVudToPB1oXfNyrRstCJ2S8_6MGsxrjKMEimiqpbXowYURSOX1dz9tFsLIFhTsRW8skj6ngVQw&ddm=1&flowName=GlifWebSignIn&flowEntry=ServiceLogin"
-        ><img src="/images/yr/loginpage/loginG.png" alt="구글"
-      /></a>
+        <a
+          href="https://accounts.google.com/InteractiveLogin/signinchooser?continue=https%3A%2F%2Ftakeout.google.com%2F%3Fhl%3Dko&followup=https%3A%2F%2Ftakeout.google.com%2F%3Fhl%3Dko&hl=ko&osid=1&passive=1209600&ifkv=AXH0vVudToPB1oXfNyrRstCJ2S8_6MGsxrjKMEimiqpbXowYURSOX1dz9tFsLIFhTsRW8skj6ngVQw&ddm=1&flowName=GlifWebSignIn&flowEntry=ServiceLogin"
+          ><img src="/images/yr/loginpage/loginG.png" alt="구글"
+        /></a>
+      </div>
     </div>
   </div>
 </template>
 
 <style lang="scss" scoped>
-@use "/src/assets/_Variables.scss" as *;
+@use "sass:color";
+@use "/src/assets/Main.scss" as *;
+@use "/src/assets/Variables.scss" as *;
+
 .login {
-  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
-  padding: 2rem;
 }
 
 .login-container {
-  margin-bottom: 100px !important;
   background: white;
-  padding: 2rem;
   border-radius: 8px;
   // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
-  margin: auto;
-  margin-top: 120px;
   text-align: center;
   .loginImg {
     img {
@@ -225,27 +221,56 @@ label {
 
 input,
 select {
-  width: 90%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+  font-size: 15px;
+  border: 1px solid $border-gray;
+  border-radius: $radius;
+  box-sizing: border-box;
+  color: $dark-gray;
+  &:focus {
+    outline: 3px solid $blue-sky;
+    outline-offset: -2px;
+  }
 }
 
 .password-input {
   position: relative;
-}
-
-.toggle-password {
-  position: absolute;
-  right: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #666;
-  cursor: pointer;
-  font-size: 0.9rem;
+  input {
+    width: 100%;
+    height: 40px;
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid $border-gray;
+    border-radius: $radius;
+    box-sizing: border-box;
+    color: $dark-gray;
+    &:focus {
+      outline: 3px solid $blue-sky;
+      outline-offset: -2px;
+    }
+  }
+  .toggle-password {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #888888;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  .eye-icon {
+    display: block;
+    width: 20px;
+    height: auto;
+    opacity: 0.5;
+    &:hover {
+      opacity: 0.7;
+    }
+  }
 }
 
 .form-options {
@@ -437,41 +462,6 @@ select {
   width: 20px;
   height: 20px;
   margin-bottom: 5px;
-}
-
-.password-input {
-  position: relative;
-  width: 100%;
-}
-
-.password-input input {
-  width: 82%;
-  padding: 10px 40px 10px 12px; /* 오른쪽에 버튼 공간 확보 */
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-}
-
-.toggle-password {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-}
-
-.eye-icon {
-  width: 20px;
-  height: 20px;
-  opacity: 0.6;
-  transition: opacity 0.2s ease;
-}
-
-.toggle-password:hover .eye-icon {
-  opacity: 1;
 }
 
 @media (max-width: 480px) {

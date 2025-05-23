@@ -1,16 +1,3 @@
-<style>
-/*푸터 .fixed-buttons 영역을 클릭 투명하게*/
-:deep(.fixed-buttons) {
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-/*푸터 안의 a, button 만 클릭 허용*/
-:deep(.fixed-buttons) a,
-:deep(.fixed-buttons) button {
-  pointer-events: auto !important;
-}
-</style>
-
 <script setup>
 import { computed, ref, onBeforeUnmount } from "vue";
 
@@ -296,7 +283,7 @@ function setCategory(cat) {
 
 <template>
   <!-- 전체 -->
-  <div class="wrap">
+  <div class="wrap_total">
     <div class="st_wrap">
       <!-- 상단컨테이너 -->
       <div class="st_customer">
@@ -332,8 +319,7 @@ function setCategory(cat) {
             v-model="searchQuery"
             class="st_search"
             type="text"
-            placeholder="검색어를 입력하세요"
-          />
+            placeholder="검색어를 입력하세요" />
           <button class="st_search-btn my-button" @click="onSearch">
             검색
           </button>
@@ -345,8 +331,7 @@ function setCategory(cat) {
             :key="cat"
             @click="setCategory(cat)"
             :class="{ active: selectedCategory === cat }"
-            class="st_category-btn my-button"
-          >
+            class="st_category-btn my-button">
             {{ cat }}
           </button>
         </div>
@@ -365,8 +350,7 @@ function setCategory(cat) {
                           ? '/images/cr/up.png'
                           : '/images/cr/down.png'
                       "
-                      alt="토글 아이콘"
-                    />
+                      alt="토글 아이콘" />
                   </div>
                 </td>
               </tr>
@@ -386,16 +370,14 @@ function setCategory(cat) {
         <button
           class="my-button"
           @click="prevPage"
-          :disabled="currentPage === 1"
-        >
+          :disabled="currentPage === 1">
           이전
         </button>
         <span>{{ currentPage }} / {{ totalPages }}</span>
         <button
           class="my-button"
           @click="nextPage"
-          :disabled="currentPage === totalPages"
-        >
+          :disabled="currentPage === totalPages">
           다음
         </button>
       </div>
@@ -405,33 +387,13 @@ function setCategory(cat) {
 
 <style lang="scss" scoped>
 @use "sass:color";
-@use "@/assets/Main.scss" as *;
-@use "@/assets/_Variables.scss" as *;
-
-// 스타일 변수
-$border-gray: #b5b5b5;
-$blue-sky: #279bf3;
-$red-holiday: #e63946;
-$blue-weekend: #1a44ff;
-$gray-past: #cccccc;
-$dark-gray: #333333;
-$radius: 8px;
-
-//전체배경
-.wrap {
-  padding: 100px 0;
-  min-height: 100vh; /* 화면 전체 높이를 확보한 뒤 */
-  background: linear-gradient(
-    to top,
-    #e2f1fc 50%,
-    /* 아래 50% */ transparent 50% /* 위 50% */
-  );
-}
+@use "/src/assets/Main.scss" as *;
+@use "/src/assets/Variables.scss" as *;
 
 // 전체 래퍼
 .st_wrap {
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   text-align: center;
@@ -443,7 +405,6 @@ $radius: 8px;
 // 타이틀
 .st_title1 {
   display: flex;
-  gap: 10px;
   align-items: center;
   justify-content: center;
   text-align: center;

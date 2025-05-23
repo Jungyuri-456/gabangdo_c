@@ -1,38 +1,9 @@
-<style>
-/*푸터 .fixed-buttons 영역을 클릭 투명하게*/
-:deep(.fixed-buttons) {
-  pointer-events: none !important;
-  z-index: 0 !important;
-}
-/*푸터 안의 a, button 만 클릭 허용*/
-:deep(.fixed-buttons) a,
-:deep(.fixed-buttons) button {
-  pointer-events: auto !important;
-}
-</style>
-
-<script setup>
-import { defineProps, defineEmits } from "vue";
-
-// props 정의
-const props = defineProps({
-  steps: Array,
-  currentStep: Number,
-  show: Boolean,
-});
-
-// Parent에게 이벤트를 올릴 emit 정의
-const emit = defineEmits(["prev", "next", "go"]);
-</script>
-
 <template>
   <transition name="stepper-fade">
-    <div v-show="show" class="sticky-stepper">
-      <!-- 좌측 페이드 아웃 오버레이 -->
-      <div class="fade-overlay fade-left"></div>
+    <div class="sticky-stepper" ref="stepperEl">
       <!-- Prev 버튼 -->
       <div class="step-nav">
-        <button @click="emit('prev')" :disabled="props.currentStep === 1">
+        <button @click="goPrev" :disabled="stepIndex === 1">
           <img src="/images/cr/down.png" class="rotate" alt="이전" />
         </button>
       </div>
@@ -43,58 +14,125 @@ const emit = defineEmits(["prev", "next", "go"]);
           :key="idx"
           :class="[
             'step',
-            {
-              done: idx < props.currentStep - 1,
-              active: idx === props.currentStep - 1,
-            },
+            { done: idx < stepIndex - 1, active: idx === stepIndex - 1 },
           ]">
           <div class="wrap">
-            <div
-              class="circle"
-              @click="emit('go', idx + 1)"
-              style="cursor: pointer">
-              {{ idx + 1 }}
-            </div>
+            <div class="circle" @click="goTo(idx + 1)">{{ idx + 1 }}</div>
+            <div v-if="idx < props.steps.length - 1" class="bar"></div>
             <div class="label">{{ step }}</div>
           </div>
-          <div v-if="idx < props.steps.length - 1" class="bar"></div>
         </div>
       </div>
       <!-- Next 버튼 -->
       <div class="step-nav">
-        <button
-          @click="emit('next')"
-          :disabled="props.currentStep === props.steps.length">
+        <button @click="goNext" :disabled="stepIndex === props.steps.length">
           <img src="/images/cr/up.png" class="rotate" alt="다음" />
         </button>
       </div>
-      <!-- 우측 페이드 아웃 오버레이 -->
-      <div class="fade-overlay fade-right"></div>
     </div>
   </transition>
 </template>
 
+<script setup>
+import { ref, onMounted, onBeforeUnmount, nextTick, watch } from "vue";
+
+const props = defineProps({
+  steps: { type: Array, required: true },
+  selectors: { type: Array, required: true },
+});
+const emit = defineEmits(["go"]);
+
+const stepIndex = ref(1);
+const sectionEls = [];
+let observer = null;
+const stepperEl = ref(null);
+
+// 스텝 이동 함수
+function goTo(idx) {
+  const clamped = Math.min(Math.max(1, idx), sectionEls.length);
+  const el = sectionEls[clamped - 1];
+  if (!el) return;
+  stepIndex.value = clamped;
+  // 스텝퍼 위치 재계산
+  updateStepperPosition();
+  // 스크롤
+  const offset =
+    (stepperEl.value?.getBoundingClientRect().height || 0) + headerGap;
+  window.scrollTo({ top: el.offsetTop - offset, behavior: "smooth" });
+  emit("go", clamped);
+}
+const goPrev = () => goTo(stepIndex.value - 1);
+const goNext = () => goTo(stepIndex.value + 1);
+
+const headerGap = 90; // 헤더 높이 75 + gap 15
+
+// 스텝퍼 위치 재계산 (bottom 맞춤)
+function updateStepperPosition() {
+  const sp = stepperEl.value;
+  if (!sp) return;
+  const idx = stepIndex.value - 1;
+  const sec = sectionEls[idx];
+  const title = sec?.querySelector(".st_section-title");
+  if (!title) return;
+  const h = sp.getBoundingClientRect().height;
+  const margin = 10;
+  const newTop = title.offsetTop - h - margin;
+  sp.style.top = newTop + "px";
+}
+
+onMounted(() => {
+  nextTick(() => {
+    // 섹션 요소 수집
+    props.selectors.forEach((sel) => {
+      const el = document.querySelector(sel);
+      if (el) sectionEls.push(el);
+    });
+    // IntersectionObserver for active step
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            const i = sectionEls.indexOf(e.target);
+            if (i !== -1 && stepIndex.value !== i + 1) {
+              stepIndex.value = i + 1;
+            }
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+    sectionEls.forEach((el) => observer.observe(el));
+    // 초기 위치
+    updateStepperPosition();
+  });
+});
+
+onBeforeUnmount(() => {
+  if (observer) observer.disconnect();
+});
+
+// active 변경 시 위치 업데이트
+watch(stepIndex, () => updateStepperPosition());
+</script>
+
 <style lang="scss" scoped>
 @use "sass:color";
-@use "@/assets/Main.scss" as *;
-@use "@/assets/_Variables.scss" as *;
+@use "/src/assets/Main.scss" as *;
+@use "/src/assets/Variables.scss" as *;
 
-// ── 컨테이너 스타일 ──
 .sticky-stepper {
-  position: sticky;
-  top: var(--sticky-top, 10px);
-  left: 50;
+  position: fixed;
+  left: 0;
   right: 0;
-  margin: 0 auto;
-  width: 100%;
+  z-index: 6000;
+  /* top은 JS에서 동적으로 설정 */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 5998;
   padding: 5px 10px;
   background: linear-gradient(
     to right,
-    transparent 0px,
+    transparent 0,
     transparent 50px,
     #fff 50px,
     #fff calc(100% - 50px),
@@ -103,41 +141,11 @@ const emit = defineEmits(["prev", "next", "go"]);
   );
   background-repeat: no-repeat;
   background-size: 100% 100%;
+
   border-top: 3px solid #c1ebd0;
   border-bottom: 3px solid #c1ebd0;
-
-  &::before,
-  &::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 55px;
-    pointer-events: none;
-  }
-  &::before {
-    left: 0;
-    background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 1) 100%
-    );
-  }
-  &::after {
-    right: 0;
-    background: linear-gradient(
-      to left,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 1) 100%
-    );
-  }
-  > * {
-    position: relative;
-    z-index: 6000;
-  }
 }
-
-// ── Prev/Next 버튼 ──
+/* Prev/Next 버튼 */
 .step-nav button {
   background: none;
   border: none;
@@ -157,64 +165,54 @@ const emit = defineEmits(["prev", "next", "go"]);
     filter: invert(100%) brightness(80%);
   }
 }
-
-// ── 스텝바 (원+레이블) ──
 .stepper {
   flex: 1;
   display: flex;
-  justify-content: space-between;
-  position: relative;
-
-  .step {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-
-    // 원 사이사이 2px 실선 구분
-    & + .step {
-      &::before {
-        content: "";
-        position: absolute;
-        top: 25%;
-        left: -50%;
-        width: 100%;
-        border-top: 3px solid #ddd;
-        transform: translateY(-50%);
-      }
-    }
-
-    .wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .circle {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      border: 3px solid #ddd;
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      z-index: 2;
-    }
-    .label {
-      margin-top: 4px;
-      font-size: 13px;
-      color: #555;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-  }
+  align-items: center;
+  justify-content: space-evenly;
 }
 
-// ── 액티브/완료 스타일 (예시) ──
+.step {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.bar {
+  flex: 1;
+  height: 3px;
+  background: #ddd;
+  margin: 0 -4px;
+  z-index: 1;
+}
+
+.circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid #ddd;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.label {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #555;
+  text-align: center;
+}
+
 .step.done .circle {
   background: #ccc;
   border-color: #ccc;
@@ -229,11 +227,10 @@ const emit = defineEmits(["prev", "next", "go"]);
   font-weight: bold;
 }
 
-/* transition 클래스 */
 .stepper-fade-enter-from,
 .stepper-fade-leave-to {
   opacity: 0;
-  margin-top: -10px; /* 스티키 기준 위로 10px */
+  margin-top: -10px;
 }
 .stepper-fade-enter-to,
 .stepper-fade-leave-from {
