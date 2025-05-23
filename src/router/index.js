@@ -22,7 +22,6 @@ import Assign from "../pages/worker/Assign.vue";
 import AssignedJobs from "../pages/worker/AssignedJobs.vue";
 import Jobhistory from "../pages/worker/Jobhistory.vue";
 import Profile from "@/pages/worker/Profile.vue";
-import workerLogin from "@/pages/worker/workerLogin.vue";
 // 관리자페이지
 import LoginAdmin from "../views/LoginAdmin.vue";
 import AdminHome from "../pages/admin/AdminHome.vue";
@@ -32,7 +31,6 @@ import Settings from "../pages/admin/Settings.vue";
 import Workers from "../pages/admin/Workers.vue";
 import Reservations from "../pages/admin/Reservations.vue";
 import Terminals from "../pages/admin/Terminals.vue";
-import WorkerLogin from "@/pages/worker/workerLogin.vue";
 const routes = [
   { path: "/", component: Home },
   { path: "/bangbeob2", component: Bangbeob2 },
@@ -81,10 +79,6 @@ const routes = [
       {
         path: "profile",
         component: Profile,
-      },
-      {
-        path: "workerLogin",
-        component: WorkerLogin,
       },
     ],
   },
