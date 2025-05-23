@@ -1,10 +1,11 @@
 <template>
   <div class="chart-container">
-    <Line :data="chartData" :options="chartOptions" />
+    <Line :data="chartData" :options="chartOptions" class="dark:text-white" />
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted, watchEffect } from 'vue';
 import { Line } from "vue-chartjs";
 import {
   Chart as ChartJS,
@@ -26,7 +27,12 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-
+// 다크 모드 감지
+const isDarkMode = ref(false);
+onMounted(() => {
+  isDarkMode.value = document.documentElement.classList.contains('dark');
+});
+// 차트데이터
 const chartData = {
   labels: ["1월", "2월", "3월", "4월", "5월", "6월"],
   datasets: [
@@ -44,44 +50,53 @@ const chartData = {
     },
   ],
 };
+// 차트옵션
+const chartOptions = ref({});
+watchEffect(() => {
+  const textColor = isDarkMode.value ? '#ffffff' : '#000000';
+  const gridColor = isDarkMode.value ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
 
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: true,
-      position: "top",
-      labels: {
-        font: {
-          size: 12,
+  chartOptions.value = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: "top",
+        labels: {
+          color: textColor,
+          font: { size: 12 },
+        },
+      },
+      tooltip: {
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
+        titleColor: "#fff",
+        bodyColor: "#fff",
+        titleFont: { size: 14 },
+        bodyFont: { size: 12 },
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: gridColor,
+        },
+        ticks: {
+          color: textColor,
+        },
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: textColor,
         },
       },
     },
-    tooltip: {
-      backgroundColor: "rgba(0, 0, 0, 0.8)",
-      titleFont: {
-        size: 14,
-      },
-      bodyFont: {
-        size: 12,
-      },
-    },
-  },
-  scales: {
-    y: {
-      beginAtZero: true,
-      grid: {
-        color: "rgba(0, 0, 0, 0.1)",
-      },
-    },
-    x: {
-      grid: {
-        display: false,
-      },
-    },
-  },
-};
+  };
+});
 </script>
 
 <style scoped>
