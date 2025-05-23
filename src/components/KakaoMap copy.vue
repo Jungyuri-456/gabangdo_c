@@ -67,7 +67,9 @@ function loadKakaoMapScript() {
       resolve();
     } else {
       const script = document.createElement("script");
-      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_KEY}&autoload=false`;
+      script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${
+        import.meta.env.VITE_KAKAO_MAP_KEY
+      }&autoload=false`;
       script.onload = () => window.kakao.maps.load(resolve);
       document.head.appendChild(script);
     }
@@ -92,7 +94,10 @@ onMounted(async () => {
   };
 
   positions.forEach((pos, idx) => {
-    const markerImage = new kakao.maps.MarkerImage(pos.image, new kakao.maps.Size(40, 40));
+    const markerImage = new kakao.maps.MarkerImage(
+      pos.image,
+      new kakao.maps.Size(40, 40)
+    );
     const marker = new kakao.maps.Marker({
       map,
       position: new kakao.maps.LatLng(pos.lat, pos.lng),
@@ -110,7 +115,6 @@ onMounted(async () => {
     kakao.maps.event.addListener(marker, "mouseout", () => {
       infowindow.close();
     });
-
   });
 });
 </script>
