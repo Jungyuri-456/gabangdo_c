@@ -20,7 +20,9 @@ const mdMenuXbutton = () => {
 
 // openHanmberger
 const openHanmberger = () => {
-  isMdMenuOpen.value = !isMdMenuOpen.value;
+  if (window.innerWidth >= 768) return 
+    isMdMenuOpen.value = !isMdMenuOpen.value;
+  
 };
 const links = [
   { name: "대시보드", path: "/admin/dashboard", icon: "fas fa-chart-line" },
@@ -58,18 +60,18 @@ const logout = () => {
           @click="openHanmberger"
           class="bb flex justify-between items-center p-4 px-10 md:justify-center border-b md:-ml-8 border-black bg-white dark:border-gray-700 dark:bg-gray-800">
           <h1
-            class="w-[130px] md:w-full text-xl text-center py-4 md:p-4 pl-0 -ml-1 font-bold  dark:text-white">
+            class="w-[130px] md:w-full text-xl text-center py-4 md:p-4 pl-0 -ml-1 font-bold dark:text-white">
             관리자 대시보드
           </h1>
-          <i
-            class="block mr-1.5 md:hidden first-line:w-8 fas fa-bars"></i>
+          <i  
+            class="block mr-1.5 md:hidden first-line:w-8 fas fa-bars cursor-pointer hover:bg-gray-100 p-1.5 rounded-lg dark:text-white"></i>
         </div>
         <!-- 메뉴 -->
         <div v-if="isMdMenuOpen" class="relative p-4 pl-0">
           <!-- x버튼 -->
           <span
             @click="mdMenuXbutton"
-            class="block md:hidden absolute top-[5px] right-[40px] text-gray-700 dark:text-gray-300 pl-2 pr-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
+            class="block md:hidden absolute top-[5px] right-[49px] text-gray-700 dark:text-gray-300 pl-1.5 pr-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer"
             >X</span
           >
           <!-- 네비게이션 메뉴 -->
@@ -110,6 +112,7 @@ const logout = () => {
     </div>
   </div>
 </template>
+
 
 <style scoped>
 /* 기본 스타일 */
@@ -209,5 +212,4 @@ const logout = () => {
 .dark .text-indigo-300 {
   color: #a5b4fc;
 }
-
 </style>
