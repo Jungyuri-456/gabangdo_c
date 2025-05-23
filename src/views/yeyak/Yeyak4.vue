@@ -149,8 +149,8 @@ function submitReservation() {
                 <span class="label">{{ row.label }}</span>
                 <!-- 가방 요약 -->
                 <div v-if="row.bagLabel !== undefined" class="summary-item">
-                  <span class="bag-label">{{ row.bagLabel }}</span>
-                  <span class="bag-tag">{{ row.bagTag }}</span>
+                  <span class="bag-label">{{ row.bagLabel }}&nbsp;</span>
+                  <span class="bag-tag">{{ row.bagTag }}&nbsp;</span>
                   <span class="bag-count">{{ row.bagCount }}</span>
                 </div>
                 <!-- 예약 정보 2 -->
@@ -165,45 +165,45 @@ function submitReservation() {
               </div>
             </template>
           </div>
-          <!-- 결제 수단 선택 -->
-          <div class="payment">
-            <div class="payment-wrap">
-              <div class="payment-methods">
-                <!-- 일반결제 -->
-                <label
-                  v-for="(val, key) in paymentTexts"
-                  :key="key"
-                  class="payment-option my-button"
-                  :class="{ active: selectedPayment === key }">
-                  <input
-                    type="radio"
-                    v-model="selectedPayment"
-                    :value="key"
-                    name="payment"
-                    class="my-button" />
-                  {{ val }}
-                </label>
-                <!-- 간편결제 -->
-                <div class="payment-icons-wrapper payment-icons-inline">
-                  <span class="payment-label">간편결제</span>
-                  <div class="payment-radio my-button">
-                    <label
-                      v-for="(src, key) in paymentIcons"
-                      :key="key"
-                      class="payment-image my-button"
-                      :class="{ active: selectedPayment === key }">
-                      <input
-                        type="radio"
-                        v-model="selectedPayment"
-                        :value="key"
-                        name="payment"
-                        class="my-button" />
-                      <img
-                        :src="src"
-                        :alt="`${key} 아이콘`"
-                        class="payment-icon my-button" />
-                    </label>
-                  </div>
+        </div>
+        <!-- 결제 수단 선택 -->
+        <div class="payment">
+          <div class="payment-wrap">
+            <div class="payment-methods">
+              <!-- 일반결제 -->
+              <label
+                v-for="(val, key) in paymentTexts"
+                :key="key"
+                class="payment-option my-button"
+                :class="{ active: selectedPayment === key }">
+                <input
+                  type="radio"
+                  v-model="selectedPayment"
+                  :value="key"
+                  name="payment"
+                  class="my-button" />
+                {{ val }}
+              </label>
+              <!-- 간편결제 -->
+              <div class="payment-icons-wrapper payment-icons-inline">
+                <span class="payment-label">간편결제</span>
+                <div class="payment-radio my-button">
+                  <label
+                    v-for="(src, key) in paymentIcons"
+                    :key="key"
+                    class="payment-image my-button"
+                    :class="{ active: selectedPayment === key }">
+                    <input
+                      type="radio"
+                      v-model="selectedPayment"
+                      :value="key"
+                      name="payment"
+                      class="my-button" />
+                    <img
+                      :src="src"
+                      :alt="`${key} 아이콘`"
+                      class="payment-icon my-button" />
+                  </label>
                 </div>
               </div>
             </div>
@@ -327,6 +327,8 @@ function submitReservation() {
 // 결제 수단
 .payment {
   margin-bottom: 30px;
+  position: relative;
+  font-weight: 500;
 }
 .payment-wrap {
   display: flex;
@@ -335,10 +337,9 @@ function submitReservation() {
   gap: 20px;
   width: 100%;
 }
-
 .payment-methods {
   display: grid;
-  height: 40px;
+  height: auto;
   align-items: center;
   justify-content: center;
   grid-template-columns: repeat(3, 1fr);
@@ -403,8 +404,7 @@ function submitReservation() {
 
 .payment-label {
   display: flex;
-  margin-right: auto;
-  font-weight: 600;
+  margin-right: 15px;
   font-size: 15px;
   white-space: nowrap;
   color: $dark-gray;
@@ -431,7 +431,7 @@ function submitReservation() {
   display: flex;
   height: 40px;
   align-items: center;
-  gap: 15px;
+  gap: 5px;
   justify-content: flex-end;
 }
 .payment-image {
@@ -464,20 +464,6 @@ function submitReservation() {
   grid-auto-rows: 40px;
 }
 
-/* ── 진짜 높이·패딩·마진 완전 초기화 ── */
-.payment-option,
-.payment-icons-wrapper,
-.payment-icons-inline,
-.payment-radio {
-  margin: 0;
-  padding: 0 10px;
-  height: 40px !important;
-  box-sizing: border-box !important;
-  line-height: normal !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
 // 제출 버튼
 .button {
   display: flex;
@@ -501,7 +487,6 @@ function submitReservation() {
     background-color: color.adjust($sub-color, $lightness: 20%) !important;
   }
 }
-
 .my-button {
   position: relative;
   z-index: 4000; /* fixed-buttons(1000)보다 높게 */

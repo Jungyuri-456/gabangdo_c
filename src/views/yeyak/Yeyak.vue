@@ -5,9 +5,17 @@ import { useReservationStore } from "@/stores/reservationStore";
 import CalendarPicker from "@/views/yeyak/CalendarPicker.vue";
 import TimePicker from "@/views/yeyak/TimePicker.vue";
 import CustomSelect from "@/views/yeyak/CustomSelect.vue";
-import ProgressStepper from "@//views/yeyak/ProgressStepper.vue";
+import ProgressStepper from "@/views/yeyak/ProgressStepper.vue";
 
+const stepperRef = ref(null);
 const currentStep = ref(1);
+
+function onNextClick() {
+  // stepperRef.value가 null이 아닐 때만 호출
+  if (stepperRef.value) {
+    stepperRef.value.goNext();
+  }
+}
 // ProgressStepper 의 @go 이벤트를 받을 핸들러
 function onStepChange(newIdx) {
   currentStep.value = newIdx;
@@ -226,6 +234,10 @@ function submitReservation() {
     alert("모든 정보를 입력하세요");
     return;
   }
+  if (!agreePrivacy.value || !agreeTerms.value) {
+    alert("필수 약관(개인정보·이용약관)에 동의해주세요");
+    return;
+  }
   reservationStore.setReservation({
     name: name.value,
     telPrefix: telPrefix.value,
@@ -306,6 +318,7 @@ watch(selectedDate, (val) => {
       <div class="grid-container">
         <!-- 스텝퍼 네비바 -->
         <ProgressStepper
+          ref="stepperRef"
           :steps="[
             '예약자정보',
             '날짜/시간',
@@ -328,16 +341,20 @@ watch(selectedDate, (val) => {
               </div>
               <!-- 이름 입력 -->
               <div class="name-input">
-                <input v-model="name" placeholder="이름 입력" />
+                <input
+                  v-model="name"
+                  placeholder="이름을 입력하세요."
+                  @input="onNextClick()" />
               </div>
               <!-- 연락처 입력 -->
               <div class="phone-input my-button">
-                <CustomSelect v-model="telPrefix" />
+                <CustomSelect v-model="telPrefix" @change="onNextClick()" />
                 <input
                   v-model="formattedNumber"
                   maxlength="9"
-                  placeholder="전화번호 입력(8자리)"
-                  class="datetime-input" />
+                  placeholder="전화번호를 입력하세요."
+                  class="datetime-input"
+                  @input="onNextClick()" />
               </div>
             </div>
           </div>
@@ -350,7 +367,10 @@ watch(selectedDate, (val) => {
                   <p class="st_section-title">이용날짜</p>
 
                   <div class="my-button">
-                    <CalendarPicker class="wrapper" v-model="selectedDate" />
+                    <CalendarPicker
+                      class="wrapper"
+                      v-model="selectedDate"
+                      @update:modelValue="onNextClick()" />
                   </div>
                 </div>
                 <!-- 시간 -->
@@ -360,7 +380,8 @@ watch(selectedDate, (val) => {
                     <TimePicker
                       class="wrapper"
                       v-model="selectedTime"
-                      :selectedDate="selectedDate" />
+                      :selectedDate="selectedDate"
+                      @update:modelValue="onNextClick()" />
                   </div>
                 </div>
               </div>
@@ -396,7 +417,10 @@ watch(selectedDate, (val) => {
                   :class="{
                     active: selectedStart === place,
                   }"
-                  @click="toggleStart(place)">
+                  @click="
+                    toggleStart(place);
+                    onNextClick();
+                  ">
                   {{ place }}
                 </button>
               </div>
@@ -408,7 +432,7 @@ watch(selectedDate, (val) => {
               <input
                 type="text"
                 v-model="customStartInput"
-                placeholder="목적지의 주소를 입력하세요"
+                placeholder="목적지의 주소를 입력하세요."
                 @focus="isStartConfirmed = false" />
               <button
                 class="custom-start my-button"
@@ -432,7 +456,10 @@ watch(selectedDate, (val) => {
                   :class="{
                     active: selectedStop === place,
                   }"
-                  @click="toggleStop(place)">
+                  @click="
+                    toggleStop(place);
+                    onNextClick();
+                  ">
                   {{ place }}
                 </button>
               </div>
@@ -444,7 +471,7 @@ watch(selectedDate, (val) => {
               <input
                 type="text"
                 v-model="customStopInput"
-                placeholder="목적지의 주소를 입력하세요"
+                placeholder="목적지의 주소를 입력하세요."
                 @focus="isStopConfirmed = false" />
               <button
                 class="custom-stop my-button"
@@ -483,13 +510,18 @@ watch(selectedDate, (val) => {
                   <div class="bag-controls-wrap">
                     <div class="bag-controls my-button">
                       <button
-                        @click="item.count > 0 && item.count--"
+                        @click="item.count > 0 && (item.count--, onNextClick())"
                         class="ctrl-btn my-button"
                         :disabled="item.count === 0">
                         -
                       </button>
                       <span>{{ item.count }}</span>
-                      <button @click="item.count++" class="ctrl-btn my-button">
+                      <button
+                        @click="
+                          item.count++;
+                          onNextClick();
+                        "
+                        class="ctrl-btn my-button">
                         +
                       </button>
                     </div>
@@ -681,7 +713,12 @@ watch(selectedDate, (val) => {
           <!-- 예약하기버튼 -->
           <div ref="step5" id="step5" class="step-container">
             <div class="button">
-              <button class="my-button st_reser" @click="submitReservation">
+              <button
+                class="my-button st_reser"
+                @click="
+                  submitReservation();
+                  onNextClick();
+                ">
                 예약하기
               </button>
             </div>
@@ -760,6 +797,17 @@ body {
   margin: 0 auto;
   width: 500px;
   height: auto;
+  background: linear-gradient(
+    to right,
+    transparent 0,
+    transparent 50px,
+    #fff 50px,
+    #fff calc(100% - 50px),
+    transparent calc(100% - 50px),
+    transparent 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
 .grid-container {
@@ -813,10 +861,6 @@ body {
 }
 
 // 입력 필드
-:deep(input)::placeholder {
-  color: $dark-gray;
-  opacity: 1;
-}
 input,
 select {
   width: 100%;
@@ -835,12 +879,25 @@ select {
 
 //이름
 .name-input {
-  margin-bottom: 10px;
   gap: 10px;
   display: flex;
   height: 40px;
   width: 100%;
   color: $dark-gray;
+  margin-bottom: 10px;
+  input {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    height: 40px;
+    border-radius: $radius;
+    padding: 10px;
+    border: 1px solid $border-gray;
+    color: $dark-gray;
+    .name-input input:focus {
+      outline: 3px solid $blue-sky;
+    }
+  }
 }
 // 전화번호
 .phone-input {

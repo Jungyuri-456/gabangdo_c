@@ -127,10 +127,6 @@ function goToLookup() {
 }
 
 // 입력 필드
-:deep(input) ::placeholder {
-  color: $dark-gray;
-  opacity: 1;
-}
 input,
 select {
   width: 100%;
@@ -155,6 +151,20 @@ select {
   width: 100%;
   color: $dark-gray;
   margin-bottom: 10px;
+  input {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    height: 40px;
+    border-radius: $radius;
+    padding: 10px;
+    border: 1px solid $border-gray;
+    color: $dark-gray;
+    .name-input input:focus {
+      outline: 3px solid $blue-sky;
+      outline-offset: -2px;
+    }
+  }
 }
 // 전화번호
 .phone-input {
@@ -197,7 +207,7 @@ select {
     padding: 10px;
     border: 1px solid $border-gray;
     color: $dark-gray;
-    .phone-input input:focus {
+    .lookup-input input:focus {
       outline: 3px solid $blue-sky;
       outline-offset: -2px;
     }
