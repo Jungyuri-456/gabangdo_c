@@ -28,9 +28,11 @@
           <div class="contain3">
             <p>대구 짐옮김이 전문 No.1</p>
           </div>
-          <div class="contain4">
-            <button>예약하기</button>
-          </div>
+          <router-link to="/yeyak">
+            <div class="contain4">
+              <button>예약하기</button>
+            </div>
+          </router-link>
         </div>
       </div>
     </div>
@@ -86,39 +88,48 @@
       </div>
     </div>
 
-    <!-- 배너및 메뉴이동 -->
-    <div class="newBanner">
-      <div class="inner">
-        <div class="newBannerAll">
-          <div class="banner"></div>
-          <div class="menuMove">
-            <div class="menuMove1">
-              <!-- 이용안내 -->
-              <div class="menu1">
-                <p>이용안내</p>
-                <p>짐운송, 짐안내 확인하기</p>
+    <!-- 배너 및 메뉴 이동 섹션 -->
+    <div class="banner-section">
+      <div class="inner-container">
+        <!-- 왼쪽 배너 이미지 -->
+        <div class="banner-image">
+          <img src="/public/images/yr/mainImg/banner1.png" alt="가방도 배너" />
+        </div>
+
+        <!-- 오른쪽 메뉴 이동 및 예약 버튼 -->
+        <div class="menu-box">
+          <!-- 2x2 메뉴 -->
+          <div class="menu-grid">
+            <router-link to="/bangbeob2">
+              <div class="menu-item">
+                <p class="menu-title">이용안내</p>
+                <p class="menu-desc">짐운송, 짐안내 이용안내 확인하기</p>
               </div>
-              <!-- 이용요금 -->
-              <div class="menu2">
-                <p>이용요금</p>
-                <p>요금안내 확인하기</p>
+            </router-link>
+            <router-link to="/yogeum">
+              <div class="menu-item">
+                <p class="menu-title">이용요금</p>
+                <p class="menu-desc">짐운송 이용요금 확인하기</p>
               </div>
-            </div>
-            <div class="menuMove2">
-              <!-- 이용후기 -->
-              <div class="menu3">
-                <p>이용후기</p>
-                <p>고객님들의 이용후기</p>
+            </router-link>
+            <router-link to="/sotong2">
+              <div class="menu-item">
+                <p class="menu-title">이용후기</p>
+                <p class="menu-desc">고객 이용후기 확인하기</p>
               </div>
-              <!-- 축제안내 -->
-              <div class="menu4">
-                <p>축제안내</p>
-                <p>대구시 축제 확인하기</p>
+            </router-link>
+            <router-link to="/yh_festival">
+              <div class="menu-item">
+                <p class="menu-title">축제안내</p>
+                <p class="menu-desc">대구시 축제 확인하기</p>
               </div>
-            </div>
-            <!-- 예약하기 -->
-            <div class="reservation">예약하기</div>
+            </router-link>
           </div>
+
+          <!-- 예약 버튼 -->
+          <router-link to="/yeyak">
+            <button class="reserve-button">예약하기</button>
+          </router-link>
         </div>
       </div>
     </div>
@@ -243,6 +254,11 @@ onMounted(() => {
             cursor: pointer;
           }
         }
+        .contain4 button:hover{
+          color: #279bf3;
+          border: 1px solid #279bf3;
+          background-color: #fff;
+        }
       }
     }
   }
@@ -332,6 +348,7 @@ onMounted(() => {
   .container4 {
     width: 100%;
     background-color: #fff;
+    margin-bottom: 150px;
     .inner {
       max-width: 1300px;
       margin: 0 auto;
@@ -367,25 +384,95 @@ onMounted(() => {
     }
   }
 
-  // 배너및 메뉴이동
-  .newBanner {
+  // 배너 및 메뉴 이동 섹션
+  .banner-section {
+    background-color: #ffffff;
+    width: 100%;
+  }
+
+  .inner-container {
+    max-width: 1300px;
+    margin: 0 auto;
     display: flex;
-    .inner {
-      max-width: 1300px;
-      margin: 0 auto;
-      .banner {
-        width: 50%;
-      }
-      .menuMove {
-        width: 50%;
-        .menuMove1 {
-          display: flex;
-          .menu1 {
-            width: 50%;
-          }
-        }
-      }
-    }
+    // flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .banner-image {
+    flex: 1 1 50%;
+    // max-width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .banner-image img {
+    display: block;
+    width: 100%;
+    object-fit: cover;
+
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  // 오른쪽 메뉴 이동 및 예약 버튼
+  .menu-box {
+    flex: 1 1 50%;
+    // max-width: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .menu-item {
+    background-color: #e9e9e9;
+    border-radius: 8px;
+    padding-top: 20px;
+    padding-left: 30px;
+    padding-right: 40px;
+    padding-bottom: 50px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .menu-item:hover {
+    background-color: #c6c6c6;
+  }
+
+  .menu-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #222;
+    font-size: 25px;
+  }
+
+  .menu-desc {
+    font-size: 14px;
+    color: #666;
+  }
+
+  .reserve-button {
+    background-color: #279bf3;
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: bold;
+    padding: 35px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: 100%;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .reserve-button:hover {
+    background-color: #357acc;
   }
 }
 </style>

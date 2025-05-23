@@ -1,7 +1,7 @@
 <template>
   <div class="w-[390px] m-auto">
     <!-- 상단 상태표시 -->
-    <div class="bg-[#373737] text-white p-4">
+    <div class="bg-gray-800 text-white p-4">
       <!-- 이너 -->
       <div class="w-[350px] mx-auto">
         <!-- 헤더 -->
