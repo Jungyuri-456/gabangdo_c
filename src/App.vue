@@ -43,6 +43,7 @@ const isWorkerPage = computed(() => {
     route.meta.hideLayout                                    // 라우트 메타에서 숨김 처리
   );
 });
+
 </script>
 
 <style lang="scss" scoped>
