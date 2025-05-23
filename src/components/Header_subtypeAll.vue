@@ -13,33 +13,28 @@
             <!-- 메인메뉴  -->
             <ul
               @mouseenter="showAllSubMenu = true"
-              @mouseleave="showAllSubMenu = false"
-            >
+              @mouseleave="showAllSubMenu = false">
               <li
                 v-for="(item, index) in menuItems"
                 :key="index"
-                @click="handleMenuClick(item)"
-              >
+                @click="handleMenuClick(item)">
                 <router-link
                   v-if="!item.sub"
                   :to="item.to"
-                  :class="{ mainMenu: item.label === '예약도' }"
-                >
+                  :class="{ mainMenu: item.label === '예약도' }">
                   <span class="menu-label">{{ item.label }}</span>
                 </router-link>
                 <a
                   v-else
                   href="#"
-                  :class="{ mainMenu: item.label === '예약도' }"
-                >
+                  :class="{ mainMenu: item.label === '예약도' }">
                   {{ item.label }}
                 </a>
                 <!-- 서브메뉴영역 -->
                 <ul
                   v-if="item.sub"
                   class="subMenu"
-                  :class="{ show: showAllSubMenu }"
-                >
+                  :class="{ show: showAllSubMenu }">
                   <li v-for="(sub, idx) in item.sub" :key="idx">
                     <router-link :to="sub.to">{{ sub.label }}</router-link>
                   </li>
@@ -86,16 +81,14 @@
               :class="{ show: shortMenu, leave: isLeaving }"
               v-show="shortMenu"
               @mouseleave="handleMouseLeave"
-              @mouseenter="clearLeave"
-            >
+              @mouseenter="clearLeave">
               <span @click.prevent="closeMobileMenu" role="button">X</span>
               <ul>
                 <li v-for="(item, index) in menuItems" :key="index">
                   <router-link
                     v-if="!item.sub"
                     :to="item.to"
-                    @click="handleMenuClick(item)"
-                  >
+                    @click="handleMenuClick(item)">
                     <span>{{ item.label }}</span>
                   </router-link>
                   <div v-else>
@@ -543,7 +536,7 @@ body.modal-open {
   top: 70px;
   left: 0;
   width: 100%;
-  height: 70px;
+  height: 80px;
   background-color: rgba(255, 255, 255, 0.8);
   z-index: 8;
   opacity: 0;

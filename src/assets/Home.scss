@@ -1,4 +1,4 @@
-@use "./Variables" as *;
+@use "/src/assets/Variables" as *;
 /* visual전체영역 */
 /* 사이즈 섹션 */
 .masize,
@@ -318,7 +318,7 @@ strong {
       width: 36px;
     }
   }
-  .hd_hambar img{
+  .hd_hambar img {
     margin-left: 20px;
   }
   .hd_man,
@@ -402,14 +402,16 @@ strong {
   .mavistxt {
     margin-top: 0 !important;
     align-items: center !important;
-    img{
+    img {
       padding: 20px 20px 30px;
       width: 270px !important;
       margin: 10px 0 0;
     }
   }
 
-  .mavistxt > button{margin: 20px 0 10px;}
+  .mavistxt > button {
+    margin: 20px 0 10px;
+  }
   .mavistxt > h4 {
     text-align: center;
   }
@@ -557,12 +559,12 @@ strong {
   .mavistxt img {
     width: 270px !important;
   }
-  .macontent2_icon{
-    margin: 50px 0  30px !important;
+  .macontent2_icon {
+    margin: 50px 0 30px !important;
   }
   .macontent2_iconimg {
     gap: 0 !important;
-  }     
+  }
   .macontent2_wrap {
     display: none;
   }
@@ -608,7 +610,7 @@ strong {
   .macontent3_gp {
     margin: 30px 0 !important;
   }
-  .macontent3_gp:last-child{
+  .macontent3_gp:last-child {
     margin-bottom: 0 !important;
   }
 }
@@ -628,10 +630,11 @@ strong {
   .swiper-button-next {
     display: none;
   }
-  .mavistxt img{
+  .mavistxt img {
     width: 250px !important;
   }
-  .masize , .masize1 {
+  .masize,
+  .masize1 {
     width: 100%;
     max-width: 250px !important;
     display: block;
